@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kcron
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # Missing dependencies
+url="https://kde.org/applications/system/"
+pkgdesc="Configure and schedule tasks"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfigwidgets-dev kdoctools-dev ki18n-dev kiconthemes-dev kio-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kcron-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="ecb527a3a213a490d8b14fe5c87564c07c2efa056c27f93572697fe48c994c3a04c7f742e0b9c2670c99f4d77a514ef0f575a43ced914ddacb919281d7c84a9e  kcron-20.08.0.tar.xz"

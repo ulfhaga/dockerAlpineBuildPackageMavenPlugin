@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kwindowsystem
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Access to the windowing system"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://community.kde.org/Frameworks"
+license="MIT AND (LGPL-2.1-only OR LGPL-3.0-only"
+depends_dev="qt5-qtx11extras-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev doxygen libxrender-dev xcb-util-keysyms-dev xcb-util-wm-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kwindowsystem-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="!check" # Test 6 hangs
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="57d9f92c034d85e71dd9817813f93788e9fc755009e4e618db6d347ba339e0644381e90370692ab85a056475f4c368ea6560274367309cb4f98ed56a152f3785  kwindowsystem-5.73.0.tar.xz"

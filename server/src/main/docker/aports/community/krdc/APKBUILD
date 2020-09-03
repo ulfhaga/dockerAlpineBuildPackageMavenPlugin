@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=krdc
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/internet/krdc/"
+pkgdesc="Remote Desktop Client"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+depends="freerdp"
+makedepends="extra-cmake-modules kconfig-dev kcmutils-dev kdnssd-dev knotifyconfig-dev knotifications-dev kbookmarks-dev kiconthemes-dev kxmlgui-dev kcompletion-dev kwallet-dev kwidgetsaddons-dev kwindowsystem-dev knotifyconfig-dev ki18n-dev kdoctools-dev libvncserver-dev libssh-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/krdc-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="14aa0d59110945ff61355c4866ae794aeaf4c5362861d4f002df9d98927ee50c169e8aae6ed52cc51f5599ceb8d1a766567f5730425ff4a50f4c0c307ed24303  krdc-20.08.0.tar.xz"

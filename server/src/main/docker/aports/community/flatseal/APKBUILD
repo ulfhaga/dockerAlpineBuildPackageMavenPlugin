@@ -1,0 +1,36 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=flatseal
+pkgver=1.5.3
+pkgrel=0
+pkgdesc="Permission Manager for Flatpak"
+url="https://github.com/tchx84/Flatseal"
+arch="noarch !s390x !mips !mips64" # gjs
+license="GPL-3.0-or-later"
+depends="gjs libhandy gtk+3.0"
+makedepends="meson gettext glib-dev"
+checkdepends="desktop-file-utils appstream-glib"
+subpackages="$pkgname-lang"
+source="https://github.com/tchx84/Flatseal/archive/v$pkgver/flatseal-$pkgver.tar.gz"
+builddir="$srcdir/Flatseal-$pkgver"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="b5be904025ec05e986b681c450a751191cda2fcfc72e59459ea8063253428f27fb53f6f3c6a696b5307aaaa7b983216bc26619110cb93c7165fbc3cbead087c4  flatseal-1.5.3.tar.gz"

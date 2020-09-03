@@ -1,0 +1,31 @@
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=py3-passlib
+pkgver=1.7.2
+pkgrel=1
+pkgdesc="Password hashing library supporting over 30 schemes"
+url="https://foss.heptapod.net/python-libs/passlib/wikis/home"
+arch="noarch"
+license="BSD-3-Clause"
+depends="python3"
+makedepends="py3-setuptools"
+checkdepends="py3-nose py3-scrypt"
+source="https://files.pythonhosted.org/packages/source/p/passlib/passlib-$pkgver.tar.gz"
+builddir="$srcdir"/passlib-$pkgver
+
+replaces="py-passlib" # Backwards compatibility
+provides="py-passlib=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PASSLIB_TEST_MODE=full nosetests --tests passlib.tests
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir" --skip-build
+}
+
+sha512sums="1ea0654b177b5ab2e1a7e5c3949642c34805ace6e4e4a0f82fafdb3f374edd99c667906ce598c335b668da049860648d5cbebb3e62d775898d5b0cb8cfc7bf53  passlib-1.7.2.tar.gz"

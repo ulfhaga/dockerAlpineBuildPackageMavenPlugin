@@ -1,0 +1,25 @@
+# Maintainer: Olliver Schinagl <oliver@schinagl.nl>
+pkgname="websocat"
+pkgver="1.6.0"
+pkgrel=0
+pkgdesc="Netcat, curl and socat for WebSockets"
+url="https://github.com/vi/websocat"
+arch="all !s390x !mips !mips64" # Limited by cargo/rust
+license="MIT"
+makedepends="cargo"
+options="net"
+source="${pkgname}-${pkgver}.tar.gz::https://github.com/vi/websocat/archive/v${pkgver}.tar.gz"
+
+build() {
+	cargo build --release --locked
+}
+
+check() {
+	cargo test --release --locked
+}
+
+package() {
+	install -Dm755 target/release/websocat -t "$pkgdir"/usr/bin
+}
+
+sha512sums="e41d69541d9322f43f0296fe853777372b7f1d011839a0f860e8cbbe37bdac61267d1f33e198a650bf830626fc621745e204bb5a0ba5c7317afa972ff22ada9c  websocat-1.6.0.tar.gz"

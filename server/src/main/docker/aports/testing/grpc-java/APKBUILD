@@ -1,0 +1,25 @@
+# Contributor: wener <wenermail@gmail.com>
+# Maintainer: wener <wenermail@gmail.com>
+pkgname=grpc-java
+pkgver=1.30.2
+pkgrel=0
+pkgdesc="The Java gRPC implementation. HTTP/2 based RPC"
+url="https://github.com/grpc/grpc-java"
+arch="all !aarch64 !armhf !armv7 !s390x !mips !mips64" # fails to build on aarch64 and armhf for some strange reason
+license="Apache-2.0"
+depends="openjdk8-jre"
+makedepends="openjdk8 protobuf-dev nss"
+source="$pkgname-$pkgver.tar.gz::https://github.com/grpc/grpc-java/archive/v$pkgver.tar.gz"
+options="!check"
+
+build() {
+	export GRADLE_USER_HOME="$srcdir"/.gradle
+	cd compiler
+	../gradlew --no-daemon --parallel --info java_pluginExecutable -PskipAndroid=true
+}
+
+package() {
+	install -D -m 755 compiler/build/exe/java_plugin/protoc-gen-grpc-java "$pkgdir"/usr/bin/protoc-gen-grpc-java
+}
+
+sha512sums="02c088bdcffdd86e003d7d871ab3b098d03e9dddb251d1dbfb2308a5882eb47f02580f517fa18843b22e24faddb8c5acec143aad3cd8e4533b5d86290d5ddf51  grpc-java-1.30.2.tar.gz"

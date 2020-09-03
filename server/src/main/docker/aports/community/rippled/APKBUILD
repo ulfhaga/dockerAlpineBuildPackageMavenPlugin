@@ -1,0 +1,36 @@
+# Contributor: André Klitzing <aklitzing@gmail.com>
+# Maintainer: André Klitzing <aklitzing@gmail.com>
+pkgname=rippled
+pkgver=1.5.0
+pkgrel=0
+pkgdesc="Blockchain daemon implementing the Ripple Consensus Ledger"
+options="net !check" # FIXME: 1 failure, rippled testsuite doesn't tell which one it is
+url="https://ripple.com/"
+arch="x86_64"
+license="ISC"
+makedepends="cmake openssl-dev boost-dev protobuf-dev"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/ripple/rippled/archive/$pkgver.tar.gz
+	disable-failing-test.patch
+	"
+
+build() {
+	mkdir build && cd build
+	# Use Release as buildtype for now: its subprojects don't support None either
+	cmake .. -Dstatic=OFF -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+	cmake --build .
+}
+
+check() {
+	./build/rippled --unittest --unittest-jobs ${JOBS:-2}
+}
+
+package() {
+	install -D -m644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	install -D build/rippled "$pkgdir/usr/bin/rippled"
+	install -D -m644 cfg/rippled-example.cfg "$pkgdir/etc/$pkgname/rippled.cfg"
+	install -D -m644 cfg/validators-example.txt "$pkgdir/etc/$pkgname/validators.txt"
+}
+
+sha512sums="124dac175b9e565118d8275900490f0944bb02a09f8dbca188a2c6d66b8e2bbf7fccaf4755a7bc4362c901f00f3e182d07c6ca4fa0ad09492def4bfe5bab7af9  rippled-1.5.0.tar.gz
+3ba74a07e3426fa8162160942850ed7c0472d4cdf4cf170317df2d838eec8bb2b74abfc47e40d42d80b9303bcb6c0ebe52d4babee2194db3d608d36b26dadc15  disable-failing-test.patch"

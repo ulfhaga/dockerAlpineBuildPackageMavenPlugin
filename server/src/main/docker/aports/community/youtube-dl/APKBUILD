@@ -1,0 +1,67 @@
+# Contributor: Peter Bui <pnutzh4x0r@gmail.com>
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Contributor: Timo Teräs <timo.teras@iki.fi>
+# Maintainer: Timo Teräs <timo.teras@iki.fi>
+pkgname=youtube-dl
+pkgver=2020.07.28
+pkgrel=0
+pkgdesc="Command-line program to download videos from YouTube"
+url="https://youtube-dl.org/"
+arch="noarch"
+license="Unlicense"
+depends="python3 py3-setuptools"
+checkdepends="py3-flake8 py3-nose"
+subpackages="$pkgname-doc
+	$pkgname-zsh-completion:zshcomp
+	$pkgname-bash-completion:bashcomp
+	$pkgname-fish-completion:fishcomp"
+source="https://github.com/rg3/youtube-dl/releases/download/$pkgver/youtube-dl-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname"
+
+prepare() {
+	default_prepare
+	sed -i \
+		-e 's|etc/bash_completion.d|share/bash-completion/completions|' \
+		-e 's|etc/fish/completions|share/fish/completions|' \
+		"$builddir"/setup.py
+}
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PYTHON=/usr/bin/python3 make offlinetest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+zshcomp() {
+	pkgdesc="Zsh completions for $pkgname"
+	install_if="$pkgname=$pkgver-r$pkgrel zsh"
+
+	install -Dm644 "$builddir"/$pkgname.zsh \
+		"$subpkgdir"/usr/share/zsh/site-functions/_$pkgname
+}
+
+bashcomp() {
+	pkgdesc="Bash completions for $pkgname"
+	install_if="$pkgname=$pkgver-r$pkgrel bash-completion"
+
+	mkdir -p "$subpkgdir"/usr/share/bash-completion/completions/
+	mv "$pkgdir"/usr/share/bash-completion/completions/$pkgname.bash-completion \
+		"$subpkgdir"/usr/share/bash-completion/completions/$pkgname
+}
+
+fishcomp() {
+	pkgdesc="Fish completions for $pkgname"
+	install_if="$pkgname=$pkgver-r$pkgrel fish"
+
+	mkdir -p "$subpkgdir"/usr/share/fish/completions/
+	mv "$pkgdir"/usr/share/fish/completions/$pkgname.fish \
+		"$subpkgdir"/usr/share/fish/completions/
+}
+
+sha512sums="be18cd53577a1e750a9610d481225b5683414ee4a095aa90b1a9ef150e9009bec4c2188f19f13505c88ac0179872751a07f5fb4b591beca3cefd11ccf071132d  youtube-dl-2020.07.28.tar.gz"

@@ -1,0 +1,36 @@
+# Contributor: Róbert Nagy <vrnagy@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libcec
+pkgver=5.0.0
+pkgrel=0
+pkgdesc="libcec for the Pulse-Eight USB-CEC adapter"
+url="https://github.com/Pulse-Eight/libcec"
+arch="all"
+license="GPL-2.0-or-later"
+depends_dev="eudev-dev python3-dev libxrandr-dev swig"
+makedepends="$depends_dev p8-platform-dev cmake"
+subpackages="$pkgname-dev"
+source="https://github.com/Pulse-Eight/libcec/archive/libcec-$pkgver.tar.gz"
+
+builddir="$srcdir"/libcec-libcec-$pkgver
+
+build() {
+	mkdir "$builddir/build"
+	cd "$builddir/build"
+	cmake -DCMAKE_BUILD_TYPE=None \
+		-DBUILD_SHARED_LIBS=1 \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		..
+	make
+}
+
+package() {
+	cd "$builddir/build"
+	make DESTDIR="$pkgdir" install
+
+	# Add cec directory to sys.path to get rid of issue https://github.com/Pulse-Eight/libcec/issues/316
+	python_dir=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+	echo "cec" > "${pkgdir}$python_dir/cec.pth"
+}
+
+sha512sums="f604cc1cd5f73fd7c1c304f0bff7f90cc9d80d517b4a385e14c19076c3fcbf2b05fc577aa19ef01ebfca05f16b489a03ed8ce9a997d9615920811773e547f7d2  libcec-5.0.0.tar.gz"

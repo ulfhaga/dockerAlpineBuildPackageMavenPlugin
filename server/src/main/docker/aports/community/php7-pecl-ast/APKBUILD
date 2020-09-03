@@ -1,0 +1,35 @@
+# Contributor: Andy Blyler <andy@blyler.cc>
+# Maintainer: Fabio Ribeiro <fabiorphp@gmail.com>
+pkgname=php7-pecl-ast
+_pkgreal=ast
+pkgver=1.0.8
+pkgrel=0
+pkgdesc="PHP extension exposing PHP 7 abstract syntax tree - PECL"
+url="https://pecl.php.net/package/ast"
+arch="all"
+license="BSD-3-Clause"
+depends="php7-common"
+makedepends="php7-dev"
+source="$pkgname-$pkgver.tar.gz::https://pecl.php.net/get/$_pkgreal-$pkgver.tgz"
+builddir="$srcdir"/$_pkgreal-$pkgver
+provides="php7-ast=$pkgver-r$pkgrel" # for backward compatibility
+replaces="php7-ast" # for backward compatibility
+
+build() {
+	phpize7
+	./configure --prefix=/usr \
+		--with-php-config=/usr/bin/php-config7
+	make
+}
+
+check() {
+	make NO_INTERACTION=1 REPORT_EXIT_STATUS=1 test
+}
+
+package() {
+	make INSTALL_ROOT="$pkgdir/" install
+	install -d "$pkgdir"/etc/php7/conf.d
+	echo "extension=$_pkgreal.so" > "$pkgdir"/etc/php7/conf.d/$_pkgreal.ini
+}
+
+sha512sums="c8363f7f95e5f42811caa780ef385b92d1917ed8ffb2f25e73319b451250e594c2b20df24c8ac8b6f5bca74e8d600b72d8eacf1a38d95a2fa4aec04aa355919b  php7-pecl-ast-1.0.8.tar.gz"

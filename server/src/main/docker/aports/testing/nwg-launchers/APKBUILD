@@ -1,0 +1,23 @@
+# Contributor: Matthew T Hoare <matthew.t.hoare@gmail.com>
+# Maintainer: Matthew T Hoare <matthew.t.hoare@gmail.com>
+pkgname=nwg-launchers
+pkgver=0.3.2
+pkgrel=0
+pkgdesc="GTK+ launchers for sway, i3 and some other window managers"
+url="https://github.com/nwg-piotr/nwg-launchers"
+arch="all"
+license="GPL-3.0-or-later"
+makedepends="cmake gtkmm3-dev meson nlohmann-json"
+options="!check" # no checks
+source="$pkgname-$pkgver.tar.gz::https://github.com/nwg-piotr/nwg-launchers/archive/v$pkgver.tar.gz"
+
+build() {
+	abuild-meson . output
+	ninja -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="c5acfe0977e771a251d074a1185039991034354d5f5f5a9e49a8f1349397a87ac072d8b4510685f022bfd9f28f02cb81b08d62557c36cde482798a1cb244ea46  nwg-launchers-0.3.2.tar.gz"

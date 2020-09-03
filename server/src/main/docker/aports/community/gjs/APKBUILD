@@ -1,0 +1,38 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=gjs
+pkgver=1.64.4
+pkgrel=1
+pkgdesc="GNOME javascript library"
+url="https://wiki.gnome.org/Projects/Gjs"
+arch="all !s390x !mips !mips64"
+license="MIT AND LGPL-2.0-or-later"
+makedepends="dbus gobject-introspection-dev mozjs68-dev mozjs68
+	gtk+3.0-dev cairo-dev meson<0.55 libffi>=3.3"
+checkdepends="xvfb-run"
+subpackages="$pkgname-dev"
+source="https://download.gnome.org/sources/gjs/${pkgver%.*}/gjs-$pkgver.tar.xz"
+
+build() {
+	meson \
+		--buildtype=plain \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		-Dprofile=disabled \
+		-Dinstalled_tests=false \
+		output
+	ninja -C output
+}
+
+check() {
+	# Tests can take a while on armv7
+	xvfb-run meson test -C output -t 10
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="21a15d7106ad6584fb1f02cb0a0a4cab211a3540adb8f2c03d35c211e3946b81935000a52351fedd95a18a7ff6b7f96e665fcafa3c411ff79f2b6cb332c82b42  gjs-1.64.4.tar.xz"

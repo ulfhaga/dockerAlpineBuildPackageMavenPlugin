@@ -1,0 +1,47 @@
+# Contributor: Stuart Cardall <developer@it-offshore.co.uk>
+# Maintainer: Stuart Cardall <developer@it-offshore.co.uk>
+pkgname=libmbim
+pkgver=1.24.2
+pkgrel=0
+pkgdesc="MBIM modem protocol helper library"
+url="https://www.freedesktop.org/wiki/Software/libmbim/"
+arch="all"
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+makedepends="gtk-doc python3 glib-dev py3-gobject3 libgudev-dev
+	gobject-introspection-dev"
+subpackages="
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-tools
+	$pkgname-bash-completion
+	"
+source="https://www.freedesktop.org/software/libmbim/libmbim-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static \
+		--enable-introspection=yes
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+tools() {
+	pkgdesc="Tools for libmbim"
+
+	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/libexec
+	mv "$pkgdir"/usr/bin/* "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/libexec/* "$subpkgdir"/usr/libexec
+	rmdir -p "$pkgdir"/usr/bin "$pkgdir"/usr/libexec 2>/dev/null || true
+}
+
+sha512sums="1005ca982b9f705deb64ae6e9ed0af7803a7802cf653b1dc83c7c90a073ac9e776100f6b2bda2be8c72fefd18ae7adb5c5509d9368398271b3b364a0ae977a1f  libmbim-1.24.2.tar.xz"

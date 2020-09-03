@@ -1,0 +1,53 @@
+# Contributor: Danilo Falcão <danilo@falcao.org>
+# Maintainer: Danilo Falcão <danilo@falcao.org>
+pkgname=py3-pelican
+_pkgname=pelican
+pkgver=4.5.0
+pkgrel=0
+pkgdesc="Static site generator written in Python"
+options="!check" # Tests require locale support
+url="https://getpelican.com"
+arch="noarch"
+license="AGPL-3.0-only"
+depends="
+	python3
+	py3-feedgenerator
+	py3-jinja2
+	py3-pygments
+	py3-docutils
+	py3-tz
+	py3-blinker
+	py3-unidecode
+	py3-six
+	py3-dateutil
+	py3-markdown
+	"
+checkdepends="py3-django"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir"/$_pkgname-$pkgver
+
+prepare() {
+	default_prepare
+
+	# remove shebang from python files
+	sed -i '1d' \
+		pelican/tools/*.py \
+		pelican/tools/templates/*.py.jinja2
+}
+
+replaces="pelican" # Backwards compatibility
+provides="pelican=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="71cd7e8556a7762290b8a7620b9c539abc9a31393a02c3e120ae760913ecfead442ff36d6210cfa53e7ef9724cbc5a0d1ddf1a1ed2f0fe0706a1a144e0eb5d3b  pelican-4.5.0.tar.gz"

@@ -1,0 +1,52 @@
+# Contributor: Olivier Mauras <olivier@mauras.ch>
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=borgbackup
+_pkgname=borg
+pkgver=1.1.13
+pkgrel=0
+pkgdesc="Deduplicating backup program"
+url="https://www.borgbackup.org/"
+arch="all !s390x !mips !mips64 !armhf" # limited by py3-pyzmq + https://gitlab.alpinelinux.org/alpine/aports/-/issues/11644
+license="BSD-3-Clause"
+depends="python3 py3-pyzmq py3-setuptools"
+makedepends="python3-dev lz4-dev acl-dev attr-dev openssl-dev linux-headers
+	zstd-dev"
+checkdepends="py3-pytest py3-pytest-benchmark"
+subpackages="
+	$pkgname-doc
+	$pkgname-bash-completion
+	$pkgname-fish-completion
+	$pkgname-zsh-completion
+	"
+source="https://github.com/borgbackup/borg/releases/download/$pkgver/borgbackup-$pkgver.tar.gz"
+
+build() {
+	# https://github.com/borgbackup/borg/issues/4891#issuecomment-615838317
+	CFLAGS="$CFLAGS -DXXH_FORCE_MEMORY_ACCESS=1" python3 setup.py build
+}
+
+check() {
+	PYTHONPATH="$(echo "$builddir"/build/lib.linux-*)" pytest -v --benchmark-skip --pyargs borg.testsuite
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	install -Dm644 -t "$pkgdir"/usr/share/man/man1 docs/man/*.1
+
+	install -Dm644 scripts/shell_completions/bash/$_pkgname \
+		"$pkgdir"/usr/share/bash-completion/completions/$_pkgname
+
+	install -Dm644 scripts/shell_completions/fish/$_pkgname.fish \
+		"$pkgdir"/usr/share/fish/completions/$_pkgname.fish
+
+	install -Dm644 scripts/shell_completions/zsh/_$_pkgname \
+		"$pkgdir"/usr/share/zsh/site-functions/_$_pkgname
+
+	# clean some useless files
+	cd "$pkgdir"/usr/lib/python*/site-packages/borg
+	find . -name '*.h' -delete -o -name '*.c' -delete -o -name '*.pyx' -delete
+}
+
+sha512sums="2480dba6c842659a248361b35b478120e50df3525b8f07d89dac4e78369bb1dad2679b9efa6a4d6f38637759666095dc2dcbb7750edccd97972e2c8980a51b84  borgbackup-1.1.13.tar.gz"

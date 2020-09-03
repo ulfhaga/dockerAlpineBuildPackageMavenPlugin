@@ -1,0 +1,45 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kio-gdrive
+pkgver=20.08.0
+pkgrel=1
+arch="all !ppc64le !s390x !armhf !mips !mips64" # Blocked by libkgapi -> qt5-qtwebengine
+url="https://community.kde.org/KIO_GDrive"
+pkgdesc="KIO Slave to access Google Drive"
+license="GPL-2.0-or-later"
+depends="
+	kaccounts-providers
+	signon-plugin-oauth2
+	signon-ui
+	"
+makedepends="
+	extra-cmake-modules
+	intltool
+	kaccounts-integration-dev
+	kdoctools-dev
+	ki18n-dev
+	kio-dev
+	libkgapi-dev
+	qt5-qtbase-dev
+	"
+source="https://download.kde.org/stable/release-service//$pkgver/src/kio-gdrive-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="ac96dae7bc3700e5a7a681d043596a964ea167ce79d74f0a8ed159912573ebd6df56c6072b87a5c7e1eef8dc6b4aef2e8264989c0c946dfa1aa5fee26d752075  kio-gdrive-20.08.0.tar.xz"

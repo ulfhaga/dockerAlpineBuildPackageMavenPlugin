@@ -1,0 +1,37 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=gnome-system-monitor
+pkgver=3.36.1
+pkgrel=0
+pkgdesc="GNOME system monitor"
+url="https://www.gnome.org/"
+arch="all !s390x !mips !mips64" # librsvg
+license="GPL-2.0-or-later"
+makedepends="gnome-desktop-dev libgtop-dev gtkmm3-dev
+	libxml2-dev librsvg-dev itstool libxml2-utils libxslt
+	meson polkit-dev"
+checkdepends="appstream-glib desktop-file-utils"
+subpackages="$pkgname-doc $pkgname-lang"
+source="https://download.gnome.org/sources/gnome-system-monitor/${pkgver%.*}/gnome-system-monitor-$pkgver.tar.xz"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--datadir=/usr/share \
+		--buildtype=plain \
+		-Dsystemd=false \
+		output .
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="52443c0dbcd4fffb7451f540f0e48088a956a4e176af708d198c6ac2054f454dbf910df21925daca484a30d6c1c3526ad634c38ab01f905a08a64b11938c0c2d  gnome-system-monitor-3.36.1.tar.xz"

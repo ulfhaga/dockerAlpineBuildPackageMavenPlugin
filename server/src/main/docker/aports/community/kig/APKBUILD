@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kig
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="http://edu.kde.org/kig"
+pkgdesc="Interactive Geometry"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev kparts-dev kdoctools-dev ki18n-dev ktexteditor-dev kiconthemes-dev kconfigwidgets-dev karchive-dev kxmlgui-dev kcrash-dev kcoreaddons-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kig-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="bc0e21bb575043c960f6c7ccc1fd138a56c68a578482afa9583be1b3a2c01b9dffd7297d4bc3ee39cd659f8cdc6eed3b00dc83e2fc1f7c6c495bcf720ce9fe77  kig-20.08.0.tar.xz"

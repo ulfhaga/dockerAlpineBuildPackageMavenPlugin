@@ -1,0 +1,40 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>docker</id>
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}/target/lib</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/docker/scripts</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/src/main/docker/aports</directory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/src/main/docker/fabric8</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+</assembly>

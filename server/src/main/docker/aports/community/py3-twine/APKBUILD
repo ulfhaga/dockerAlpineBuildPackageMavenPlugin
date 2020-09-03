@@ -1,0 +1,36 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-twine
+pkgver=3.2.0
+pkgrel=0
+pkgdesc="Collection of utilities for publishing packages on PyPI"
+options="!check" # Requires unpackaged 'pretend'
+url="https://twine.readthedocs.io/en/latest/"
+arch="noarch"
+license="Apache-2.0"
+depends="python3
+	py3-pkginfo
+	py3-readme_renderer
+	py3-requests>=2.20.0
+	py3-requests-toolbelt
+	py3-setuptools
+	py3-tqdm
+	py3-keyring
+	"
+checkdepends="py3-pytest"
+source="https://files.pythonhosted.org/packages/source/t/twine/twine-$pkgver.tar.gz"
+builddir="$srcdir/twine-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PYTHONPATH="$PWD/build/lib" pytest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="a63e4a4dfd414c785448a75276afc658d4a3cf06bcaf1ee2694b05b209a764b83c38a3e90521df81af739bcf3501137b15740472d47f980563e5dedb804096f4  twine-3.2.0.tar.gz"

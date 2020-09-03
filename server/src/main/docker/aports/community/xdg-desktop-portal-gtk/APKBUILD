@@ -1,0 +1,48 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=xdg-desktop-portal-gtk
+pkgver=1.7.1
+pkgrel=0
+pkgdesc="Gtk implementation of xdg-desktop-portal"
+url="https://github.com/flatpak/xdg-desktop-portal-gtk"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="xdg-desktop-portal"
+makedepends="gtk+3.0-dev dbus-dev gnome-desktop-dev"
+subpackages="$pkgname-lang"
+source="https://github.com/flatpak/xdg-desktop-portal-gtk/releases/download/$pkgver/xdg-desktop-portal-gtk-$pkgver.tar.xz
+	"
+
+prepare() {
+	default_prepare
+
+	sed 's|/usr/bin/sh|/bin/sh|' \
+		-i compile \
+		-i missing \
+		-i install-sh \
+		-i depcomp \
+		-i config.sub \
+		-i config.guess
+}
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	rm -rf "$pkgdir"/usr/lib/systemd
+}
+
+sha512sums="2a2326559a4ed7e44ffddc1a6881c25f14822465f5660bc806e7d8a120d66268e2987329f4bc9f7821329eea41ee96b15a39c5f7ac805a1e04d0604a88b31c08  xdg-desktop-portal-gtk-1.7.1.tar.xz"

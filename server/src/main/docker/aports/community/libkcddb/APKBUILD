@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libkcddb
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://www.kde.org/applications/multimedia/"
+pkgdesc="KDE CDDB library"
+license="LGPL-2.0-or-later AND GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfig-dev kdoctools-dev kcodecs-dev ki18n-dev kio-dev kwidgetsaddons-dev libmusicbrainz-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/libkcddb-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="net" # Required for tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_TESTING=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	# musicbrainztest-severaldiscs and asynccddblookuptest are broken
+	# asynchttplookuptest fails to setup dbus
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "(musicbrainztest-severaldiscs|asynchttplookuptest|asynccddblookuptest)"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="614da415f7506543dc7b62a5a3ad1d508e768b166ae03ec70ecae01c651c4d066ff51b171bbc307ec0d43bbdf4067a480023ecb276faf26ae045f86f5dd00e19  libkcddb-20.08.0.tar.xz"

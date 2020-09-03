@@ -1,0 +1,52 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+_pkgname=lyaml
+pkgname=lua-$_pkgname
+pkgver=6.2.6
+pkgrel=0
+pkgdesc="LibYAML binding for Lua"
+url="https://github.com/gvvaughan/lyaml"
+arch="all"
+license="MIT"
+makedepends="yaml-dev lua-stdlib-normalize"
+replaces="lua-yaml"
+source="$_pkgname-$pkgver.tar.gz::https://github.com/gvvaughan/lyaml/archive/v$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+_luaversions="5.1 5.2 5.3"
+for _v in $_luaversions; do
+	makedepends="$makedepends lua$_v-dev"
+	subpackages="$subpackages lua$_v-$_pkgname:_subpackage"
+done
+
+build() {
+	local lver; for lver in $_luaversions; do
+		msg "Building for Lua $lver..."
+
+		cp -r "$builddir" "$srcdir"/build-$lver
+		cd "$srcdir"/build-$lver
+		lua$lver build-aux/luke
+	done
+}
+
+package() {
+	mkdir -p "$pkgdir"
+}
+
+_subpackage() {
+	local lver="${subpkgname%-lyaml}"
+	lver=${lver#lua}
+	pkgdesc="$pkgdesc $lver"
+	depends="lua$lver lua$lver-stdlib-normalize"
+	install_if="$pkgname=$pkgver-r$pkgrel lua$lver"
+	local rockdir="$subpkgdir/usr/lib/luarocks/rocks-$lver/$_pkgname/$pkgver-1"
+
+	cd "$srcdir"/build-$lver
+
+	lua$lver build-aux/luke PREFIX="$subpkgdir"/usr install
+	rm -Rf "$subpkgdir"/usr/share/doc
+
+	mkdir -p "$rockdir"
+	echo 'rock_manifest = {}' > "$rockdir"/rock_manifest
+}
+
+sha512sums="6f3398f33e54e2800b306a5d06519f879a72d523c346ab84f062b1f95850d46e1b31588003d1c4b5654e343b78ec9c07b85a48d0fce304e8d69a5566a8585373  lyaml-6.2.6.tar.gz"

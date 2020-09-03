@@ -1,0 +1,40 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=choose
+pkgver=1.3.0
+pkgrel=0
+pkgdesc="A human-friendly and fast alternative to cut and (sometimes) awk"
+url="https://github.com/theryangeary/choose"
+arch="x86_64 armv7 armhf aarch64 x86 ppc64le"  # limited by rust/cargo
+license="GPL-3.0-or-later"
+makedepends="cargo"
+source="https://github.com/theryangeary/choose/archive/v$pkgver/choose-$pkgver.tar.gz"
+
+prepare() {
+	default_prepare
+
+	# Optimize binary for size.
+	cat >> Cargo.toml <<-EOF
+
+		[profile.release]
+		codegen-units = 1
+		lto = true
+		opt-level = "z"
+		panic = "abort"
+	EOF
+}
+
+build() {
+	cargo build --release --locked
+}
+
+check() {
+	cargo test --release
+}
+
+package() {
+	cargo install --path . --root="$pkgdir/usr"
+	rm "$pkgdir"/usr/.crates.*
+}
+
+sha512sums="f0a074d7ead8557dc4235cedd64f10419897e254f345c37b8241feaa39176c7b1e6128091221568a8b5830656b8ae0344b1574d7daf198517d6df76f782242b1  choose-1.3.0.tar.gz"

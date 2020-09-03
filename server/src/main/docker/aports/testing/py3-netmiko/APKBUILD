@@ -1,0 +1,31 @@
+# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+pkgname=py3-netmiko
+_pkgname=netmiko
+pkgver=3.2.0
+pkgrel=0
+pkgdesc="Multi-vendor library to simplify Paramiko SSH connections to network devices"
+url="https://github.com/ktbyers/netmiko"
+arch="noarch"
+license="MIT"
+depends="openssh-client py3-yaml py3-paramiko py3-scp python3"
+makedepends="py3-setuptools"
+source="$pkgname-$pkgver.tar.gz::https://github.com/ktbyers/$_pkgname/archive/v$pkgver.tar.gz"
+builddir="$srcdir"/$_pkgname-$pkgver
+
+replaces="py-netmiko" # Backwawrds compatibility
+provides="py-netmiko=$pkgver-r$pkgrel" # Backwards compatibility
+
+check() {
+	python3 setup.py check
+}
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="3a2e91517c37d4d482cdd515d32a304064861dad68a2b09bbaf842de685121d3a79a7abe5ca1518317ec85f8a2d32d95835cb1e8126b821213e682c9f7cb456b  py3-netmiko-3.2.0.tar.gz"

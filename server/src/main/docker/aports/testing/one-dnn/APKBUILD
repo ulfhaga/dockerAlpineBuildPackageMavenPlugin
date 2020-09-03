@@ -1,0 +1,38 @@
+# Contributor: Dennis Krupenik <dennis@krupenik.com>
+# Maintainer: Dennis Krupenik <dennis@krupenik.com>
+pkgname=one-dnn
+pkgver=1.6.1
+pkgrel=0
+pkgdesc="oneAPI Deep Neural Network Library"
+url="https://01.org/oneDNN"
+# Used to executed primitives on Intel 64bit, aarch64 and compatible devices
+arch="x86_64"
+license="Apache-2.0"
+depends_dev="libtbb-dev opencl-headers opencl-icd-loader-dev"
+makedepends="cmake $depends_dev"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://github.com/oneapi-src/oneDNN/archive/v$pkgver/oneDNN-$pkgver.tar.gz"
+builddir="$srcdir/oneDNN-$pkgver"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_BUILD_TYPE=None \
+		-DDNNL_GPU_RUNTIME=OCL \
+		$CMAKE_CROSSOPTS .
+	make -C build
+}
+
+check() {
+	ctest -E '(gpu|cross-engine)'
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+sha512sums="1733bc4909d64165c43a9a5b00dab47b387e04f8f7b3dc89b33f1ff48a4da582db76adc6f34b68413b1ce652228141e09af8855175feff81ac7f892be2b4bfda  oneDNN-1.6.1.tar.gz"

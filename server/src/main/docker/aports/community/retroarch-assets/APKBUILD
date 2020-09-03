@@ -1,0 +1,23 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: David Demelier <markand@malikania.fr>
+pkgname=retroarch-assets
+pkgver=0_git20200812
+pkgrel=0
+_commit="8e99b408071b19cbd12ba63f4f9fdf5ffa8a5863"
+arch="noarch"
+url="https://www.libretro.com"
+pkgdesc="Assets needed for RetroArch - e.g. menu drivers, etc"
+license="CC-BY-4.0"
+source="$pkgname-$_commit.tar.gz::https://github.com/libretro/retroarch-assets/archive/$_commit.tar.gz"
+builddir="$srcdir/$pkgname-$_commit"
+options="!check" # No code to test
+
+build() {
+	make
+}
+
+package() {
+	DESTDIR="$pkgdir" make install
+}
+
+sha512sums="d9ccb3d5e1103803f02cf585b28698aaaf4c40816ca0d068da7e7a9abf655fdef2d23931421961eab7bb76b270a705b4340acdb3cd12b817c6dadbf1d316e545  retroarch-assets-8e99b408071b19cbd12ba63f4f9fdf5ffa8a5863.tar.gz"

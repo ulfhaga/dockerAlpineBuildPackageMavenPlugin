@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ktnef
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="API for handling TNEF data"
+arch="all !armhf"
+url="https://kontact.kde.org/"
+license="LGPL-2.0-or-later"
+depends_dev="qt5-qtbase-dev kcalendarcore-dev kcalutils-dev kcontacts-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/release-service/$pkgver/src/ktnef-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="acc5bc1e0503cd4541390ed458c4ea255576f4155ce4c9b8f1f04475105ec04ee8ef74664bf75333ce84ec4d3a5d607b156bf066bee857c81654e26a806e06fd  ktnef-20.08.0.tar.xz"

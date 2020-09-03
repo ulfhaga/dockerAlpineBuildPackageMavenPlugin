@@ -1,0 +1,27 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=diffoscope
+pkgver=155
+pkgrel=0
+pkgdesc="In-depth comparison of files, archives, and directories"
+options="!check" # Requires unpackaged 'tlsh'
+url="https://diffoscope.org/"
+arch="noarch !armv7 !x86 !mips !mips64 !armhf" # py3-magic, py3-libarchive-c missing
+license="GPL-3.0-or-later"
+makedepends="python3-dev py3-setuptools py3-docutils"
+depends="py3-magic py3-libarchive-c"
+checkdepends="py3-pytest gzip bzip2 unzip libarchive-tools"
+source="https://salsa.debian.org/reproducible-builds/diffoscope/-/archive/$pkgver/diffoscope-$pkgver.tar.gz"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="43d9eec13d884823513a227229587a6bbaac8b31d6418c09a0f6be323f6878eb9461da9e4b864b10cebc49d1b884bae0436192337ebf3de17c4da06b1e1ec865  diffoscope-155.tar.gz"

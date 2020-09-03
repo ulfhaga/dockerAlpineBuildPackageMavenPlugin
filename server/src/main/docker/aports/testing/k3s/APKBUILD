@@ -1,0 +1,84 @@
+# Contributor: Oleg Titov <oleg.titov@gmail.com>
+# Maintainer: Oleg Titov <oleg.titov@gmail.com>
+# Maintainer: wener <wenermail@gmail.com>
+pkgname=k3s
+_pkgver=1.18.8+k3s1
+pkgver=${_pkgver/+k3s/.}
+pkgrel=1
+pkgdesc="Lightweight Kubernetes. 5 less than k8s."
+url="https://k3s.io"
+arch="all !mips !mips64"
+license="Apache-2.0"
+options="chmod-clean !check" # No test suite from upstream
+depends="cni-plugins conntrack-tools containerd coreutils dbus findutils ipset iptables"
+makedepends="go linux-headers sqlite-dev sqlite-static zlib-dev zlib-static"
+install="$pkgname.post-install $pkgname.pre-deinstall"
+subpackages="$pkgname-doc $pkgname-openrc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/rancher/k3s/archive/v$_pkgver.tar.gz
+	k3s.confd
+	k3s.initd
+	k3s.logrotate
+	k3s.modules-load
+	"
+builddir="$srcdir/src/github.com/rancher/$pkgname"
+
+# secfixes:
+#   1.18.6.1-r0:
+#     - CVE-2020-8557
+#     - CVE-2020-8559
+#   1.18.3.1-r0:
+#     - CVE-2020-10749
+#     - CVE-2020-8555
+#   0.8.1-r0:
+#     - CVE-2019-9512
+#     - CVE-2019-9514
+#   0.8.0-r0:
+#     - CVE-2019-11247
+#     - CVE-2019-11249
+
+prepare() {
+	export GOPATH="$srcdir"
+
+	mkdir -p "$(dirname $builddir)"
+	mv "$srcdir"/$pkgname-${_pkgver/+/-} "$builddir"/
+
+	default_prepare
+}
+
+build() {
+	msg2 "Prepare GOPATH and GOBIN..."
+	export GOPATH="$srcdir"
+	export GOBIN="$GOPATH/bin"
+
+	msg2 "Building k3s..."
+
+	mkdir -p build/data && ./scripts/download && go generate
+
+	TAGS="ctrd no_btrfs netcgo osusergo providerless static_build libsqlite3"
+	STATIC_SQLITE="-extldflags '-static -lm -ldl -lz -lpthread'"
+	VERSIONFLAGS="
+	-X github.com/rancher/k3s/pkg/version.Version=1.18.8+k3s1
+	-X github.com/rancher/k3s/pkg/version.GitCommit=AlpineLinux
+	"
+	GOLDFLAGS="-w -s"
+
+	go build -o k3s -tags "$TAGS" -ldflags "$VERSIONFLAGS $GOLDFLAGS $STATIC_SQLITE" ./cmd/server/main.go
+}
+
+package() {
+	install -m755 -D k3s \
+		"$pkgdir"/usr/bin/k3s
+
+	install -m644 -D -t "$pkgdir"/usr/share/doc/$pkgname README.md
+
+	install -m755 -D "$srcdir"/k3s.initd "$pkgdir"/etc/init.d/k3s
+	install -m644 -D "$srcdir"/k3s.confd "$pkgdir"/etc/conf.d/k3s
+	install -m644 -D "$srcdir"/k3s.logrotate "$pkgdir"/etc/logrotate.d/k3s
+	install -m644 -D "$srcdir"/k3s.modules-load "$pkgdir"/etc/modules-load.d/k3s.conf
+}
+
+sha512sums="1dec1359a204b4f182f98cf9b9416f0dd706d17f43f5b2b70bd091082a96ac0bb432a3485f8cf4a9dd4bac138ec835af606619b04a9a075956647d4a5de26ec8  k3s-1.18.8.1.tar.gz
+f03221efceb4ce2305c41c4c9e6d02ee5b799ed0cdfb1fc5018f8696e4d05575ae63b7c87596d765c5aa76c4a3bacf7c205e3eb61465e26886081a5d0da013ea  k3s.confd
+cff8db85337dd6b8a5126ea2c498fec09bc11cfdb856069ca78218cb5e58ce0c4c42a239e1d26bac9893f64ecc81fbdff64f7f937a960475b6298caafca0b36d  k3s.initd
+018a5e9b417a937c17f0a4a9e08eed434f06186207626ad038aec22ee667aba4cefa6e9e2a222e2c430d2cbb88c8663648f5bab0e76926a0edd13b8bdfd2673a  k3s.logrotate
+85ee1310cb36c85c42b4068a9549a3ef72b856cd61b2c1036c3e871ef43a69ed80b43599ad94ce5b069ddd823e730596bb3d3875d4ba8cd77c4cc1985335ffff  k3s.modules-load"

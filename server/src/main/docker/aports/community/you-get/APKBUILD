@@ -1,0 +1,25 @@
+# Contributor: Ivan Tham <pickfire@riseup.net>
+# Maintainer: Ivan Tham <pickfire@riseup.net>
+pkgname=you-get
+pkgver=0.4.1456
+pkgrel=0
+pkgdesc="Tiny command line utility to download media contents"
+url="https://you-get.org"
+arch="noarch"
+license="MIT"
+depends="ca-certificates ffmpeg python3 py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/y/you-get/you-get-$pkgver.tar.gz"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py check
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="2580a8f9b658115624ac33c882fa3c81cb424af5b74334a6cea9fbd38c64102655d4babc4a011e5cf62987950de502d78bbf18133d1dec7b72e333e576c1085a  you-get-0.4.1456.tar.gz"

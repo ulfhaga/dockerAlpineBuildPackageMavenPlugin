@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kwalletmanager
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/system/org.kde.kwalletmanager5"
+pkgdesc="A tool to manage the passwords on your KDE system"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev karchive-dev kauth-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kdbusaddons-dev kdoctools-dev ki18n-dev kiconthemes-dev kjobwidgets-dev  kcmutils-dev kio-dev knotifications-dev kservice-dev ktextwidgets-dev kwallet-dev kwindowsystem-dev kxmlgui-dev kcrash-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kwalletmanager-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="b72be07d91e89ddf138097d7cb556e329020aad647ca39f4ec57258455e349ac9ee210412e75da575775a80d9d19add66445eded24019102b81345687fdcca56  kwalletmanager-20.08.0.tar.xz"

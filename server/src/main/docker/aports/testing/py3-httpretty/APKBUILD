@@ -1,0 +1,31 @@
+# Maintainer: Valery Kartel <valery.kartel@gmail.com>
+# Contributor: Valery Kartel <valery.kartel@gmail.com>
+pkgname=py3-httpretty
+pkgver=1.0.2
+pkgrel=0
+pkgdesc="HTTP client mocking tool for Python"
+url="https://github.com/gabrielfalcao/HTTPretty"
+arch="noarch"
+license="MIT"
+depends="python3"
+makedepends="python3-dev py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/h/httpretty/httpretty-$pkgver.tar.gz"
+replaces="py-httpretty"
+provides="py-httpretty=$pkgver-r$pkgrel"
+builddir="$srcdir"/httpretty-$pkgver
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+	# Fix permissions on .EGG-INFO
+	chmod 644 "$pkgdir"/usr/lib/python3*/site-packages/*.egg-info/*
+}
+
+sha512sums="f9ef1c82f4fe3a31696e06228cea512664c5118b3c32910d7810d1fcf16b05d31b9b55db7bb6bd64967aadb162a2952757627439769db9117164b8248de9049c  httpretty-1.0.2.tar.gz"

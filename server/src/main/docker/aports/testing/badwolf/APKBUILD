@@ -1,0 +1,25 @@
+# Maintainer: Haelwenn (lanodan) Monnier <contact+alpine@hacktivis.me>
+pkgname=badwolf
+pkgver=1.0.2
+pkgrel=0
+pkgdesc="A minimalist and privacy-oriented WebKit browser"
+url="https://hacktivis.me/projects/badwolf"
+arch="all"
+license="BSD-3-Clause"
+makedepends="webkit2gtk-dev"
+subpackages="$pkgname-doc $pkgname-dbg"
+source="https://hacktivis.me/releases/badwolf-$pkgver.tar.gz"
+
+build() {
+	make PREFIX=/usr CFLAGS="$CFLAGS"
+}
+
+check() {
+	make test
+}
+
+package() {
+	make PREFIX=/usr DESTDIR="$pkgdir" install
+}
+
+sha512sums="6c4e33adb62e13a5d6e878fc649d1e2764e0995db5b34a946a9b7aed2d85bb990248168b322801b7366a0d22ff8ae886092ca68f436f815ba2667ee13b13e4ea  badwolf-1.0.2.tar.gz"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdbusaddons
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Addons to QtDBus"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1-only OR LGPL-3.0-only"
+makedepends="extra-cmake-modules qt5-qttools-dev doxygen shared-mime-info"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kdbusaddons-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="!check" # Requires running dbus-daemon
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="edf29af24711de88ab91af1a9cca4b55d32dd3c555952d834bba43dfb12d5c0dd8cb698fb22539a2ac786c7a8a3745ddeb054d8da2cb4e1543744143fa5ca941  kdbusaddons-5.73.0.tar.xz"

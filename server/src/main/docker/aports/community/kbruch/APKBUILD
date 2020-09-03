@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kbruch
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://edu.kde.org/kbruch/"
+pkgdesc="Practice Fractions"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfig-dev kcrash-dev kdoctools-dev ki18n-dev kwidgetsaddons-dev kxmlgui-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kbruch-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="75f4a94e3729bc00f0b62a902be627ad4ae48240737898ebeb928c72379966f67c02fac50a8968bac51a40a3f219e6934356cd7aa2a2de693e3f976ffe0073ea  kbruch-20.08.0.tar.xz"

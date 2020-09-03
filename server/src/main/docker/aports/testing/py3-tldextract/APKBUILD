@@ -1,0 +1,30 @@
+# Contributor: Galen Abell <galen@galenabell.com>
+# Maintainer: Galen Abell <galen@galenabell.com>
+pkgname="py3-tldextract"
+_pyname="tldextract"
+pkgver=2.2.3
+pkgrel=0
+pkgdesc="Accurately separate the TLD from the registered domain and subdomains of a URL"
+url="https://github.com/john-kurkowski/tldextract"
+arch="noarch"
+license="BSD-3-Clause"
+depends="python3"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-responses"
+source="$_pyname-$pkgver.tar.gz::https://github.com/john-kurkowski/tldextract/archive/$pkgver.tar.gz"
+builddir="$srcdir/$_pyname-$pkgver"
+
+build() {
+	export SETUPTOOLS_SCM_PRETEND_VERSION="$pkgver"
+
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+sha512sums="ce07a13b0b63ad9316216152dababe5b8536136838876f77cc116c688a82e61a4e68cfa08f55ba4c29d9be0be9b4626cf37653150b97ee30e9aa190c9ce4d2a5  tldextract-2.2.3.tar.gz"

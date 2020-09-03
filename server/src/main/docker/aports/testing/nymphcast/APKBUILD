@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=nymphcast
+pkgver=0.1_alpha3
+pkgrel=0
+arch="all !mips !mips64" # blocked by nymphrpc -> poco
+url="http://nyanko.ws/product_nymphcast.php"
+pkgdesc="Audio and video casting system with support for custom applications"
+license="BSD-3-Clause"
+depends="avahi"
+depends_dev="nymphrpc-dev"
+makedepends="$depends_dev sdl2-dev sdl2_image-dev ffmpeg-dev openssl-dev"
+subpackages="$pkgname-static $pkgname-dev $pkgname-server $pkgname-server-openrc"
+source="https://github.com/MayaPosch/NymphCast/archive/v${pkgver/_/-}/nymphcast-v${pkgver/_/-}.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/NymphCast-${pkgver/_/-}"
+
+build() {
+
+	make -C src/client_lib
+	make -C src/server
+}
+
+package() {
+	DESTDIR="$pkgdir" PREFIX=/usr make -C src/client_lib install
+	DESTDIR="$pkgdir" PREFIX=/usr make -C src/server install-openrc
+}
+
+server() {
+	pkgdesc="$pkgdesc (server)"
+
+	DESTDIR="$subpkgdir" PREFIX=/usr make -C "$builddir"/src/server install
+}
+
+sha512sums="2602f6341355a74bd8ff3f4ae9fa9f78b6dfa388c7c4218869a5620389d3acc629769a5f358e6e1bd716be137d0fbd4801643c904d21bb5e2fe3b2311b97f9c1  nymphcast-v0.1-alpha3.tar.gz"

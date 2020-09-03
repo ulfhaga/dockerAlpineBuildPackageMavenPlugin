@@ -1,0 +1,40 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer:
+pkgname=mdcat
+pkgver=0.21.0
+pkgrel=0
+pkgdesc="Cat for markdown"
+url="https://github.com/lunaryorn/mdcat"
+arch="all !s390x !mips !mips64" # Limited by cargo
+license="Apache-2.0"
+makedepends="cargo openssl-dev"
+checkdepends="py3-ansi2html"
+subpackages="
+	$pkgname-bash-completion
+	$pkgname-zsh-completion
+	$pkgname-fish-completion
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/lunaryorn/mdcat/archive/mdcat-$pkgver.tar.gz"
+builddir="$srcdir/mdcat-mdcat-$pkgver"
+
+build() {
+	cargo build --release --locked
+}
+
+check() {
+	cargo test --release --locked
+}
+
+package() {
+	install -s -Dm0755 target/release/mdcat -t "$pkgdir"/usr/bin
+
+	# Install the generated shell completion files
+	install -Dm644 "$builddir"/target/release/build/mdcat-*/out/completions/mdcat.bash \
+		-t "$pkgdir"/usr/share/bash-completion/completions
+	install -Dm644 "$builddir"/target/release/build/mdcat-*/out/completions/_mdcat \
+		-t "$pkgdir"/usr/share/zsh/site-functions
+	install -Dm644 "$builddir"/target/release/build/mdcat-*/out/completions/mdcat.fish \
+		-t "$pkgdir"/usr/share/fish/completions
+}
+
+sha512sums="5697f093227c0e1953682116b695128bd96845a21417b608b7f9ec2682a7fe92dfc2b24a4fce382922f3fdedc4942e69dfcfbfe3a8422712bee2c9ccace2d408  mdcat-0.21.0.tar.gz"

@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=numix-icon-theme-circle
+pkgver=20.07.11
+pkgrel=0
+pkgdesc="Official icon theme from the Numix project"
+url="https://github.com/numixproject/numix-icon-theme-circle"
+arch="noarch"
+license="GPL-3.0-only"
+depends="numix-icon-theme"
+subpackages="$pkgname-light"
+source="$pkgname-$pkgver.tar.gz::https://github.com/numixproject/numix-icon-theme-circle/archive/$pkgver.tar.gz"
+options="!check" # No code so no tests
+
+package() {
+	mkdir -p "$pkgdir"/usr/share/icons
+	mv "$builddir"/Numix-Circle "$pkgdir"/usr/share/icons/
+}
+
+light() {
+	pkgdesc="$pkgdesc (Light version)"
+
+	mkdir -p "$subpkgdir"/usr/share/icons
+	mv "$builddir"/Numix-Circle-Light "$subpkgdir"/usr/share/icons/
+}
+
+sha512sums="21550994b798387c9e93ecd6d7d73611744fd7bacc061306d0671e27d309608992d148081840f9857728dfa72aff4b288a6f0e57d34af727f29a0b6f89553560  numix-icon-theme-circle-20.07.11.tar.gz"

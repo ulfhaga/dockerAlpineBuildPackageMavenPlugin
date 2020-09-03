@@ -1,0 +1,49 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=mycroft-core
+pkgver=20.2.5
+pkgrel=0
+pkgdesc="Mycroft Core, the Mycroft Artificial Intelligence platform"
+url="https://mycroft.ai/"
+# mips, mips64 and s390x blocked by py3-precise-runner
+# s390x blocked by mimic1
+arch="noarch !mips !mips64 !s390x"
+license="Apache-2.0"
+depends="python3 py3-six py3-requests py3-gtts py3-pyaudio py3-pyee py3-speechrecognition py3-tornado py3-websocket-client py3-requests-futures py3-serial py3-psutil py3-pocketsphinx py3-inflection py3-pillow py3-dateutil py3-fasteners py3-yaml py3-lingua-franca mycroft-skills-manager mycroft-skills-kit py3-adapt-parser py3-padatious py3-fann2 py3-padaos py3-precise-runner py3-petact py3-xdg mimic1"
+# These dependencies are required for their executables
+depends="$depends pulseaudio-utils mpg123 vorbis-tools"
+# Minimum skills required for functionality
+depends="$depends mycroft-skill-fallback-unknown mycroft-skill-pairing mycroft-skill-configuration"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-wheel py3-vlc"
+install="$pkgname.post-install"
+source="$pkgname-$pkgver.tar.gz::https://github.com/MycroftAI/mycroft-core/archive/release/v$pkgver.tar.gz
+	mycroft.conf
+	0001-xdg.patch
+	2680.patch
+	"
+# Net is required for tests
+# Some tests are broken still, will be enabled later
+options="!check"
+builddir="$srcdir/mycroft-core-release-v$pkgver"
+
+build() {
+	MYCROFT_LOOSE_REQUIREMENTS=1 python3 setup.py build
+}
+
+check() {
+	# test_hotword_factory and test_local_recognizer fail
+	# https://github.com/MycroftAI/mycroft-core/issues/2574
+	PYTHONPATH="$PWD/build/lib" pytest -rRxs -k 'not testInvalid and not testListenerConfig'
+}
+
+package() {
+	MYCROFT_LOOSE_REQUIREMENTS=1 python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	install -Dm644 "$srcdir"/mycroft.conf "$pkgdir"/etc/mycroft/mycroft.conf
+}
+
+sha512sums="9a8d0a4a65cece2e6005e3513e73208d843bcf654ebeed5f027eb3e63da99210336678d490d5c4625efb1732a172537072675f7f03e914d5fca27ae2ef570631  mycroft-core-20.2.5.tar.gz
+c852bf37c3588a3f65f55b65af0e55440e13aeeaca522e7029a7326ec58c9cf053d14c7c3376a952b65512cabe3437ba6701f1e0e0e4971d6b5ada159bacd57a  mycroft.conf
+33b4dbc733e741343fae9f573ef206a4d698e944946818f8181b49aece3bcfdef0a683ff5e1f592379ada2beef8a4ada1a536046dee64792d78f0677b3d9a545  0001-xdg.patch
+9f731235cfd44dbcd48a4e51742dec0d415d2a9e136547adc451a2f0145bf9b8300a15fa2e8abac3f9b1075bcad7ed9c88ea394b3080575f58c0c631daea9233  2680.patch"

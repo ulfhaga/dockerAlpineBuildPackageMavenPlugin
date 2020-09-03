@@ -1,0 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kquickcharts
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="A QtQuick plugin providing high-performance charts"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1-only OR LGPL-3.0-only"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtquickcontrols2-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kquickcharts-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="b08d36d14b016fc23982133c3f5275dda348e7ad79d1f58354c99c1aae63e6416de7b41ad24e763e533e276bbcd5f2a5fb2f82e01ce6cc45da90c79012948994  kquickcharts-5.73.0.tar.xz"

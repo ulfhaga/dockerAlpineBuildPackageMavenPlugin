@@ -1,0 +1,28 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Justin Berthault <justin.berthault@zaclys.net>
+pkgname=py3-libevdev
+_pyname=python-libevdev
+pkgver=0.9
+pkgrel=0
+pkgdesc="Python3 wrapper around the evdev library"
+url="https://python-libevdev.readthedocs.io/en/latest"
+arch="noarch"
+license="MIT"
+depends="libevdev python3"
+checkdepends="py3-pytest"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.freedesktop.org/libevdev/$_pyname/-/archive/$pkgver/$_pyname-$pkgver.tar.gz"
+builddir="$srcdir/$_pyname-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PYTHONPATH=. pytest-3 test/*.py
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="8b61b7b5d7f2ccc7c510afa321e048c0b1a77cf6d646d611269c75787ed4fcdb70d463dfdc7bf62b260788db3695a9797fa5809c5ff4d0441180dc31028a3b2a  py3-libevdev-0.9.tar.gz"

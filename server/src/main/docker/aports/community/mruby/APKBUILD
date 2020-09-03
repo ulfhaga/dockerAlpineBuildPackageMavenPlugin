@@ -1,0 +1,40 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=mruby
+pkgver=2.1.1
+pkgrel=0
+pkgdesc="Lightweight Ruby"
+url="http://mruby.org"
+arch="all !armhf !armv7 !x86 !s390x"
+license="MIT"
+depends=""
+makedepends="$depends_dev bison ruby ruby-rake"
+subpackages="$pkgname-tools $pkgname-static"
+source="https://github.com/mruby/mruby/archive/$pkgver/$pkgname-$pkgver.tar.gz
+	build_config.rb"
+builddir="$srcdir/$pkgname-$pkgver"
+
+build() {
+	MRUBY_CONFIG="$srcdir/build_config.rb" ./minirake --verbose
+}
+
+package() {
+	install -d "$pkgdir"/usr/bin
+	cp build/host-debug/bin/* "$pkgdir"/usr/bin/
+	cp build/host/bin/* "$pkgdir"/usr/bin/
+
+	install -d "$pkgdir"/usr/lib
+	cp build/host/lib/*.a "$pkgdir"/usr/lib/
+}
+
+tools() {
+	pkgdesc="$pkgdesc (tools)"
+
+	install -d "$subpkgdir"/usr/bin
+
+	mv "$pkgdir"/usr/bin/* "$subpkgdir"/usr/bin/ \
+		&& mv "$subpkgdir"/usr/bin/mruby "$pkgdir"/usr/bin/
+}
+
+sha512sums="66f9b4bebb5a7b19f5cb1be2bd8b9bc65e4dbb5d4350d238ad5f947c9195fd431f2069f7334036ea63a750e9257e59ae1aef16ac99c7e1f4e17724cd1cbe2e50  mruby-2.1.1.tar.gz
+9c51108d9766e3e3129ac89d76fc7dcc797b206bcc5660d60e89426adb93707fcf5acdffb24cd3438b3eabfcc02e3767a17e9233c25e0762ebe2ddab9f159252  build_config.rb"

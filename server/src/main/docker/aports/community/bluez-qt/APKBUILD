@@ -1,0 +1,28 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=bluez-qt
+pkgver=5.73.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+pkgdesc="Qt wrapper for Bluez 5 DBus API"
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1-or-later"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen graphviz qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/bluez-qt-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc"
+options="!check" # Multiple tests either hang or fail completely
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="1cb59003eaa3c43c998c43c9037e7dd9c1ade09789f02bd4dc4400c82040c0e722349493b9965f9ece341055dbee9fe20dfb1288fb65e7a63eeac6f27fabdc04  bluez-qt-5.73.0.tar.xz"

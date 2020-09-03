@@ -1,0 +1,38 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-astroid
+pkgver=2.4.2
+pkgrel=1
+pkgdesc="A new abstract syntax tree from Python's ast"
+url="https://www.astroid.org"
+arch="noarch"
+license="LGPL-2.1-or-later"
+depends="py3-lazy-object-proxy py3-six py3-typed-ast py3-wrapt"
+replaces="py-logilab-astng"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-pytest-runner"
+source="https://files.pythonhosted.org/packages/source/a/astroid/astroid-$pkgver.tar.gz"
+builddir="$srcdir"/astroid-$pkgver
+
+prepare() {
+	default_prepare
+	# Remove pinned version restrictions
+	sed -e 's/six~=[0-9.*]*/six/' \
+		-e 's/wrapt~=[0-9.*]*/wrapt/' \
+		-e 's/lazy_object_proxy==[0-9.*]*/lazy_object_proxy/' \
+		-i astroid/__pkginfo__.py
+}
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 -m pytest -v
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="f5d759c07a13e06d3d071faacff2dc775924566aaef8bdb6e526c4ebf723b6b561f5824b711b33e33a2a69df0a2ff4cbf0f4302c9a0d55610e031e81c4a4be91  astroid-2.4.2.tar.gz"

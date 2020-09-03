@@ -1,0 +1,102 @@
+# Contributor: Mark Riedesel <mark@klowner.com>
+# Maintainer: Mark Riedesel <mark@klowner.com>
+pkgname=blender
+pkgver=2.83.5
+_pkgver=${pkgver%.[0-9]}
+pkgrel=0
+pkgdesc="3D Creation/Animation/Publishing System"
+url="https://www.blender.org/"
+arch="x86_64" # only on x86_64, mainly because of openimageio
+license="GPL-2.0-or-later"
+depends="blender-shared=$pkgver-r$pkgrel"
+makedepends="cmake libx11-dev libjpeg-turbo-dev libpng-dev freetype-dev python3-dev
+	openimageio-dev opencolorio-dev glew-dev openal-soft-dev ffmpeg-dev blosc-dev
+	fftw-dev tiff-dev libxi-dev libsndfile-dev boost-dev openexr-dev py3-numpy-dev
+	opensubdiv-dev lzo-dev libxrender-dev openjpeg-dev openxr-dev libtbb-dev libtbb
+	llvm10-dev eigen-dev sdl2-dev jack-dev alembic-dev"
+subpackages="$pkgname-doc $pkgname-shared::noarch $pkgname-headless py3-$pkgname:python"
+source="https://download.blender.org/source/blender-$pkgver.tar.xz
+	0001-musl-fixes.patch
+	0002-fix-linking-issue.patch
+	"
+
+
+build() {
+	# Headless
+	mkdir -p "$builddir"/build-headless
+	cd "$builddir"/build-headless
+	_build -C../build_files/cmake/config/blender_headless.cmake
+
+	# Full
+	mkdir -p "$builddir"/build-full
+	cd "$builddir"/build-full
+	_build -C../build_files/cmake/config/blender_full.cmake
+
+	# Python module
+	mkdir -p "$builddir"/build-py
+	cd "$builddir"/build-py
+	_build -C../build_files/cmake/config/bpy_module.cmake
+}
+
+_build() {
+	local _py_version=$(python3 -c 'import sys; print("%i.%i" % (sys.version_info.major, sys.version_info.minor))')
+
+	cmake .. "$@" \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=None \
+		-DWITH_PYTHON_INSTALL=OFF \
+		-DWITH_INSTALL_PORTABLE=OFF \
+		-DWITH_SYSTEM_LZO=ON \
+		-DWITH_SYSTEM_EIGEN3=ON \
+		-DWITH_SYSTEM_GLEW=ON \
+		-DPYTHON_VERSION=$_py_version
+	cmake --build .
+}
+
+package() {
+	# Install headless files
+	cd "$builddir"/build-headless
+	DESTDIR="$pkgdir"/headless cmake --install .
+
+	# Rename the headless blender to blender-headless
+	mkdir -p "$pkgdir"/usr/bin
+	mv "$pkgdir"/headless/usr/bin/blender "$pkgdir"/usr/bin/blender-headless
+	rm -rf "$pkgdir"/headless
+
+	# Install python module
+	cd "$builddir"/build-py
+	DESTDIR="$pkgdir" cmake --install .
+
+	# Install the full package
+	cd "$builddir"/build-full
+	DESTDIR="$pkgdir" cmake --install .
+}
+
+shared() {
+	pkgdesc="Blender shared runtime data and add-on scripts"
+	mkdir -p "$subpkgdir"/usr/share/
+	mv "$pkgdir"/usr/share/blender "$subpkgdir"/usr/share/
+}
+
+headless() {
+	pkgdesc="$pkgdesc (headless build)"
+	depends="blender-shared=$pkgver-r$pkgrel"
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/blender-headless "$subpkgdir"/usr/bin/
+}
+
+python() {
+	local _py_version=$(python3 -c 'import sys; print("%i.%i" % (sys.version_info.major, sys.version_info.minor))')
+
+	pkgdesc="Blender modules for Python 3"
+	mkdir -p "$subpkgdir"/usr/lib/python"$_py_version"/site-packages
+	mv "$pkgdir"/usr/lib/python"$_py_version"/site-packages/bpy.so "$subpkgdir"/usr/lib/python"$_py_version"/site-packages/
+	rm -rf "$pkgdir"/usr/lib
+
+	# Symlink to the blender-shared files
+	ln -s /usr/share/blender/"$_pkgver" "$subpkgdir"/usr/lib/python"$_py_version"/site-packages/"$_pkgver"
+}
+
+sha512sums="6179b4c285d40f59b7701cafe8d2cca5d764ef15b5c390c42cfb7cf8a41704b09a4e62fcf644d76bd2b7f47bcfc96395f0afa4a1d748c4c2ba8dfdee7356df9f  blender-2.83.5.tar.xz
+aadee6f3767a225e766ae9d32d7459c776f1bc2cf9f3e37e63983d44e0e3f7525c33abe95f7c3b956b0bb87beff84d148032e6e3c6003b4338f0a64668c737af  0001-musl-fixes.patch
+c626ed61534879250c30e39aead32d605a72843dea8f24843f25548ad3109efa9f4363c81a320165427522395f3e9dff4861b5f74f31b1f2b3fe8d93e57c43ae  0002-fix-linking-issue.patch"

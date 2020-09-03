@@ -1,0 +1,47 @@
+# Contributor: Katie Holly <holly@fuslvz.ws>
+# Maintainer: Konstantin Kulikov <k.kulikov2@gmail.com>
+pkgname=telegraf
+pkgver=1.15.2
+pkgrel=0
+_commit=cd037b49 # git rev-parse --short HEAD
+_branch=release-${pkgver%.*}
+pkgdesc="A plugin-driven server agent for collecting & reporting metrics, part of the InfluxDB project"
+url="https://www.influxdata.com/time-series-platform/telegraf/"
+arch="x86_64 aarch64"
+license="MIT"
+makedepends="go binutils-gold linux-headers"
+install="$pkgname.pre-install"
+subpackages="$pkgname-openrc"
+options="net chmod-clean"
+source="telegraf-$pkgver.tar.gz::https://github.com/influxdata/telegraf/archive/v$pkgver.tar.gz
+	telegraf.initd
+	telegraf.confd
+	"
+
+export GOPATH=${GOPATH:-$srcdir/go}
+export GOCACHE=${GOCACHE:-$srcdir/go-build}
+export GOTMPDIR=${GOTMPDIR:-$srcdir}
+
+build() {
+	local ldflags="-X main.version=$pkgver -X main.branch=$_branch -X main.commit=$_commit"
+	go build -ldflags "$ldflags" ./cmd/telegraf
+}
+
+check() {
+	# filecount tests are excluded because they depend on exact file sizes
+	# which depend on filesystem used.
+	local pkgs="$(go list ./... | grep -v plugins/inputs/filecount)"
+	go test -short $pkgs
+}
+
+package() {
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 "$srcdir/$pkgname.confd" "$pkgdir/etc/conf.d/$pkgname"
+	install -Dm755 "$builddir/$pkgname" "$pkgdir/usr/bin/$pkgname"
+	install -Dm644 "$builddir/etc/$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
+	install -dm755 "$pkgdir/etc/$pkgname.conf.d"
+}
+
+sha512sums="96f344573af5c5a575e56895bffa70e9701278d9e32f5ba63b39e7a0153d1a7d9e9ab9f304e9db872b029dcd137ed199ba42757c6f365823955cc2cb04e154d9  telegraf-1.15.2.tar.gz
+abe483deb8e12fe140de2c36d17bbfbc97ed7a5de8c3d76162357f7ba6575b8236b7197b92a26ed6d54f95c1ccbfc12ca62d6cc0371bf49d10a1ea5622a51ed1  telegraf.initd
+d1a9aa57f8b5179f2d8396518b9db757fe1c40337b515c1f750cf577683ff15f3174bc757afa70d880a1fef809c873e6aa0da1b903a5a97934c14965712d47a4  telegraf.confd"

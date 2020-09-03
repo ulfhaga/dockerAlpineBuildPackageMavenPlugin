@@ -1,0 +1,82 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Contributor: Holger Jaekel <holger.jaekel@gmx.de>
+# Maintainer: Mark Riedesel <mark+alpine@klowner.com>
+pkgname=openexr
+pkgver=2.5.2
+pkgrel=0
+pkgdesc="A high dynamic-range image file format library"
+url="https://www.openexr.com/"
+arch="all !mips !mips64" # py3-numpy
+license="BSD-3-Clause"
+makedepends="
+	boost-dev
+	boost-python3
+	chrpath
+	cmake
+	py3-numpy-dev
+	python3-dev
+	zlib-dev
+	"
+subpackages="
+	$pkgname-doc
+	$pkgname-dev
+	py3-$pkgname:py3
+	$pkgname-tools
+	"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/openexr/openexr/archive/v$pkgver.tar.gz
+	10-musl-_fpstate.patch
+	"
+
+# secfixes:
+#   2.5.2-r0:
+#     - CVE-2020-15304
+#     - CVE-2020-15305
+#     - CVE-2020-15306
+
+build() {
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		$CMAKE_CROSSOPTS .
+	make -C build
+}
+
+check() {
+	cd build
+
+	_exclude_tests="OpenEXR.IlmImf"
+	case "$CARCH" in
+		x86) _exclude_tests="($_exclude_tests|IlmBase.Imath)" ;;
+	esac
+
+	ctest -E $_exclude_tests
+}
+
+package() {
+	make DESTDIR="$pkgdir" -C build install
+}
+
+py3() {
+	pkgdesc="$pkgdesc (Python3 bindings for the Imath vector/matrix classes)"
+
+	# Install missing python module
+	_pythonpath=$(python3 -c "from sysconfig import get_path; print(get_path('platlib'))")
+	install -Dm755 $builddir/build/python3*/imathnumpy.so -t "$subpkgdir"/$_pythonpath
+	chrpath -d $subpkgdir/$_pythonpath/imathnumpy.so
+	mv $pkgdir$_pythonpath/* $subpkgdir$_pythonpath
+	mv $pkgdir/usr/lib/*Python* $subpkgdir/usr/lib/
+	rm -rf $pkgdir/usr/lib/python*
+}
+
+tools() {
+	mkdir -p "$subpkgdir"/usr/
+	mv "$pkgdir"/usr/bin "$subpkgdir"/usr/
+}
+
+sha512sums="62f98695cf56600303db9c2d13d34cacc1851a103d8ffb7e7ce8c6d9d14e6bf02804836c718ae03e8d685ef3dda0cf7b2130e2d363f8095b22a15bf30d706fab  openexr-2.5.2.tar.gz
+8791366e55684176ab81ae60c31c63da15a924d8fb5e2b648b88da491cada3897d49e4547c00d7767c97ed383480de5d69285549d100ee5d75a96de9ab857e5d  10-musl-_fpstate.patch"

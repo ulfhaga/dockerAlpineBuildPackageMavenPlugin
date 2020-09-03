@@ -1,0 +1,23 @@
+# Maintainer: Raatty <me@raatty.club>
+pkgname=lightdm-mobile-greeter
+pkgver=4
+pkgrel=0
+pkgdesc="A simple lightdm greeter for mobile"
+url="https://raatty.club:3000/raatty/lightdm-mobile-greeter"
+arch="x86_64 armv7 armhf aarch64 x86 ppc64le" # thats all rust is build for
+license="MIT"
+depends="xorg-server"
+makedepends="cargo make libhandy-dev lightdm-dev"
+source="$pkgname-$pkgver.tar.gz::https://raatty.club:3000/raatty/lightdm-mobile-greeter/archive/$pkgver.tar.gz"
+builddir="$srcdir/$pkgname"
+options="!check" # No tests
+
+build() {
+	make build
+}
+
+package() {
+	DESTDIR="$pkgdir" PREFIX="/usr" make install
+}
+
+sha512sums="a774563741fe500e476197e3f0d991317ef758309ae5fc434ea8d1fd36973521fbc44dddf31a4f5bdaa7f581e928ea17ac5191fe8d2d5bc82d7b3f9f07537cd0  lightdm-mobile-greeter-4.tar.gz"

@@ -1,0 +1,42 @@
+# Contributor: Steffen Nurpmeso <steffen@sdaoden.eu>
+# Contributor: Ivan Tham <pickfire@riseup.net>
+# Maintainer:
+pkgname=s-nail
+pkgver=14.9.19
+pkgrel=0
+pkgdesc="SysV mail/BSD Mail/POSIX mailx: send and receive Internet mail"
+options="suid"
+url="https://www.sdaoden.eu/code.html#s-mailx"
+arch="all"
+license="BSD-3-Clause"
+makedepends="openssl-dev libidn-dev ncurses-dev"
+replaces="mailx"
+subpackages="$pkgname-doc"
+source="https://ftp.sdaoden.eu/s-nail-$pkgver.tar.xz"
+
+build() {
+	make \
+		VAL_SID= VAL_MAILX=mail \
+		VAL_PREFIX=/usr \
+		VAL_SYSCONFDIR=/etc \
+		\
+		OPT_GSSAPI=no \
+		VAL_IDNA=idn \
+		VAL_RANDOM="tls,libgetrandom,sysgetrandom,urandom,builtin" \
+		VAL_MAIL=/var/mail \
+		\
+		config
+	make build
+}
+
+check() {
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}
+
+sha512sums="53c8cf7449afc3e99029ad54ed9c63edefce8ca00cd32dab138c34a7ced7d16852e45e5ad3949b2b8d7baa17421ce38079405781517cdbd3cb67d773bad561f8  s-nail-14.9.19.tar.xz"

@@ -1,0 +1,41 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer:
+pkgname=zola
+pkgver=0.11.0
+pkgrel=0
+pkgdesc="Opionated static site generator"
+url="https://github.com/getzola/zola"
+# (! denote spurious SIGSEGVs, depends on upstream LLVM x Rust)
+arch="x86_64 !armv7 armhf aarch64 !x86" # Limited by cargo
+license="MIT"
+makedepends="cargo openssl-dev libsass-dev oniguruma-dev"
+subpackages="
+	$pkgname-zsh-completion
+	$pkgname-fish-completion
+	$pkgname-bash-completion
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/getzola/zola/archive/v$pkgver.tar.gz"
+
+export RUSTONIG_SYSTEM_LIBONIG=1 # Link against system liboniguruma
+
+build() {
+	cargo build --release --verbose --locked
+}
+
+check() {
+	cargo test all --release --verbose --locked
+}
+
+package() {
+	install -Dm0755 target/release/zola "$pkgdir"/usr/bin/zola
+
+	install -Dm644 "$builddir"/completions/zola.bash \
+			"$pkgdir"/usr/share/bash-completion/completions/zola
+	install -Dm644 "$builddir"/completions/_zola \
+			"$pkgdir"/usr/share/zsh/site-functions/_zola
+	install -Dm644 "$builddir"/completions/zola.fish \
+			"$pkgdir"/usr/share/fish/completions/zola.fish
+}
+
+
+sha512sums="5dfa1cfa084ad2b5d526f328ec8c78e3fc9f764bd2915ed2fd2913d9ca3392dab6952f5d39596824d514fccfce1fd957c9f2a647b19bcd53af6c1c5253040360  zola-0.11.0.tar.gz"

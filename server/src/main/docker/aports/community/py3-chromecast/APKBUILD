@@ -1,0 +1,24 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-chromecast
+pkgver=7.2.1
+pkgrel=0
+pkgdesc="Python module to talk to Google Chromecast"
+url="https://github.com/balloob/pychromecast"
+arch="noarch"
+license="MIT"
+depends="python3 py3-casttube py3-zeroconf py3-protobuf"
+makedepends="py3-setuptools"
+source="https://pypi.python.org/packages/source/P/PyChromecast/PyChromecast-$pkgver.tar.gz"
+options="!check" # No tests
+builddir="$srcdir/PyChromecast-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="3ef068b2f6d088a2d25d9fad929bd6a3ba93d0e22fc75f2d0b20fc976ef3f2c7353bf4045348e2fb2a71ce4b75dec0f8270bf2a65d5a6b880a019d45368eb207  PyChromecast-7.2.1.tar.gz"

@@ -1,0 +1,27 @@
+# Contributor: André Klitzing <aklitzing@@gmail.com>
+# Maintainer: André Klitzing <aklitzing@gmail.com>
+pkgname=croc
+pkgver=8.0.12
+pkgrel=0
+pkgdesc="Easily and securely send things from one computer to another"
+url="https://github.com/schollz/croc"
+arch="all !s390x !mips !mips64" # s390x fails: https://github.com/schollz/croc/issues/218
+license="MIT"
+makedepends="go"
+source="https://github.com/schollz/croc/releases/download/v$pkgver/croc_${pkgver}_src.tar.gz"
+
+build() {
+	export CGO_LDFLAGS="$LDFLAGS"
+	export GOFLAGS="$GOFLAGS -trimpath -mod=vendor"
+	go build
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 -t "$pkgdir/usr/bin/" "$pkgname"
+}
+
+sha512sums="2e0304484fe6c1e2e4d19440c5ff4c2c50f47580ed068f9bb4e052f64441027c5cd28c734c5e781fa883c0b41ff979ec7d076b700673c1b4d7211f4824c31235  croc_8.0.12_src.tar.gz"

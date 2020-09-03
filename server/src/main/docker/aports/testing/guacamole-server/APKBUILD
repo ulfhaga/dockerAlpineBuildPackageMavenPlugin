@@ -1,0 +1,57 @@
+# Contributor:
+# Maintainer:
+pkgname=guacamole-server
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="package for guacamole server"
+url="https://guacamole.apache.org"
+arch="all !mips64" # Tests fail
+license="GPL-3.0-or-later"
+makedepends="cairo-dev libjpeg-turbo-dev libpng-dev ossp-uuid-dev ffmpeg-dev
+	freerdp-dev pango-dev libssh2-dev libvncserver-dev pulseaudio-dev
+	openssl-dev libvorbis-dev libwebp-dev perl libwebsockets-dev cunit-dev
+	"
+subpackages="$pkgname-doc $pkgname-dev"
+source="http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/$pkgver/source/guacamole-server-$pkgver.tar.gz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--disable-static \
+		--with-libavcodec \
+		--with-libavutil \
+		--with-libswscale \
+		--with-ssl \
+		--without-winsock \
+		--with-vorbis \
+		--with-pulse \
+		--with-pango \
+		--with-terminal \
+		--with-vnc \
+		--with-rdp \
+		--with-ssh \
+		--without-telnet \
+		--with-webp \
+		--with-websockets
+	make
+}
+
+check() {
+	# 4 Tests fail on s390x
+	# test_common 10
+	# test_common 12
+	# test_common 13
+	# test_common 14
+	[ "$CARCH" = s390x ] && return 0
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+sha512sums="8d25ca6fab292ca5393034fec39179fda70eb8f31dcd069ef8c7638d7ac171ccaeb87f3fb3c668eb790688838fcd4eb6cf38df9aae38822fbd09dacb4d9db211  guacamole-server-1.2.0.tar.gz"

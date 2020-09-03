@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=plasma-sdk
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="Applications useful for Plasma Development"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+depends="kirigami2 qt5-qtquickcontrols"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev karchive-dev kcompletion-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kdbusaddons-dev kdeclarative-dev ki18n-dev kiconthemes-dev kio-dev plasma-framework-dev kservice-dev ktexteditor-dev kwidgetsaddons-dev kdoctools-dev kparts-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/plasma/$pkgver/plasma-sdk-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	# iconmodeltest is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "iconmodeltest"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="0734cc8e9160a50948f6d96b84d7a9dd76bdd3f6508b88960534049abbdeb7d10c66d083804cec848881ecf14a219ebc15275b0b8937a2efec744a3c9fe048a9  plasma-sdk-5.19.4.tar.xz"

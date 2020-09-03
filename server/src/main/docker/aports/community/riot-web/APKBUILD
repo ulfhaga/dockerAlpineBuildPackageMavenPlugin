@@ -1,0 +1,28 @@
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Maintainer: Galen Abell <galen@galenabell.com>
+pkgname=riot-web
+pkgver=1.7.4
+pkgrel=0
+pkgdesc="A glossy Matrix collaboration client for the web"
+url="https://riot.im/"
+arch="noarch"
+options="!check"
+license="Apache-2.0"
+source="https://github.com/vector-im/riot-web/releases/download/v$pkgver/riot-v$pkgver.tar.gz"
+builddir="$srcdir/riot-v$pkgver"
+
+build() {
+	return 0
+}
+
+package() {
+	mkdir -p "$pkgdir"/usr/share/webapps \
+		"$pkgdir"/etc/riot-web
+	cp -r "$builddir" "$pkgdir"/usr/share/webapps/riot-web
+	mv "$pkgdir"/usr/share/webapps/riot-web/config.sample.json \
+		"$pkgdir"/etc/riot-web
+	ln -sf /etc/riot-web/config.json \
+		"$pkgdir"/usr/share/webapps/riot-web/config.json
+}
+
+sha512sums="f9ed033e8868c8356230976970cab80a3a2f8e7b031027b2e8843e6fa503916bf97cea01770954cb75188771308b586a8748f6cfc83674c5e8ac7ec88c10dcb2  riot-v1.7.4.tar.gz"

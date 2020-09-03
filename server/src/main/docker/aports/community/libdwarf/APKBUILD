@@ -1,0 +1,71 @@
+# Contributor: David Huffman <storedbox@outlook.com>
+# Maintainer:
+pkgname=libdwarf
+pkgver=20200825
+pkgrel=0
+pkgdesc="Parsing library for DWARF2 and later debugging file format"
+url="https://www.prevanders.net/dwarf.html"
+arch="all"
+license="LGPL-2.1-or-later"
+makedepends="elfutils-dev zlib-dev"
+subpackages="$pkgname-static $pkgname-dev dwarf-tools dwarf-tools-doc"
+source="http://www.prevanders.net/libdwarf-$pkgver.tar.gz"
+options="!check"
+
+build() {
+	[ "$CARCH" != "s390x" ] && _enable_dwarfgen="--enable-dwarfgen"
+	./configure --prefix=/usr --enable-shared $_enable_dwarfgen
+	make
+}
+
+package() {
+	local bindir="$pkgdir/usr/bin"
+	local docdir="$pkgdir/usr/share/doc/dwarf-tools"
+	local incdir="$pkgdir/usr/include/libdwarf"
+	local libdir="$pkgdir/usr/lib"
+	local man1dir="$pkgdir/usr/share/man/man1"
+	mkdir -p "$bindir" "$docdir" "$incdir" "$libdir" "$man1dir"
+
+	cd "$builddir/libdwarf"
+	cp dwarf.h libdwarf.h "$incdir"
+	cd "$builddir/libdwarf/.libs"
+	cp libdwarf.a libdwarf.so libdwarf.so.1 "$libdir"
+
+	cd "$builddir/dwarfdump"
+	cp .libs/dwarfdump "$bindir"
+	cp COPYING "$docdir/dwarfdump.COPYING"
+	cp DWARFDUMPCOPYRIGHT GPL.txt "$docdir"
+	cp dwarfdump.conf "$libdir"
+	cp dwarfdump.1 "$man1dir"
+
+	case "$CARCH" in
+		s390x) ;;
+		*)
+		cd "$builddir/dwarfgen"
+		cp .libs/dwarfgen "$bindir"
+		cp COPYING "$docdir/dwarfgen.COPYING"
+		cp dwarfgen.1 "$man1dir"
+		;;
+	esac
+}
+
+tools() {
+	license="GPL-2.0-only AND BSD-3-Clause"
+	pkgdesc="Tools for interacting with DWARF2 and later debugging files"
+
+	local bin="usr/bin"
+	local lib="usr/lib"
+
+	mkdir -p "$subpkgdir/$lib"
+	mv "$pkgdir/$bin" "$subpkgdir/$bin"
+	mv "$pkgdir/$lib/dwarfdump.conf" "$subpkgdir/$lib"
+}
+
+static() {
+	depends=""
+	pkgdesc="$pkgdesc (static library)"
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/*.a "$subpkgdir"/usr/lib
+}
+
+sha512sums="ef7578d5a07d45ded0e5e641ac69b917ace33bd94efcad7d87b5d1960d7e48839095b480b086c84326fc2f15a9e9cfb6ea7a51d8fffe2f63f50b4b8bd5fdbd39  libdwarf-20200825.tar.gz"

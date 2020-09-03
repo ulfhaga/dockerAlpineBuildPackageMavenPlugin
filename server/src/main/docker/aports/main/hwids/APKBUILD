@@ -1,0 +1,68 @@
+# Contributor: A. Wilcox <awilfox@adelielinux.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=hwids
+pkgver=20200813
+pkgrel=0
+pkgdesc="Hardware identification databases"
+url="https://github.com/gentoo/hwids/"
+arch="noarch"
+options="!check"  # No test suite, just databases.
+license="BSD-3-Clause OR GPL-2.0-or-later"
+makedepends="eudev-dev"
+subpackages="$pkgname-net $pkgname-pci $pkgname-udev $pkgname-usb"
+depends="$subpackages"
+subpackages="$subpackages $pkgname-doc"
+source="https://github.com/gentoo/hwids/archive/hwids-$pkgver.tar.gz"
+builddir="$srcdir/hwids-hwids-$pkgver"
+
+build() {
+	make UDEV=yes
+}
+
+package() {
+	make DESTDIR="$pkgdir" DOCDIR="/usr/share/doc/$pkgname-$pkgver" \
+		MISCDIR="/usr/share/hwdata" UDEV=yes install
+}
+
+_mv() {
+	local _file
+	pkgdesc="$pkgdesc ($1)"
+	shift
+	depends=""
+	mkdir -p "$subpkgdir"/usr/share/hwdata
+	for _file in $*; do
+		mv "$pkgdir"/usr/share/hwdata/$_file "$subpkgdir"/usr/share/hwdata
+	done
+}
+
+usb() {
+	replaces="hwdata-usb"
+	provides="hwdata-usb=$pkgver-r$pkgrel"
+	_mv "USB IDs" usb.ids
+}
+
+pci() {
+	replaces="hwdata-pci"
+	provides="hwdata-pci=$pkgver-r$pkgrel"
+	_mv "PCI IDs" pci.ids
+}
+
+net() {
+	replaces="hwdata-oui hwdata"
+	provides="hwdata-oui=$pkgver-r$pkgrel"
+	license="Public-Domain"
+	_mv "Networking OUIs" oui.txt iab.txt
+}
+
+udev() {
+	install_if="hwids=$pkgver-r$pkgrel eudev"
+	install_if="hwids-pci=$pkgver-r$pkgrel eudev"
+	install_if="hwids-usb=$pkgver-r$pkgrel eudev"
+	pkgdesc="$pkgdesc (udev integration)"
+
+	mkdir -p "$subpkgdir"/
+	mv "$pkgdir"/lib "$subpkgdir"/
+	mv "$pkgdir"/etc "$subpkgdir"/
+}
+
+sha512sums="096070205381fc8b698276d8927d71831684129921c1165323b62ac624a5694f779dd601b25db6dc28a01878704c3de9ff37dbb2696867afafea527544cff2e4  hwids-20200813.tar.gz"

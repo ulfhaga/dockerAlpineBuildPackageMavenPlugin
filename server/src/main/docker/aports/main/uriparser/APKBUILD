@@ -1,0 +1,41 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=uriparser
+pkgver=0.9.4
+pkgrel=0
+pkgdesc="A strictly RFC 3986 compliant URI parsing and handling library"
+url="https://uriparser.github.io/"
+arch="all"
+license="BSD-3-Clause"
+makedepends="cmake gtest-dev"
+subpackages="$pkgname-dev lib$pkgname:libs"
+source="https://github.com/uriparser/uriparser/releases/download/uriparser-$pkgver/uriparser-$pkgver.tar.bz2"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DURIPARSER_BUILD_DOCS=OFF \
+		-DURIPARSER_BUILD_TOOLS=ON \
+		-DURIPARSER_BUILD_TESTS=ON \
+		-DBUILD_SHARED_LIBS=ON \
+		$CMAKE_CROSSOPTS
+	make
+}
+
+check() {
+	make test ARGS=--verbose
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="c5e671ce2589aacd2c562e66facbee9e1cad3101e840f40b7ebdb917fa669e0c3ae7ed75623692f601655c0b82c10bcfe3086ad628beac8f965e613228e67ecd  uriparser-0.9.4.tar.bz2"

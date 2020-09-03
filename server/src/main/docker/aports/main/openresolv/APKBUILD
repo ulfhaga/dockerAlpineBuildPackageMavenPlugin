@@ -1,0 +1,26 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=openresolv
+pkgver=3.11.0
+pkgrel=0
+pkgdesc="A framework for managing DNS information"
+url="https://roy.marples.name/projects/openresolv"
+arch="noarch"
+license="BSD-2-Clause"
+subpackages="$pkgname-doc"
+source="http://roy.marples.name/downloads/openresolv/openresolv-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--libexecdir=/usr/libexec/openresolv \
+		--sysconfdir=/etc
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="09708b8a1abf7de926f75a1825d4243be6e59fc1de7cc3d7ab7f5a317e11175bd24af03bff2c878ccc54c96913feed27630765647c70fec8a9f9aa7370744e24  openresolv-3.11.0.tar.xz"

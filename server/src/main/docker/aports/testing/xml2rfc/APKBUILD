@@ -1,0 +1,26 @@
+# Contributor:
+# Maintainer:
+pkgname=xml2rfc
+pkgver=2.47.0
+pkgrel=0
+pkgdesc="A tool for converting XML documents into internet drafts and RFCs"
+options="!check" # Requires unpackaged i18naddress
+url="https://tools.ietf.org/"
+arch="noarch"
+license="BSD-2-Clause"
+depends="python3 py3-setuptools py3-six py3-requests py3-lxml"
+source="https://files.pythonhosted.org/packages/source/x/xml2rfc/xml2rfc-$pkgver.tar.gz"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 test.py
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="6585a2bdaca8e32c92bf366039bc0113ea832be98643ae59c4e739165fef6a376e9fd4e37c7af94a74bbdc51b3a0246ed868aa06dd557cf550f6f7ce7fa1e861  xml2rfc-2.47.0.tar.gz"

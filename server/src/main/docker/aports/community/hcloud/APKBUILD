@@ -1,0 +1,43 @@
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=hcloud
+_pkgname=cli
+pkgver=1.19.1
+pkgrel=0
+pkgdesc="Command-line interface for Hetzner Cloud"
+url="https://github.com/hetznercloud/cli"
+options="chmod-clean"
+arch="all !mips64" # limited by go
+license="MIT"
+makedepends="go"
+subpackages="$pkgname-bash-completion"
+source="$_pkgname-$pkgver.tar.gz::https://github.com/hetznercloud/cli/archive/v$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+export GOPATH="$srcdir"
+export CGO_ENABLED=0
+
+build() {
+	go build \
+		-ldflags "-w -X github.com/hetznercloud/cli/cli.Version=v$pkgver" \
+		-v \
+		./cmd/hcloud
+	./hcloud completion bash > "$builddir"/$pkgname.bash
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 "$builddir"/hcloud "$pkgdir"/usr/bin/$pkgname
+	install -Dm644 "$builddir"/$pkgname.bash \
+		"$pkgdir"/usr/share/bash-completion/completions/$pkgname
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="66a70ba536bec69223afde1d249afdc966acce8b22f3cd22e62427da8552fde5fb6b89a08800a4d06a0a049161d9b081aa556c06c358072618e1e093f5ec34ef  cli-1.19.1.tar.gz"

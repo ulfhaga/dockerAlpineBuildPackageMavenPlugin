@@ -1,0 +1,62 @@
+# Contributor: Sergei Lukin <sergej.lukin@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libsndfile
+pkgver=1.0.29
+pkgrel=0
+pkgdesc="A C library for reading and writing files containing sampled sound"
+url="http://www.mega-nerd.com/libsndfile"
+arch="all"
+license="LGPL-2.0-or-later"
+subpackages="$pkgname-dev $pkgname-doc"
+depends_dev="flac-dev libvorbis-dev libogg-dev"
+makedepends="alsa-lib-dev linux-headers python3 $depends_dev"
+source="https://github.com/erikd/libsndfile/releases/download/v$pkgver/libsndfile-$pkgver.tar.bz2"
+
+# sporadic testsuite failures on armhf
+case $CARCH in arm*) options="!check";; esac
+
+# secfixes:
+#   1.0.28-r8:
+#     - CVE-2018-19758
+#     - CVE-2019-3832
+#   1.0.28-r7:
+#     - CVE-2018-19758
+#   1.0.28-r6:
+#     - CVE-2017-17456
+#     - CVE-2017-17457
+#     - CVE-2018-19661
+#     - CVE-2018-19662
+#   1.0.28-r4:
+#     - CVE-2018-13139
+#   1.0.28-r2:
+#     - CVE-2017-12562
+#   1.0.28-r0:
+#     - CVE-2017-7585
+#     - CVE-2017-7741
+#     - CVE-2017-7742
+#   1.0.28-r1:
+#     - CVE-2017-8361
+#     - CVE-2017-8362
+#     - CVE-2017-8363
+#     - CVE-2017-8365
+
+build() {
+	ac_cv_sys_largefile_CFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--disable-sqlite \
+		--enable-largefile
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="72cf038b26c66e6e085d97ef1954bd3aa76315527f632649707c76128953bfbb2c9b52527d309720ca1107a9e04e033722995911dad43b4adda46bf4a05354d7  libsndfile-1.0.29.tar.bz2"

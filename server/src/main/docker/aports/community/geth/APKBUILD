@@ -1,0 +1,29 @@
+# Contributor: André Klitzing <aklitzing@gmail.com>
+# Maintainer: André Klitzing <aklitzing@gmail.com>
+pkgname=geth
+pkgver=1.9.19
+pkgrel=0
+pkgdesc="Official Go implementation of the Ethereum protocol"
+url="https://geth.ethereum.org/"
+arch="all !aarch64 !mips64" # build fails
+license="LGPL-3.0-or-later"
+makedepends="go linux-headers"
+checkdepends="fuse"
+options="!check chmod-clean"
+source="$pkgname-$pkgver.tar.gz::https://github.com/ethereum/go-ethereum/archive/v$pkgver.tar.gz"
+builddir="$srcdir/go-ethereum-$pkgver"
+
+build() {
+	make
+}
+
+check() {
+	make test
+}
+
+package() {
+	mkdir -p "$pkgdir"/usr/bin
+	install -m755 -t "$pkgdir"/usr/bin build/bin/*
+}
+
+sha512sums="d5aa1147311d7f0a60da4643b6d3b224214a43a1ee74680d53e8259a6863ad29008afc303dd34dd0c8c912a90b1828b7f0d03d21a7764046f6f273024516a13a  geth-1.9.19.tar.gz"

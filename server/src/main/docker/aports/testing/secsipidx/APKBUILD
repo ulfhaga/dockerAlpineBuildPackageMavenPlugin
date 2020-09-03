@@ -1,0 +1,30 @@
+# Maintainer: Leonardo Arena <rnalrd@alpinelinux.org>
+pkgname=secsipidx
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Secure SIP/Telephony Identity Extensions"
+url="https://github.com/asipto/secsipidx"
+arch="all !mips64" # go
+license="GPL-2.0-only"
+makedepends="go"
+options="!check" # returns always 1
+disturl="dev.alpinelinux.org:/archive/$pkgname"
+giturl="https://github.com/asipto/secsipidx.git"
+source="$pkgname-$pkgver.tar.gz::https://github.com/asipto/secsipidx/archive/v1.0.0.tar.gz"
+
+build() {
+	export GOPATH="$srcdir"
+	go get -d github.com/asipto/secsipidx
+	go build
+}
+
+check() {
+	./$pkgname-$pkgver -version
+}
+
+package() {
+	install -D -m755 $pkgname-$pkgver "$pkgdir"/usr/bin/$pkgname
+}
+
+
+sha512sums="38855cf0b511c638063daacde040083638f7a53f31366d3df3b4c37d7d29e784f7e352bf4f194f99cab2eacf9308bed207a22b2ec1bfd0d843658f9d1664c997  secsipidx-1.0.0.tar.gz"

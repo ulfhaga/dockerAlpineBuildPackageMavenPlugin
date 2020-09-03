@@ -1,0 +1,31 @@
+# Contributor: Sam Dodrill <shadowh511@gmail.com>
+# Contributor: TBK <alpine@jjtc.eu>
+# Maintainer: Sam Dodrill <shadowh511@gmail.com>
+pkgname=py3-virtualenv
+pkgver=20.0.31
+pkgrel=0
+pkgdesc="Virtual Python3 Environment builder"
+url="https://www.virtualenv.org/en/latest/"
+arch="noarch"
+license="MIT"
+depends="python3 py3-distlib py3-filelock py3-setuptools"
+checkdepends="py3-pytest py3-mock"
+source="https://files.pythonhosted.org/packages/source/v/virtualenv/virtualenv-$pkgver.tar.gz"
+builddir="$srcdir/virtualenv-$pkgver"
+
+replaces="py-virtualenv" # Backwards compatibility
+provides="py-virtualenv=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="46220bda37b3b860e44c4d0775a89c22a7ba775287f05438d1d3698201cc213a05b2718ef40be302627005ae349dc59a3141c7a30cc1dab6dc81f7692c7f16a5  virtualenv-20.0.31.tar.gz"

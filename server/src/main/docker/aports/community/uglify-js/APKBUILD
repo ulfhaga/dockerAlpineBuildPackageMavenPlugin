@@ -1,0 +1,26 @@
+# Contributor: Kevin Daudt <kdaudt@alpinelinux.org>
+# Maintainer: Kevin Daudt <kdaudt@alpinelinux.org>
+pkgname=uglify-js
+pkgver=3.10.2
+pkgrel=0
+pkgdesc="JavaScript parser, mangler/compressor and beautifier toolkit"
+url="http://lisperator.net/uglifyjs"
+arch="noarch !mips !mips64" # blocked by nodejs
+license="BSD-2-Clause"
+depends="nodejs"
+makedepends="npm"
+source="https://registry.npmjs.org/uglify-js/-/uglify-js-$pkgver.tgz"
+options="!check"
+builddir="$srcdir/package"
+
+unpack() {
+	# skipping unpacking, installing archive directly
+	verify
+}
+
+package() {
+	npm install -g --user root --prefix "$pkgdir/usr" "$srcdir/uglify-js-$pkgver.tgz"
+	chown -R root: "$pkgdir" # npm installs as build user
+}
+
+sha512sums="197098370aa8a3431b2c04608588f1541c430a7534b4ba8dec83cb7471db89b09bd4d239cc1914d843dccbf19a57173406d4e3ab219724220d7ba24c4760e9a3  uglify-js-3.10.2.tgz"

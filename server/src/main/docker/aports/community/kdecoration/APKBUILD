@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdecoration
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="Plugin based library to create window decorations"
+arch="all !armhf"
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="LGPL-2.1-only OR LGPL-3.0-only"
+depends_dev="qt5-qtbase-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/plasma/$pkgver/kdecoration-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="6359f86e8099e7a96c84cb5a6230e896dce14af897d8fef5202b2f2242ad6f5fa41f4deeeea1eb48f2e8dd5f7eb84cfb78332751440c7abd821b5367b83c261c  kdecoration-5.19.4.tar.xz"

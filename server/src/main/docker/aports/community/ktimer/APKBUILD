@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ktimer
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/utilities/org.kde.ktimer"
+pkgdesc="A little tool to execute programs after some time"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kdoctools-dev ki18n-dev kwidgetsaddons-dev kio-dev kdbusaddons-dev knotifications-dev kconfig-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/ktimer-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="d61e02ac2189ebf577044513fd171c47aade16b203990f8e9cbfdedaa01b63956171c7eaad7a275b69c068f5ebd2a5f690979996fc5ed11f04a0de7e4712b063  ktimer-20.08.0.tar.xz"

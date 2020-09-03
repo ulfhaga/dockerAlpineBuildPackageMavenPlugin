@@ -1,0 +1,29 @@
+# Maintainer: Thomas Liske <thomas@fiasko-nw.net>
+pkgname=py3-pyroute2
+_pkgname=pyroute2
+pkgver=0.5.13
+pkgrel=0
+pkgdesc="Python Netlink library"
+url="https://github.com/svinota/pyroute2"
+arch="noarch"
+license="GPL-2.0-or-later OR Apache-2.0"
+makedepends="py3-setuptools py3-pytest"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	pytest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	# do not ship cli scripts for now
+	rm -rf "${pkgdir:?}/usr/bin"
+}
+
+sha512sums="bb0ad606352bca8573d7686c52a0cc4b02a33174044177c74f842a061e9dc66669f2ebb14e80dbde31e146826f10c0c0ab0ce3324a87be4ba80e2f661e1b51d3  pyroute2-0.5.13.tar.gz"

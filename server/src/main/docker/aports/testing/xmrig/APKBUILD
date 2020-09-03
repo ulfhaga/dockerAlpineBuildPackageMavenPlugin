@@ -1,0 +1,37 @@
+# Contributor: Oleg Titov <oleg.titov@gmail.com>
+# Maintainer: Oleg Titov <oleg.titov@gmail.com>
+pkgname=xmrig
+pkgver=6.3.3
+pkgrel=0
+pkgdesc="XMRig is a high performance Monero (XMR) miner"
+url="https://xmrig.com/"
+arch="all !s390x !ppc64le !aarch64 !mips !mips64" # gets stuck on aarch64 builder
+arch="$arch !armv7" # armv7 fails to build on CI
+arch="$arch !armhf" # Fails on the builders
+license="GPL-3.0-or-later"
+options="!check" # No test suite from upstream
+makedepends="cmake libmicrohttpd-dev libuv-dev openssl-dev hwloc-dev"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/xmrig/xmrig/archive/v$pkgver.tar.gz"
+
+case "$CARCH" in
+	aarch64*) CMAKE_CROSSOPTS="-DARM_TARGET=8"; makedepends="$makedepends linux-headers" ;;
+	armv7*)   CMAKE_CROSSOPTS="-DARM_TARGET=7"; makedepends="$makedepends linux-headers" ;;
+	armhf*)   CMAKE_CROSSOPTS="-DARM_TARGET=7"; makedepends="$makedepends linux-headers" ;;
+esac
+
+build() {
+	cmake -B build $CMAKE_CROSSOPTS -DCMAKE_BUILD_TYPE=None \
+		-DWITH_CUDA=OFF \
+		-DWITH_OPENCL=OFF
+
+	make -C build
+}
+
+package() {
+	install -Dm 755 build/xmrig $pkgdir/usr/bin/xmrig
+
+	install -Dm 644 -t "$pkgdir"/usr/share/doc/$pkgname/ README.md
+}
+
+sha512sums="463f13b990a68dd9be5a3ef9d3dc35581cf8b8bcf9658a45b9660a97d14e950102abe11a1ede8402fe246cd317e93cb63e77c80f4bbc616152117cc1140c8919  xmrig-6.3.3.tar.gz"

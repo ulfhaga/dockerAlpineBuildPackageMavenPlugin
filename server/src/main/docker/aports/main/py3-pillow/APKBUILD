@@ -1,0 +1,43 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-pillow
+pkgver=7.2.0
+pkgrel=0
+pkgdesc="Python Imaging Library"
+options="!check"
+url="https://python-pillow.org/"
+arch="all"
+license="custom:PIL"
+depends="py3-olefile"
+makedepends="python3-dev py3-setuptools freetype-dev openjpeg-dev libimagequant-dev libwebp-dev tiff-dev libpng-dev lcms2-dev libjpeg-turbo-dev libxcb-dev zlib-dev"
+checkdepends="py3-pytest py3-numpy"
+source="https://files.pythonhosted.org/packages/source/P/Pillow/Pillow-$pkgver.tar.gz"
+builddir="$srcdir/Pillow-$pkgver"
+
+provides="py-pillow=$pkgver-r$pkgrel" # backwards compatibility
+replaces="py-pillow" # backwards compatiblity
+
+# secfixes:
+#   6.2.2-r0:
+#     - CVE-2019-19911
+#     - CVE-2020-5310
+#     - CVE-2020-5311
+#     - CVE-2020-5312
+#     - CVE-2020-5313
+
+build() {
+	# zlib resides in lib
+	export CFLAGS="$CFLAGS -L/lib"
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+	python3 selftest.py
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="493d6cbaa625b62dc2c4ca2424f1cd1b41103060e34a4759fe89961e20e7d9cd1e99bfd2c9be6fc95c14a2a6f90f983233cb33950ec972cb67ee874ac9a769e2  Pillow-7.2.0.tar.gz"

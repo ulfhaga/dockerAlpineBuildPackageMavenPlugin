@@ -1,0 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=elisa
+pkgver=20.08.0
+pkgrel=0
+arch="all !s390x !armhf !mips !mips64" # missing vlc-dev
+url="https://kde.org/applications/multimedia/org.kde.elisa"
+pkgdesc="A simple music player aiming to provide a nice experience for its users"
+license="LGPL-3.0-or-later"
+depends="kirigami2 vlc"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtmultimedia-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kirigami2-dev ki18n-dev kdeclarative-dev kcoreaddons-dev baloo-dev kfilemetadata-dev kdoctools-dev kxmlgui-dev kconfig-dev kconfigwidgets-dev kcrash-dev kdbusaddons-dev kcmutils-dev kpackage-dev kio-dev vlc-dev"
+checkdepends="xvfb-run cmd:dbus-run-session"
+source="https://download.kde.org/stable/release-service/$pkgver/src/elisa-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE dbus-run-session xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="e4f7352c00199ba0780199a5c7f72ea4f7954bae575dc6fce9786f8957053b34d08877a82c3888495ad4915668c494ddd1388e8fd4173f5e805e229ae7541d62  elisa-20.08.0.tar.xz"

@@ -1,0 +1,29 @@
+# Contributor: Julian Weigt <juw@posteo.de>
+# Maintainer: Julian Weigt <juw@posteo.de>
+pkgname=gomuks
+pkgver=0.1.2
+pkgrel=0
+pkgdesc="A terminal based Matrix client written in Go"
+url="https://github.com/tulir/gomuks"
+arch="all !mips64"
+license="GPL-3.0-only"
+makedepends="go olm-dev"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://codeload.github.com/tulir/gomuks/tar.gz/v$pkgver"
+builddir="$srcdir/src/github.com/tulir/gomuks"
+
+prepare() {
+	mkdir -p ${builddir%/*}
+	mv "$srcdir"/$pkgname-$pkgver "$builddir"/
+	default_prepare
+}
+
+build() {
+	go build
+}
+
+package() {
+	install -Dm755 gomuks "$pkgdir/usr/bin/gomuks"
+	install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}
+sha512sums="000a29f04ef8d8e336f9b4934a4246c654ee1482fb2d39fb39a943bbaca156298ce8ae7b6eaf85f01769d224bd0644c9ba3e0c138772502b02fdfcbf8b85c6ca  gomuks-0.1.2.tar.gz"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kapman
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/games/org.kde.kapman"
+pkgdesc="A clone of the well known game Pac-Man"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev kcoreaddons-dev kconfig-dev kcrash-dev kdbusaddons-dev kdoctools-dev kconfig-dev ki18n-dev kconfigwidgets-dev kxmlgui-dev libkdegames-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kapman-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="4db9e1fb7130fedcf6e540f0195ef9a31294979e362b46c1521d56264f61e58212dab6f48ccc9f1f72a9399046e13fe82c6171372a071a1b0c74ea1286b789c0  kapman-20.08.0.tar.xz"

@@ -1,0 +1,34 @@
+# Contributor: Jean-Louis Fuchs <jean-louis.fuchs@adfinis-sygroup.ch>
+# Maintainer: Jean-Louis Fuchs <jean-louis.fuchs@adfinis-sygroup.ch>
+pkgname=ocaml-lablgtk
+_pkgname=lablgtk
+pkgver=2.18.10
+pkgrel=0
+pkgdesc="An OCaml interface to GTK+ 2.x"
+url="http://lablgtk.forge.ocamlcore.org/"
+arch="all !x86 !armhf !armv7 !s390x !mips !mips64"  # limited by ocaml aport
+license="LGPL-2.1-or-later-WITH-OCaml-LGPL-linking-exception"
+depends="ocaml-runtime"
+depends_dev="$pkgname=$pkgver-r$pkgrel
+	gtk+2.0-dev gtkspell-dev librsvg-dev gtksourceview2-dev"
+makedepends="$depends_dev ocaml ocaml-compiler-libs ocaml-ocamldoc
+	ocaml-camlp4-dev ocaml-findlib"
+replaces="lablgtk"
+provides="lablgtk=$pkgver-r$pkgrel"  # for backward compatibility
+subpackages="$pkgname-dev"
+source="$_pkgname-$pkgver.tar.gz::https://github.com/garrigue/lablgtk/archive/$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+options="!check textrels"
+
+build() {
+	./configure --prefix=/usr
+	make -j1 world
+	make -j1 opt
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	rm -f "$pkgdir"/usr/lib/ocaml/ld.conf
+}
+
+sha512sums="73705aaa80db433d11a28df5f6f5d10bd282e477e90916152a87e71865ccfcd7dfbdbe77350ecadf61ba2ccc7a188de1c68f1e6385e20c75f167969001e8418d  lablgtk-2.18.10.tar.gz"

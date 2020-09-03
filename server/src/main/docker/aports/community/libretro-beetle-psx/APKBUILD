@@ -1,0 +1,41 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: David Demelier <markand@malikania.fr>
+pkgname=libretro-beetle-psx
+pkgver=0_git20200623
+pkgrel=0
+_commit="89a74ee2d0e2295408a23796c42ae6dbcf6a165f"
+arch="all !s390x !mips !mips64"
+url="https://github.com/libretro/beetle-psx-libretro"
+pkgdesc="Standalone port/fork of Mednafen PSX to the Libretro API"
+license="GPL-2.0-or-later"
+makedepends="mesa-dev"
+source="$pkgname-$_commit.tar.gz::https://github.com/libretro/beetle-psx-libretro/archive/$_commit.tar.gz"
+subpackages="$pkgname-hw"
+builddir="$srcdir/beetle-psx-libretro-$_commit"
+options="!check" # No tests
+
+prepare() {
+	default_prepare
+
+	mkdir -p "$srcdir"/libretro-beetle-psx && mkdir -p "$srcdir"/libretro-beetle-psx-hw
+	cp -r "$builddir"/* "$srcdir"/libretro-beetle-psx && cp -r "$builddir"/* "$srcdir"/libretro-beetle-psx-hw
+	mv "$srcdir"/libretro-beetle-psx "$builddir"
+	mv "$srcdir"/libretro-beetle-psx-hw "$builddir"
+}
+
+build() {
+	make -C libretro-beetle-psx
+	HAVE_HW=1 make -C libretro-beetle-psx-hw
+}
+
+package() {
+	install -Dm644 "$builddir"/libretro-beetle-psx/mednafen_psx_libretro.so \
+		"$pkgdir"/usr/lib/libretro/mednafen_psx_libretro.so
+}
+
+hw() {
+	install -Dm644 "$builddir"/libretro-beetle-psx-hw/mednafen_psx_hw_libretro.so \
+		"$subpkgdir"/usr/lib/libretro/mednafen_psx_hw_libretro.so
+}
+
+sha512sums="257b56297b61f1c6b6d375df621113ccd03df27768e96c3d5f10ffddab95923d833ce5da5fdd909948d4b134402efb6c4f300e85f792a8fb46f6379741ca7e76  libretro-beetle-psx-89a74ee2d0e2295408a23796c42ae6dbcf6a165f.tar.gz"

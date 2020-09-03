@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kservice
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Advanced plugin and service introspection"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.1-only AND LGPL-2.1-or-later"
+depends_dev="kconfig-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev ki18n-dev"
+makedepends="$depends_dev extra-cmake-modules kdoctools-dev doxygen qt5-qttools-dev flex-dev bison"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kservice-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	# ksycoca_xdgdirstest, kmimeassociationstest and kapplicationtradertest are broken
+	# ksycocatest requires running X
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E '(ksycoca_xdgdirs|kmimeassociations|ksycoca|kapplicationtrader)test'
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="cb1d8974746b1db1eb0fb7f2748ba309798f6507e90311116b7ab4041694a0320b9244d6f98a58f4f2e5ff29c03e7957e30ddb1ccac51e0e4ca7e79d25fb9191  kservice-5.73.0.tar.xz"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=juk
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://juk.kde.org/"
+pkgdesc="A jukebox, tagger and music collection manager"
+license="GPL-2.0-or-later"
+depends="phonon-backend-gstreamer"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev kcoreaddons-dev kcompletion-dev kconfig-dev kcrash-dev kglobalaccel-dev ki18n-dev kiconthemes-dev kdoctools-dev kio-dev kjobwidgets-dev knotifications-dev ktextwidgets-dev kxmlgui-dev kwallet-dev kwidgetsaddons-dev kwindowsystem-dev phonon-dev taglib-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/juk-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="36c7478a0f028ead9c18828b666ab5a28e4eaebd17e3b8c7b683d82886ba872661bcfe5f4b231d5feae8ab9ee4260f6489a02e79101de629fdde71cd5bcdce87  juk-20.08.0.tar.xz"

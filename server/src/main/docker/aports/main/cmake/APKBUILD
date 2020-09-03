@@ -1,0 +1,59 @@
+# Contributor: Valery Kartel <valery.kartel@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=cmake
+pkgver=3.18.1
+pkgrel=0
+pkgdesc="Cross-platform, open-source make system"
+url="https://www.cmake.org/"
+arch="all"
+license="BSD-3-Clause"
+makedepends="bzip2-dev curl-dev expat-dev libarchive-dev linux-headers
+	libuv-dev ncurses-dev rhash-dev xz-dev zlib-dev"
+options="!check"
+checkdepends="file musl-utils"
+subpackages="$pkgname-doc $pkgname-bash-completion
+	"
+case $pkgver in
+*.*.*.*) _v=v${pkgver%.*.*};;
+*.*.*) _v=v${pkgver%.*};;
+esac
+
+source="https://www.cmake.org/files/$_v/cmake-$pkgver.tar.gz
+	"
+
+_parallel_opt() {
+	local i n
+	for i in $MAKEOPTS; do
+		case "$i" in
+			-j*) n=${i#-j};;
+		esac;
+	done
+	[ -n "$n" ] && echo "--parallel $n"
+}
+
+build() {
+	# jsoncpp needs cmake to build so to avoid recursive build
+	# dependency, we use the bundled version of jsoncpp.
+	# Do NOT remove --no-system-jsoncpp unless you consulted
+	# maintainer
+	./bootstrap \
+		--prefix=/usr \
+		--mandir=/share/man \
+		--datadir=/share/$pkgname \
+		--docdir=/share/doc/$pkgname \
+		--system-libs \
+		--no-system-jsoncpp \
+		$(_parallel_opt)
+	make
+}
+
+check() {
+	CTEST_OUTPUT_ON_FAILURE=TRUE bin/ctest
+}
+
+package() {
+	cd $startdir/src/$pkgname-$pkgver
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="e0591d5fb234f3e7b74d6d2aad44fbf3e19e69547bd428681ba6ad0461d4f3d2a154605808b4733531d2c66f0e91eb39a179ae0d89a37e92a3f20e9cae691468  cmake-3.18.1.tar.gz"

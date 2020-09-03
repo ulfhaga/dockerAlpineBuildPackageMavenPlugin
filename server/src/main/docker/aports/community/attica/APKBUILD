@@ -1,0 +1,39 @@
+# Contributor:
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=attica
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Freedesktop OCS binding for Qt"
+url="http://www.kde.org/"
+arch="all !armhf" # Blocked by extra-cmake-modules
+license="LGPL-2.0-or-later"
+makedepends="qt5-qttools-dev extra-cmake-modules doxygen"
+options="!check" # failing on builders
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/attica-$pkgver.tar.xz"
+
+prepare() {
+	default_prepare
+
+	mkdir -p "$builddir"/build
+}
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="ca8787af5e7c5d6b88fad4f52b4fa4d34be40c27020f54cd05a81c135b2269702733094e917db7dd8bce07a0b39ad19b57f4dc0e686eb16b809b712078beb964  attica-5.73.0.tar.xz"

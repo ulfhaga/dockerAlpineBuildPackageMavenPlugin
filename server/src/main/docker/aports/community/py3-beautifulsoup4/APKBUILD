@@ -1,0 +1,36 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-beautifulsoup4
+_pkgname=beautifulsoup4
+pkgver=4.9.1
+pkgrel=0
+pkgdesc="A Python HTML/XML parser"
+url="http://www.crummy.com/software/BeautifulSoup/index.html"
+arch="noarch"
+license="MIT"
+depends="python3 py3-soupsieve"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/b/beautifulsoup4/beautifulsoup4-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+replaces="py-beautifulsoup4" # Backwards compatibility
+provides="py-beautifulsoup4=$pkgver-r$pkgrel" # Backwards compatibility
+
+case "$CARCH" in
+mips*)	options="!check" ;;
+esac
+
+build() {
+	2to3 -w --no-diff bs4
+	python3 setup.py build
+}
+
+check() {
+	python3 -m unittest discover -s bs4
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="a1fe9cbfe8616d2ff25cc836769ff02d51ed86b06ca9a37366867b145440b7f64b866346600ed74820f0407c8e70eaac3d58700766a99b5ff7433cb736a57b3c  beautifulsoup4-4.9.1.tar.gz"

@@ -1,0 +1,25 @@
+# Contributor: prspkt <prspkt@protonmail.com>
+# Maintainer: prspkt <prspkt@protonmail.com>
+pkgname=py3-lazy-object-proxy
+_pkgname=lazy-object-proxy
+pkgver=1.5.1
+pkgrel=0
+pkgdesc="Fast and thorough lazy object proxy"
+options="!check" # Requires unpackaged pytest-benchmark
+url="https://github.com/ionelmc/python-lazy-object-proxy"
+arch="all"
+license="BSD-2-Clause"
+depends="python3"
+makedepends="py3-setuptools python3-dev"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir/"$_pkgname-$pkgver
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="e38d5fdcd3982ead6766237899c85c474c730fcedab65f84ee1ebe4feccc24a3f646e4eb63c5b80a093dde8e84f5ada4b2fbfd4fc988b671fb03144c882a9985  lazy-object-proxy-1.5.1.tar.gz"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kidletime
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Monitoring user activity"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.0-only"
+depends_dev="qt5-qtx11extras-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kidletime-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="d6cd6de43f295b68cd8bc1cd3ab8817f091b0bb859748eaceae7552d0a7c2bf512136ac59f90c0ce433b04325c53daccf676c24cd35312712593ed86b928806b  kidletime-5.73.0.tar.xz"

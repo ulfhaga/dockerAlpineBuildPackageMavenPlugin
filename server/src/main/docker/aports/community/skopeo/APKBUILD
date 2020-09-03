@@ -1,0 +1,56 @@
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Maintainer: Carlo Landmeter <clandmeter@alpinelinux.org>
+pkgname=skopeo
+pkgver=1.1.1
+pkgrel=0
+pkgdesc="Work with remote images registries - retrieving information, images, signing content"
+url="https://github.com/containers/skopeo"
+arch="all !mips !mips64" # FTBFS on mips
+license="Apache-2.0"
+options="!check" # needs docker
+makedepends="
+	go
+	linux-headers
+	btrfs-progs-dev
+	glib-dev
+	gpgme-dev
+	lvm2-dev
+	ostree-dev
+	libselinux-dev
+	"
+subpackages="$pkgname-bash-completion"
+source="skopeo-$pkgver.tar.gz::https://github.com/containers/skopeo/archive/v$pkgver.tar.gz"
+builddir="$srcdir/src/github.com/containers/$pkgname"
+
+prepare() {
+	mkdir -p ${builddir%/*}
+	mv "$srcdir"/$pkgname-$pkgver "$builddir"/
+	default_prepare
+}
+
+build() {
+	export GOPATH="$srcdir"
+	go build -o bin/$pkgname ./cmd/$pkgname
+}
+
+check() {
+	make check
+}
+
+package() {
+	mkdir -p "$pkgdir"/var/lib/atomic/sigstore
+	install -Dm755 bin/$pkgname "$pkgdir"/usr/bin/$pkgname
+	install -Dm644 "$builddir"/default-policy.json \
+		"$pkgdir"/etc/containers/policy.json
+	install -Dm644 "$builddir"/default.yaml \
+		"$pkgdir"/etc/containers/registries.d/default.yaml
+	install -Dm644 "$builddir"/completions/bash/$pkgname \
+		"$pkgdir"/usr/share/bash-completion/completions/$pkgname
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="7d38179d550a1461f58d2d590d69ea8445d2c1d399a7cf39fcbcf6aab64da056c6de0f772f28eb60aec04c379d2cf27cbc5678546005ea6c1e8c20b7fe5b8676  skopeo-1.1.1.tar.gz"

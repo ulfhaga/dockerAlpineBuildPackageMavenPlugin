@@ -1,0 +1,41 @@
+# Contributor: Stuart Cardall <developer@it-offshore.co.uk>
+# Maintainer: Stuart Cardall <developer@it-offshore.co.uk>
+pkgname=libqmi
+pkgver=1.26.4
+pkgrel=0
+pkgdesc="QMI modem protocol helper library"
+url="https://www.freedesktop.org/wiki/Software/libqmi"
+arch="all"
+license="GPL-2.0-or-later AND LGPL-2.1-or-later"
+makedepends="glib-dev gtk-doc libgudev-dev libmbim-dev linux-headers python3"
+subpackages="
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-bash-completion
+	"
+source="https://www.freedesktop.org/software/libqmi/libqmi-$pkgver.tar.xz"
+
+# Tests fail
+[ "$CARCH" = s390x ] && options="$options !check"
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static \
+		--enable-mbim-qmux \
+		--enable-qrtr \
+		--enable-more-warnings=yes
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="6545de5d82dfbfb139ecbf5fefb0b8e34032863f36d573ca3785aa37c12881e88a0903ea7f5eb665f29406189baa2901e751338589da8310f737abaa2df04d89  libqmi-1.26.4.tar.xz"

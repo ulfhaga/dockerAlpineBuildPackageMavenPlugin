@@ -1,0 +1,59 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=xdg-desktop-portal
+pkgver=1.7.2
+pkgrel=0
+pkgdesc="Desktop integration portal"
+options="!check" # Requires libportal which has no stable tags
+url="https://github.com/flatpak/xdg-desktop-portal"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="bubblewrap"
+makedepends="gettext-dev glib-dev json-glib-dev fontconfig-dev
+	geoclue-dev xmlto flatpak-dev pipewire-dev fuse-dev autoconf automake libtool"
+checkdepends="dbus"
+subpackages="$pkgname-lang $pkgname-doc"
+source="https://github.com/flatpak/xdg-desktop-portal/releases/download/$pkgver/xdg-desktop-portal-$pkgver.tar.xz"
+
+prepare() {
+	default_prepare
+
+	sed 's|/usr/bin/sh|/bin/sh|' \
+		-i compile \
+		-i missing \
+		-i install-sh \
+		-i depcomp \
+		-i config.sub \
+		-i config.guess
+
+	autoreconf -fi
+}
+
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--disable-libportal # Unpackaged, has no stable tags
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	# We don't need this
+	rm -rf "$pkgdir"/usr/lib/systemd
+
+	mkdir -p "$pkgdir"/usr/lib
+	mv "$pkgdir"/usr/share/pkgconfig "$pkgdir"/usr/lib
+}
+
+sha512sums="fac64281e89d8bf17c6f1b3751c159d9ca6c2896b71bb83622411bf2dc9b7813974d19902c81c3576b325c98edf4dae22ccc3fe290e32f717730b6aa3afbdc12  xdg-desktop-portal-1.7.2.tar.xz"

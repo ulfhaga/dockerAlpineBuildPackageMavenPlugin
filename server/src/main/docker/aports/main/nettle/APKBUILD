@@ -1,0 +1,50 @@
+# Contributor: Łukasz Jendrysik <scadu@yandex.com>
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=nettle
+pkgver=3.6
+pkgrel=0
+pkgdesc="A low-level cryptographic library"
+url="https://www.lysator.liu.se/~nisse/nettle/"
+arch="all"
+license="LGPL-2.0-or-later"
+depends_dev="gmp-dev"
+makedepends="$depends_dev m4"
+subpackages="$pkgname-static $pkgname-dev $pkgname-utils"
+source="https://ftp.gnu.org/gnu/nettle/nettle-$pkgver.tar.gz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libdir=/usr/lib \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--localstatedir=/var \
+		--enable-fat \
+		--enable-shared \
+		--disable-openssl \
+		--enable-static
+	make
+	# strip comments in fields from .pc as it confuses pkgconf
+	sed -i -e 's/ \#.*//' *.pc
+}
+
+check() {
+	make -C examples  # required for rsa-encrypt
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+utils() {
+	pkgdesc="Utils for nettle"
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/bin "$subpkgdir"/usr/
+}
+
+sha512sums="2471af875e51327af61af8bda53cd9c3adc27b6e32592a4b5b10b3ec60999ebf771ab9c54c747b0bade4b3b5a717e77fdbdb53699dd9e8a9ed4eee07f46aed51  nettle-3.6.tar.gz"

@@ -1,0 +1,32 @@
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=gnome-autoar
+pkgver=0.2.4
+pkgrel=0
+pkgdesc="GNOME archive extraction library"
+url="https://www.gnome.org/"
+arch="all"
+license="LGP-2.1-only"
+makedepends="gtk+3.0-dev libarchive-dev vala"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://download.gnome.org/sources/gnome-autoar/${pkgver%.*}/gnome-autoar-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+check() {
+	make check
+}
+
+sha512sums="66750ae30bf9f59820f06653898eb33ac4edbb63976a02d15417118a068abd9292350220713813ddfdd1f2e77db7b3a8f8980f0c70a93d1bb87a9405e013de19  gnome-autoar-0.2.4.tar.xz"

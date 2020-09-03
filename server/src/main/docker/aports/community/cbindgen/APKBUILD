@@ -1,0 +1,29 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=cbindgen
+# Please be VERY careful bumping this - Firefox regularly fails to build
+# with new versions!
+pkgver=0.14.4
+pkgrel=0
+pkgdesc="Tool to generate C bindings from Rust code"
+url="https://github.com/eqrion/cbindgen"
+arch="x86_64 armv7 armhf aarch64 x86 ppc64le" # Limited by cargo
+license="MPL-2.0"
+makedepends="cargo"
+source="$pkgname-$pkgver.tar.gz::https://crates.io/api/v1/crates/cbindgen/$pkgver/download"
+
+build() {
+	cargo build --release --locked --verbose
+}
+
+check() {
+	# Failing tests
+	rm -rf tests/rust/expand*
+	cargo test --release --locked --verbose
+}
+
+package() {
+	install -Dm0755 target/release/cbindgen -t "$pkgdir"/usr/bin
+}
+
+sha512sums="1d1dfbb159aad25ecbe77368ced803a0cf219a00238364d95b1866f371912e10932e9a6ccda7acd8541b270b1880bda4a29af095a8d83b79a792e31d1ce2bd78  cbindgen-0.14.4.tar.gz"

@@ -1,0 +1,33 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=dconf-editor
+pkgver=3.36.4
+pkgrel=0
+pkgdesc="Dconf Editor is a viewer and editor of applications internal settings"
+url="https://wiki.gnome.org/Apps/DconfEditor"
+arch="all"
+license="GPL-3.0-or-later"
+makedepends="meson vala dconf-dev glib-dev gtk+3.0-dev"
+subpackages="$pkgname-lang $pkgname-doc"
+source="https://download.gnome.org/sources/dconf-editor/${pkgver%.*}/dconf-editor-$pkgver.tar.xz"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="a24fa44830fb0e83834cf912267de6597c1d6bf02e063af4255409d3c9a135fae409116d91751d00ee8d2319e7130606f007af76d3ec9f1380cda98ab2329eff  dconf-editor-3.36.4.tar.xz"

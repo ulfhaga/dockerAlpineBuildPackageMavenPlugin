@@ -1,0 +1,37 @@
+# Contributor: Alan Lacerda <alacerda@alpinelinux.org>
+# Maintainer: Alan Lacerda <alacerda@alpinelinux.org>
+pkgname=pluma
+pkgver=1.24.1
+pkgrel=0
+pkgdesc="A small and lightweight UTF-8 text editor for the MATE"
+url="https://github.com/mate-desktop/pluma"
+arch="all !s390x !mips !mips64" # mate-desktop
+license="GPL-2.0-or-later"
+# check fails as tracked in https://github.com/mate-desktop/pluma/issues/33
+options="!check"
+depends="mate-desktop"
+makedepends="intltool enchant2-dev iso-codes-dev gtk+3.0-dev
+	mate-desktop-dev gtksourceview-dev dconf-dev libsm-dev itstool
+	libxml2-utils fortify-headers libpeas-dev gsettings-desktop-schemas-dev"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+source="https://pub.mate-desktop.org/releases/${pkgver%.*}/pluma-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--sysconfdir=/etc \
+		--enable-static=no \
+		--prefix=/usr
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="0cfd6a035fc95993dce3e556c49641e799888f20159b29f2c0712c54ee772aa6df1ce755f329414c94efdb2cb3819ce633b92e6559b0c8cb064dab3c74729ab3  pluma-1.24.1.tar.xz"

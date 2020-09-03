@@ -1,0 +1,83 @@
+# Maintainer: Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+pkgname=opencv
+pkgver=4.4.0
+pkgrel=0
+pkgdesc="An open source computer vision and machine learning library"
+url="https://opencv.org"
+arch="x86_64" # vtk missing on other platforms
+license="BSD-3-Clause"
+subpackages="$pkgname-dbg $pkgname-dev $pkgname-samples::noarch"
+makedepends="
+	blas-dev
+	cmake
+	eigen-dev
+	ffmpeg-dev
+	freetype-dev
+	glew-dev
+	gstreamer-dev
+	harfbuzz-dev
+	hdf5-dev
+	lapack-dev
+	libdc1394-dev
+	libgphoto2-dev
+	libtbb-dev
+	mesa-dev
+	openexr-dev
+	openjpeg-dev
+	openjpeg-tools
+	py3-setuptools
+	qt5-qtbase-dev
+	vtk-dev
+	"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/opencv/opencv/archive/$pkgver.tar.gz
+	$pkgname-contrib-$pkgver.tar.gz::https://github.com/opencv/opencv_contrib/archive/$pkgver.tar.gz
+	"
+options="!check" # Tests require human interaction
+
+build() {
+	cmake -B build \
+		-DWITH_OPENCL=ON \
+		-DWITH_OPENGL=ON \
+		-DWITH_TBB=ON \
+		-DWITH_VULKAN=ON \
+		-DWITH_QT=ON \
+		-DBUILD_WITH_DEBUG_INFO=ON \
+		-DBUILD_TESTS=OFF \
+		-DBUILD_PERF_TESTS=OFF \
+		-DBUILD_EXAMPLES=ON \
+		-DINSTALL_C_EXAMPLES=ON \
+		-DINSTALL_PYTHON_EXAMPLES=ON \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCPU_BASELINE_DISABLE=SSE3 \
+		-DCPU_BASELINE_REQUIRE=SSE2 \
+		-DOPENCV_EXTRA_MODULES_PATH="$srcdir/opencv_contrib-$pkgver/modules" \
+		-DOPENCV_SKIP_PYTHON_LOADER=ON \
+		-DOPENCV_GENERATE_PKGCONFIG=ON \
+		-DOPENCV_ENABLE_NONFREE=ON \
+		-DOPENCV_GENERATE_SETUPVARS=OFF \
+		-DEIGEN_INCLUDE_PATH=/usr/include/eigen3 \
+		-DLAPACK_LIBRARIES="/usr/lib/liblapack.so;/usr/lib/libblas.so;/usr/lib/libcblas.so" \
+		-DCMAKE_SKIP_INSTALL_RPATH=ON \
+		.
+	make -C build
+}
+
+check() {
+	make -C build test
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+samples() {
+	pkgdesc="OpenCV Samples"
+	depends="$pkgname=$pkgver"
+	mkdir -p "$subpkgdir/usr/share/opencv4"
+	mv "$pkgdir/usr/share/opencv4/samples" "$subpkgdir/usr/share/opencv4"
+}
+
+sha512sums="ce4bada7b57c1a00439eca02abcba262732d5eabfd26090f6f83642d747a9a1a7908230bcd01a2b999c509e0c43c8b0dcb2b93ac824518b79cffe533f22652bb  opencv-4.4.0.tar.gz
+d1a29a4a343f55fe2ae04966d2fc2d20765de719619bea68b84ee72f432777062727d8105b0aa168f359e468544b2ea930b1a4f8dc059e51de27d8af229c6b6b  opencv-contrib-4.4.0.tar.gz"

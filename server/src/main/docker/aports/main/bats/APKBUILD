@@ -1,0 +1,21 @@
+# Maintainer: Jose-Luis Rivas <ghostbar@riseup.net>
+pkgname=bats
+pkgver=1.2.1
+pkgrel=0
+pkgdesc="Bash Automated Testing System"
+url="https://github.com/bats-core/bats-core"
+arch="noarch"
+license="MIT"
+depends="bash"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.zip::https://github.com/bats-core/bats-core/archive/v$pkgver.zip"
+builddir="$srcdir/bats-core-$pkgver"
+
+check() {
+	bash -c 'bin/bats --tap test'
+}
+
+package() {
+	./install.sh "$pkgdir"/usr
+}
+sha512sums="bd7a334a558471f691552e18362ed55882e3cdb4dbbb5ebd2c0cc5f40bbd09a4a44b8e91d0d8ce51059a84c745b30c533f3e8444c6588ab355865340a98c079b  bats-1.2.1.zip"

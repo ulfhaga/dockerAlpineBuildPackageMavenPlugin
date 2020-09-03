@@ -1,0 +1,37 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer:
+pkgname=playerctl
+pkgver=2.2.1
+pkgrel=0
+pkgdesc="MPRIS command-line controller for music players"
+options="!check" # Requires unpackaged pytest-asyncio
+url="https://github.com/altdesktop/playerctl"
+arch="all"
+license="LGPL-3.0-or-later"
+makedepends="meson glib-dev gobject-introspection-dev"
+checkdepends="py3-pytest py3-pytest-timeout"
+subpackages="
+	$pkgname-dev
+	$pkgname-doc
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/altdesktop/playerctl/archive/v$pkgver.tar.gz"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		-Dgtk-doc=false \
+		-Dintrospection=true \
+		. output
+	ninja -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+	rm -f "$pkgdir"/usr/lib/*.a
+}
+
+sha512sums="9c08a3f1d5517d7f4270ed92f226453618fc9f0688688d1af9ff55f0c77efeb1b67daa4adc481546215491550f8528095d376ab099c8ddca05235bfb34b36eb7  playerctl-2.2.1.tar.gz"

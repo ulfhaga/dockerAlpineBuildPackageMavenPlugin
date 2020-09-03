@@ -1,0 +1,25 @@
+# Contributor: arch3y <arch3y@riseup.net>
+# Maintainer: arch3y <arch3y@riseup.net>
+pkgname=libcli
+pkgver=1.10.4
+pkgrel=0
+pkgdesc="A library for including a Cisco-like command-line interface"
+url="https://github.com/dparrish/libcli"
+arch="all"
+options="!check"
+license="LGPL-2.0-or-later"
+source="$pkgname-$pkgver.tar.gz::https://github.com/dparrish/libcli/archive/V$pkgver.tar.gz"
+
+build() {
+	make DYNAMIC_LIB=1 STATIC_LIB=0 TESTS=1
+}
+
+check() {
+	./clitest
+}
+
+package() {
+	make PREFIX=/usr DESTDIR="$pkgdir" STATIC_LIB=0 install
+}
+
+sha512sums="cd278f8ac5ac2594fe19c89309398ee2acbb6bf6db66d22accc3e640d1dfd548e8e6b6cfd373148a595dcd556f5adcdab83bb2e5bd0d35cc188ff614d14a600b  libcli-1.10.4.tar.gz"

@@ -1,0 +1,17 @@
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=aixlog
+pkgver=1.4.0
+pkgrel=0
+pkgdesc="Header-only C++ logging library"
+url="https://github.com/badaix/aixlog"
+arch="noarch"
+license="MIT"
+options="!check" # not test
+source="https://github.com/badaix/aixlog/archive/v$pkgver/aixlog-v$pkgver.tar.gz"
+
+package() {
+	install -Dm644 include/aixlog.hpp "$pkgdir/usr/include/aixlog.hpp"
+}
+
+sha512sums="ec4f5a3902858ad979de8cfa81275951af73c4d159a2615a85cf60fe876ea283864f854b26198bea83c4a568948db82c5e50783c868bd2f6d8427d319b912d6f  aixlog-v1.4.0.tar.gz"

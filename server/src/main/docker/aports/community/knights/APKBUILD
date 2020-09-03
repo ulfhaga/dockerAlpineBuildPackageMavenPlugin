@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=knights
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="Chess board by KDE with XBoard protocol support"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://www.kde.org/applications/games/knights/"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev kdbusaddons-dev kconfigwidgets-dev kcrash-dev ktextwidgets-dev kxmlgui-dev kio-dev kplotting-dev kdoctools-dev kwallet-dev plasma-framework-dev libkdegames-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/knights-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="8c256a393814e477730a7aab76af43df37a3107ac1ef317cd99b9cbb77bde21256346bf5b3f3b3e507b137686400707db36afb0ba3e0d316d0d7ecfa40b83f0c  knights-20.08.0.tar.xz"

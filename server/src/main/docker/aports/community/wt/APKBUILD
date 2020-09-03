@@ -1,0 +1,42 @@
+# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+pkgname=wt
+pkgver=4.4.0
+pkgrel=0
+pkgdesc="C++ library and application server for developing and deploying web applications"
+url="https://www.webtoolkit.eu"
+arch="all"
+license="GPL-2.0-or-later WITH openssl-exception"
+depends_dev="zlib-dev boost-dev sqlite-dev mesa-dev glu-dev graphicsmagick-dev
+	openssl-dev pango-dev fcgi-dev postgresql-dev qt5-qtbase-dev libharu-dev
+	harfbuzz-dev"
+makedepends="$depends_dev cmake boost"
+pkggroups="wt"
+pkgusers="wt"
+options="!check"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/kdeforche/wt/archive/$pkgver.tar.gz"
+
+build() {
+	CXXFLAGS="$CXXFLAGS -fpermissive" \
+	cmake -B build . \
+		-DCMAKE_BUILD_TYPE=None \
+	    -DCONNECTOR_HTTP=ON \
+	    -DWT_WRASTERIMAGE_IMPLEMENTATION=GraphicsMagick \
+	    -DCMAKE_INSTALL_PREFIX=/usr \
+	    -DWEBUSER=$pkgusers \
+	    -DWEBGROUP=$pkggroups \
+	    -DRUNDIR="$pkgdir"/var/run/wt \
+	    -DUSE_SYSTEM_SQLITE3=ON \
+	    -DINSTALL_EXAMPLES=ON \
+	    -DBUILD_EXAMPLES=OFF
+	make -C build
+}
+
+package() {
+	make -C build DESTDIR=$pkgdir install
+	rm -rf $pkgdir/usr/cmake
+	rm -rf $pkgdir/var/run
+}
+
+sha512sums="c5ee591ae75fb5c538846a92ae77647b4f24b3fdd8146c1bb962d88d4b51dba525f89489622a8d76af8c07c800cea98c3ac5f4fbf628db991e3c9663158eb759  wt-4.4.0.tar.gz"

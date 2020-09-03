@@ -1,0 +1,38 @@
+# Contributor: Jeremy Thomerson <jeremy@thomersonfamily.com>
+# Maintainer: Jeremy Thomerson <jeremy@thomersonfamily.com>
+pkgname=librsync
+pkgver=2.3.1
+pkgrel=0
+pkgdesc="librsync implements the rolling-checksum algorithm of rsync"
+url="https://github.com/librsync/librsync"
+arch="all"
+license="LGPL-2.1-or-later"
+makedepends="cmake popt-dev bzip2-dev zlib-dev perl"
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/librsync/librsync/archive/v$pkgver.tar.gz"
+
+prepare() {
+	default_prepare
+	# don't invoke bash in test scripts
+	sed -i 's,#! /bin/bash,#!/bin/sh,' tests/rdiff_bad_option.sh
+}
+
+build() {
+	cmake -B build . \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_INSTALL_PREFIX=/usr
+	make -C build
+}
+
+check() {
+	make -C build check
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+	install -D -m644 doc/rdiff.1 "$pkgdir/usr/share/man/man1/rdiff.1"
+	install -D -m644 doc/librsync.3 "$pkgdir/usr/share/man/man3/librsync.3"
+}
+
+sha512sums="89e5b5ad960b8036acce41df09f5e50601d7eb57d48a2bd21c4ee54a3a375f62ee514036b9a562277b5656735b84cadf6f54cbf48c364bbf0c04f2d95ae3b5a6  librsync-2.3.1.tar.gz"

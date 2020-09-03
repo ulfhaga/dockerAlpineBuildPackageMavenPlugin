@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=krfb
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/internet/org.kde.krfb"
+pkgdesc="Desktop sharing"
+license="GPL-3.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtx11extras-dev ki18n-dev kcompletion-dev kconfig-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev kdnssd-dev kdoctools-dev knotifications-dev kwallet-dev kwidgetsaddons-dev kxmlgui-dev xcb-util-dev xcb-util-image-dev libvncserver-dev pipewire-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/krfb-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="05c83165397924c3ea38d69ea95f87bc63da3848c388a93e1ebef78384a3ff0858fc2e332f670c8b0a1246c6cbffb210bd4b02a3cab23c6331406a4cd9777a7e  krfb-20.08.0.tar.xz"

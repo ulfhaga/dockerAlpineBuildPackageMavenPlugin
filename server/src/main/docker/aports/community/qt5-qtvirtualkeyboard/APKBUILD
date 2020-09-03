@@ -1,0 +1,41 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=qt5-qtvirtualkeyboard
+pkgver=5.15.0
+pkgrel=0
+pkgdesc="Virtual keyboard framework"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://www.qt.io/developers/"
+license="LGPL-2.1-only AND LGPL-3.0-only AND GPL-3.0-only AND Qt-GPL-exception-1.0"
+depends_dev="qt5-qtsvg-dev"
+makedepends="$depends_dev hunspell-dev qt5-qtbase-dev qt5-qtdeclarative-dev"
+subpackages="$pkgname-dev"
+builddir="$srcdir/qtvirtualkeyboard-everywhere-src-$pkgver"
+
+case $pkgver in
+	*_beta*|*_rc*) _rel=development_releases;;
+	*) _rel=official_releases;;
+esac
+
+source="http://download.qt.io/$_rel/qt/${pkgver%.*}/$pkgver/submodules/qtvirtualkeyboard-everywhere-src-$pkgver.tar.xz"
+
+build() {
+	qmake-qt5 CONFIG+="lang-all handwriting"
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make INSTALL_ROOT="$pkgdir" install
+
+	# Drop QMAKE_PRL_BUILD_DIR because reference the build dir
+	find "$pkgdir/usr/lib" -type f -name '*.prl' \
+		-exec sed -i -e '/^QMAKE_PRL_BUILD_DIR/d' {} \;
+
+	install -d "$pkgdir"/usr/share/licenses
+	ln -s /usr/share/licenses/qt5-base "$pkgdir"/usr/share/licenses/$pkgname
+}
+sha512sums="fd850aa11e0dbd37f73e63517af1e311be480fc44ac05e74c25794a69fd26d06fd620a9ee3ffa3663ebeeedc0d2abe9520aa53c09b80363e8966ee7f24430869  qtvirtualkeyboard-everywhere-src-5.15.0.tar.xz"

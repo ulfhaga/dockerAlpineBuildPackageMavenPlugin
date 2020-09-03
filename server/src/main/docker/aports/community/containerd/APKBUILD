@@ -1,0 +1,94 @@
+# Contributor: Jake Buchholz <tomalok@gmail.com>
+# Maintainer: Jake Buchholz <tomalok@gmail.com>
+
+pkgname=containerd
+
+# NOTE: containerd's Makefile tries to get REVISION from git, but we're building from a tarball.
+_commit=09814d48d50816305a8e6c1a4ae3e2bcc4ba725a
+pkgver=1.4.0
+pkgrel=0
+pkgdesc="An open and reliable container runtime"
+url="https://containerd.io"
+arch="all !mips !mips64"
+license="Apache-2.0"
+depends="runc"
+makedepends="btrfs-progs-dev go go-md2man libseccomp-dev"
+subpackages="
+	$pkgname-doc
+	$pkgname-stress
+	$pkgname-openrc:openrc:noarch
+"
+source="containerd-$pkgver.tar.gz::https://github.com/containerd/containerd/archive/v$pkgver.tar.gz
+	containerd.confd
+	containerd.initd
+"
+builddir="$srcdir/src/github.com/containerd/containerd"
+
+# secfixes:
+#   1.3.3-r0:
+#     - CVE-2019-19921
+#     - CVE-2020-0601
+#     - CVE-2020-7919
+#     - CVE-2019-11253
+#   1.3.1-r0:
+#     - CVE-2019-17596
+#   1.3.0-r0:
+#     - CVE-2019-16884
+#   1.2.9-r0:
+#     - CVE-2019-9512
+#     - CVE-2019-9514
+#     - CVE-2019-9515
+#   1.2.6-r0:
+#     - CVE-2019-9946
+
+prepare() {
+	cd "$srcdir"
+	export GOPATH="$PWD"
+	mkdir -p "$(dirname "$srcdir/src/github.com/containerd/containerd")"
+	ln -s "$PWD/$pkgname-$pkgver" "$builddir"
+	cd "$builddir"
+
+	default_prepare
+}
+
+build() {
+	case "$CARCH" in
+		mips64*) buildmode=exe;;
+		*) buildmode=pie;;
+	esac
+
+	make VERSION="v$pkgver" REVISION="$_commit" BUILDMODE="$buildmode"
+	make man
+}
+
+check() {
+	./bin/containerd --version
+}
+
+package() {
+	install -d "$pkgdir"/usr/bin/
+	install -Dsm755 "$builddir"/bin/* "$pkgdir"/usr/bin/
+	install -d "$pkgdir"/usr/share/man/man5/
+	install -Dm644 "$builddir"/man/*.5 "$pkgdir"/usr/share/man/man5/
+	install -d "$pkgdir"/usr/share/man/man8/
+	install -Dm644 "$builddir"/man/*.8 "$pkgdir"/usr/share/man/man8/
+	install -d "$pkgdir"/etc/containerd/
+	"$pkgdir"/bin/containerd config default | sed "s|/opt/cni/bin|/usr/libexec/cni|g" > "$pkgdir"/etc/containerd/config.toml
+}
+
+openrc() {
+	pkgdesc="OpenRC init scripts for standalone containerd"
+	depends="$pkgname"
+
+	install -Dm755 "$srcdir"/containerd.initd "$subpkgdir"/etc/init.d/containerd
+	install -Dm644 "$srcdir"/containerd.confd "$subpkgdir"/etc/conf.d/containerd
+}
+
+stress() {
+	pkgdesc="containerd-stress utility"
+	amove usr/bin/containerd-stress
+}
+
+sha512sums="5ac733a0823f5b680d40f76cb5a8277e84efdd6642d15c1735049f8859bf9f87b212b4075bdc13e8f09a5564b55ce74d7d1290628b0ca92d9753ef9bfa9a0e44  containerd-1.4.0.tar.gz
+21a9888b684913138ec4a342b0b69e40e9c773ecd329c4e2401a807365586468cb19035583a4fc8b0f86138f5ee4c7fb911c75495263e4b43d2886ea11e0e271  containerd.confd
+2818cb9e062a6b75c5e2ad6a076eb26edc9fd9b70356b37f9306d082dc360a2d7bd802531afd8e73998cc0fdaa6ad34cd7a0a1d67bd98ee1bb7f30bab16d6084  containerd.initd"

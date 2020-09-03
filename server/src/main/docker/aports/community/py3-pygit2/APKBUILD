@@ -1,0 +1,35 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Contributor: Pierre-Gildas MILLON <pgmillon@gmail.com>
+# Maintainer: Drew DeVault <sir@cmpwn.com>
+pkgname=py3-pygit2
+_pkgname=pygit2
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="Python bindings for libgit2"
+url="https://github.com/libgit2/pygit2"
+arch="all"
+license="GPL-2.0 WITH GCC-exception-2.0"
+depends="py3-cffi py3-cached-property"
+makedepends="python3-dev py3-setuptools libgit2-dev"
+checkdepends="py3-pytest py3-hypothesis py3-cached-property"
+source="https://pypi.io/packages/source/p/$_pkgname/$_pkgname-$pkgver.tar.gz
+	s390x-patch-context-mark-xfail.patch"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+replaces="py-pygit" # Backward compat
+provides="py-pygit=$pkgver-r$pkgrel" # Backward compat
+
+build() {
+	python3 setup.py build_ext --inplace
+}
+
+check() {
+	pytest-3
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="2491892e50d9298d68c2f90b3c4b23c87e51995ccc29e285eb2f868f5e34d2568d5f554818203bf2c735179aeb197e3b7aba1be88e72a6526812e3ee2e0b4348  pygit2-1.2.1.tar.gz
+c0e22ae9a50cb727bae87fd2b03c5b71b7aee77b88764133b9d60d78a9903895d80db10c037859cbc9bfc06d251c2ed169b63c06798e70169de2b39b12fa0fc5  s390x-patch-context-mark-xfail.patch"

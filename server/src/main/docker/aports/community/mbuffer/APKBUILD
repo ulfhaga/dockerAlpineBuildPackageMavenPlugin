@@ -1,0 +1,32 @@
+# Contributor: Katie Holly <holly@fuslvz.ws>
+# Maintainer: Katie Holly <holly@fuslvz.ws>
+pkgname=mbuffer
+pkgver=20200505
+pkgrel=0
+pkgdesc="Tool for measuring and buffering data streams"
+url="http://www.maier-komor.de/mbuffer.html"
+arch="all !armhf !armv7"
+license="GPL-3.0-or-later"
+makedepends="linux-headers openssl-dev"
+subpackages="$pkgname-doc"
+source="http://www.maier-komor.de/software/mbuffer/mbuffer-$pkgver.tgz"
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		SH=/bin/sh
+	make
+}
+
+check() {
+	make -j1 check TESTTREE="$builddir"/*
+}
+
+package() {
+	make -j1 DESTDIR="$pkgdir" install
+}
+
+sha512sums="8a1e5721869fd705d02486cf93467bfe0a59b58789826ca337c18a023e9fbb18c1651211bfebdea4cdd45772ad23d0715bb3892bed04ce66f5fbe72406cde9f7  mbuffer-20200505.tgz"

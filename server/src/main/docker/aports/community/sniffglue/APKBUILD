@@ -1,0 +1,48 @@
+# Contributor: kpcyrd <git@rxv.cc>
+# Maintainer: kpcyrd <git@rxv.cc>
+pkgname=sniffglue
+pkgver=0.11.1
+pkgrel=0
+pkgdesc="Secure multithreaded packet sniffer"
+url="https://github.com/kpcyrd/sniffglue"
+# !aarch64: https://cloud.drone.io/alpinelinux/aports/10687/3/1
+# !x86: fails to compile even when -fno-stack-protector is passed
+# !ppc64le: fails to build ring
+arch="x86_64 armhf armv7" # limited by cargo
+license="GPL-3.0-or-later"
+makedepends="
+	cargo
+	libpcap-dev
+	libseccomp-dev
+	"
+install="$pkgname.pre-install"
+subpackages="$pkgname-doc"
+source="
+	sniffglue.conf
+	$pkgname-$pkgver.tar.gz::https://github.com/kpcyrd/$pkgname/archive/v$pkgver.tar.gz
+	"
+
+# libring fails to compile otherwise
+case "$CARCH" in
+	x86)
+		export CFLAGS="$CFLAGS -fno-stack-protector"
+		;;
+esac
+
+build() {
+	cargo build --release --locked
+}
+
+check() {
+	cargo test --release --locked
+}
+
+package() {
+	install -Dm755 "$builddir/target/release/sniffglue" "$pkgdir/usr/bin/sniffglue"
+	install -Dm644 "$builddir/docs/sniffglue.1" \
+		"$pkgdir/usr/share/man/man1/sniffglue.1"
+	install -Dm644 "$srcdir/$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
+}
+
+sha512sums="66e6b87e832ba8424334d24e3457a214e60e67c731471098329d0ca54c574518f7856ba780bb6bffde53bdefe2c8f789a242138ae67e2fef3e562fa083b362b1  sniffglue.conf
+d44c6a66c363ca06e5536776055826a50cd56ab344e9197493ee97ef7988cc41b7474b7be406bda2d1a95e105dc0fc42936d36f9783f404aa9abfbbacb224c02  sniffglue-0.11.1.tar.gz"

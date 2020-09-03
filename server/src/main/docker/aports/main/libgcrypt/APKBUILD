@@ -1,0 +1,64 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libgcrypt
+pkgver=1.8.6
+pkgrel=0
+pkgdesc="general purpose crypto library based on the code used in GnuPG"
+url="https://www.gnupg.org/"
+arch="all"
+license="LGPL-2.1-or-later"
+depends_dev="libgpg-error-dev"
+makedepends="$depends_dev texinfo"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc"
+source="https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$pkgver.tar.bz2"
+
+# secfixes:
+#   1.8.5-r0:
+#     - CVE-2019-13627
+#   1.8.4-r2:
+#     - CVE-2019-12904
+#   1.8.3-r0:
+#     - CVE-2018-0495
+
+build() {
+	local _arch_configure=
+	case "$CARCH" in
+	arm*)
+		# disable arm assembly for now as it produces TEXTRELs
+		export gcry_cv_gcc_arm_platform_as_ok=no
+		;;
+	x86 | x86_64)
+		_arch_configure="--enable-padlock-support"
+		;;
+	esac
+
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-static \
+		$_arch_configure
+
+	make
+}
+
+check() {
+	# t-secmem fails on ppc64le, see https://dev.gnupg.org/T3375
+	[ "$CARCH" != ppc64le ] || return 0
+	make check
+}
+
+package() {
+	make -j1 DESTDIR="$pkgdir" install
+	rm -f $pkgdir/usr/share/info/dir
+}
+
+static() {
+	pkgdesc="$pkgnanme static libraries"
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/*.a "$subpkgdir"/usr/lib/
+}
+
+sha512sums="28a26f665b7e327b79815849ee6e84ab384ee9105d81d4d06e4feeea07d986f940cbbb9faaae8712068cace45b4110a62965a93201da0e1ad008b65808b2b29b  libgcrypt-1.8.6.tar.bz2"

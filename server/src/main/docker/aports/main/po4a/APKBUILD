@@ -1,0 +1,31 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Christian Kampka <christian@kampka.net>
+pkgname=po4a
+pkgver=0.61
+pkgrel=0
+pkgdesc="Tools for helping translation of documentation"
+url="https://po4a.org"
+arch="noarch"
+license="GPL-2.0-or-later"
+options="!check" # test_requires missing: SGMLS and Unicode::GCString
+depends="gettext perl"
+makedepends="diffutils docbook-xsl perl-module-build"
+subpackages="$pkgname-doc $pkgname-lang"
+source="$pkgname-$pkgver.tar.gz::https://github.com/mquinson/po4a/archive/v$pkgver.tar.gz"
+
+build() {
+	perl Build.PL installdirs=vendor create_packlist=0
+	perl Build
+}
+
+check() {
+	perl Build test
+}
+
+package() {
+	perl Build destdir=$pkgdir install
+	# remove perllocal.pod and .packlist
+	find $pkgdir -name .packlist -o -name perllocal.pod -delete
+}
+
+sha512sums="c7dce535324783438f96d337836ae24f069847af6db171f7586faf4fd016ac2758e27f20751a68652f4ef34957eae55715dd3247189daa31e0e35d2332c9d30a  po4a-0.61.tar.gz"

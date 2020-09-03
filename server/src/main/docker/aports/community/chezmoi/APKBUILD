@@ -1,0 +1,55 @@
+# Contributor: Kevin Daudt <kdaudt@alpinelinux.org>
+# Maintainer: Kevin Daudt <kdaudt@alpinelinux.org>
+pkgname=chezmoi
+pkgver=1.8.5
+pkgrel=0
+pkgdesc="Manage your dotfiles across multiple machines, securely."
+url="https://www.chezmoi.io/"
+arch="all !mips !mips64" # go missing
+license="MIT"
+makedepends="go"
+options="!check chmod-clean" # no test suite
+subpackages="
+	$pkgname-doc
+	$pkgname-bash-completion
+	$pkgname-zsh-completion
+	$pkgname-fish-completion
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/twpayne/chezmoi/archive/v$pkgver.tar.gz"
+
+export GOPATH="$srcdir"
+
+build() {
+	go build \
+		-ldflags "
+		-X \"main.version=$pkgver\" \
+		-X \"main.date=$(date --utc +%Y-%M-%dT%H:%I:%SZ)\" \
+		-X \"github.com/twpayne/chezmoi/cmd.DocsDir=/usr/share/doc/chezmoi/\"
+		" \
+		-tags noupgrade \
+		-tags noembeddocs
+	make completions
+}
+
+package() {
+	install -Dm0755 chezmoi "$pkgdir"/usr/bin/chezmoi
+	install -Dm0644 completions/chezmoi-completion.bash \
+		"$pkgdir"/usr/share/bash-completion/completions/$pkgname
+	install -Dm0644 completions/chezmoi.zsh \
+		"$pkgdir"/usr/share/zsh/site-functions/_$pkgname
+	install -Dm0644 completions/chezmoi.fish \
+		"$pkgdir"/usr/share/fish/completions/$pkgname.fish
+}
+
+doc() {
+	default_doc
+	mkdir -p "$subpkgdir/usr/share/doc/chezmoi"
+	cp "$builddir/docs/"* "$subpkgdir/usr/share/doc/chezmoi"
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="705e10c77c95e5f067adf973ea30cf79cff3a2466da3edc1babd7f08c4ed821da3769b5315c55c424ac6440874f29329d5ae15a15ecd3ea3ceaeac429464df45  chezmoi-1.8.5.tar.gz"

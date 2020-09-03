@@ -1,0 +1,30 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=py3-tomlkit
+_realname=tomlkit
+pkgver=0.7.0
+pkgrel=0
+pkgdesc="Python3 library for parsing and modifying TOML"
+url="https://github.com/sdispater/tomlkit"
+arch="noarch"
+license="MIT"
+depends="python3"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-yaml"
+source="https://files.pythonhosted.org/packages/source/${_realname:0:1}/$_realname/$_realname-$pkgver.tar.gz"
+builddir="$srcdir/$_realname-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	py.test-3
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+	rm -rf "$pkgdir"/usr/lib/python3*/site-packages/tests
+}
+
+sha512sums="1483dbc3a8cf87257d592b5af97a66449133337b5a6f709d997054861615527510338fa27f048b27a69611782bd35a126c750eee465301d92e83cd2a8e45c5a5  tomlkit-0.7.0.tar.gz"

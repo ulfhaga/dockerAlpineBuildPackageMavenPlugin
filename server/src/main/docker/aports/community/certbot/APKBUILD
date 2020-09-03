@@ -1,0 +1,42 @@
+# Contributor: Carlo Landmeter <clandmeter@gmail.com>
+# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+pkgname=certbot
+pkgver=1.7.0
+pkgrel=0
+pkgdesc="An ACME client that can update Apache/Nginx configurations"
+url="https://github.com/certbot/certbot"
+arch="noarch"
+license="Apache-2.0"
+depends="
+	py3-acme
+	py3-configargparse
+	py3-configobj
+	py3-cryptography
+	py3-distro
+	py3-distutils-extra
+	py3-josepy
+	py3-mock
+	py3-parsedatetime
+	py3-pyrfc3339
+	py3-tz
+	py3-setuptools
+	py3-zope-component
+	py3-zope-interface
+"
+checkdepends="py3-augeas"
+replaces="letsencrypt"
+source="https://pypi.io/packages/source/c/certbot/certbot-$pkgver.tar.gz"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py check
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="987ceb63130dc98df0e4866a25c5d8ee4dc27b79650e5c8e149d45fec4709cf7c5f980de38e83d354e313df904c3830075ef04b8394f71998f06f9fa75bfb7fe  certbot-1.7.0.tar.gz"

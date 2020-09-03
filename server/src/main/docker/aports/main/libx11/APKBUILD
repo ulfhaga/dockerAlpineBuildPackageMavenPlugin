@@ -1,0 +1,46 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libx11
+pkgver=1.6.12
+pkgrel=0
+pkgdesc="X11 client-side library"
+url="http://xorg.freedesktop.org/"
+arch="all"
+license="custom:XFREE86"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc"
+depends_dev="libxcb-dev xtrans"
+makedepends="$depends_dev xorgproto util-macros xmlto"
+source="https://www.x.org/releases/individual/lib/libX11-$pkgver.tar.bz2"
+builddir="$srcdir"/libX11-$pkgver
+
+# secfixes:
+#   1.6.12-r0:
+#     - CVE-2020-14363
+#   1.6.10-r0:
+#     - CVE-2020-14344
+#   1.6.6-r0:
+#     - CVE-2018-14598
+#     - CVE-2018-14599
+#     - CVE-2018-14600
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--with-xcb
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}
+
+sha512sums="79df7d61d9009b0dd3b65f67a62189aa0a43799c01026b3d2d534092596a0b67f246af5e398a89eb1ccc61a27335f81be8262b8a39768a76f62d862cd7415a47  libX11-1.6.12.tar.bz2"

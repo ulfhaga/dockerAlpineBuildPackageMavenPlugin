@@ -1,0 +1,35 @@
+# Maintainer: Pete Dietl <petedietl@gmail.com>
+pkgname=libfort
+pkgver=0.4.1
+pkgrel=0
+pkgdesc="A simple crossplatform library to create formatted text tables."
+url="https://github.com/seleznevae/libfort"
+arch="all"
+license="MIT"
+makedepends="cmake"
+subpackages="$pkgname-dev"
+source="libfort-$pkgver.tar.gz::https://github.com/seleznevae/libfort/archive/v$pkgver.tar.gz"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		${CMAKE_CROSSOPTS} .
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="c21095f840de1a15a974fbc3efe4e6d552543f255e02ab57714c346b76a9edf7ec66fd930738e6b06189c5a1b933ec69f7a81d495c62360fa62b4fb68b2ed9ca  libfort-0.4.1.tar.gz"

@@ -1,0 +1,48 @@
+# Contributor: tcely <ntpsec+aports@tcely.33mail.com>
+# Maintainer:
+pkgname=ntpsec
+pkgver=1.1.9
+pkgrel=1
+pkgdesc="NTP reference implementation, refactored for security"
+url="https://www.ntpsec.org/"
+arch="all"
+license="BSD-2-Clause"
+depends="bash busybox python3 py3-gpsd"
+makedepends="python3-dev bison asciidoc openssl-dev linux-headers"
+subpackages="$pkgname-doc"
+source="https://ftp.ntpsec.org/pub/releases/ntpsec-$pkgver.tar.gz"
+
+# secfixes:
+#   1.1.3-r0:
+#     - CVE-2019-6442
+#     - CVE-2019-6443
+#     - CVE-2019-6444
+#     - CVE-2019-6445
+
+prepare() {
+	default_prepare
+
+	ln -s /usr/bin/python3 python
+	export PATH="$PATH":.
+}
+
+build() {
+	./waf configure \
+		--prefix=/usr \
+		--python=python3 \
+		--enable-leap-smear \
+		--enable-mssntp \
+		--refclock=all
+
+	./waf build --verbose
+}
+
+check() {
+	./waf check --verbose
+}
+
+package() {
+	./waf install --destdir="$pkgdir"
+}
+
+sha512sums="e04267aa675a5b528f3478d00329a569ecb9bbe2b6ad18697020854d2ee451bc188c4603cd5f420a08a7e3bf047d2db1301416f57f9156df23aceb1f57303b0b  ntpsec-1.1.9.tar.gz"

@@ -1,0 +1,27 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=ameba
+pkgver=0.13.2
+pkgrel=0
+pkgdesc="static code analysis tool for Crystal"
+url="https://github.com/crystal-ameba/ameba"
+arch="x86_64 aarch64"
+license="MIT"
+makedepends="crystal libxml2-dev shards yaml-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/veelenga/ameba/archive/v$pkgver.tar.gz"
+
+export CRYSTAL_CACHE_DIR="$srcdir/.cache"
+
+build() {
+	make CRFLAGS="--release"
+}
+
+check() {
+	make test SPEC_FLAGS="--no-color"
+}
+
+package() {
+	make install PREFIX="$pkgdir/usr"
+}
+
+sha512sums="55236fa8ab16a58a1a9b49c2c488da3dd756875a3e0ee95169c35579871e626af97e77835fcf29f7ebf9f45121b71a1329b5930310c25cfc113bb62f73649eee  ameba-0.13.2.tar.gz"

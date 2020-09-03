@@ -1,0 +1,35 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=bzrtp
+pkgver=4.4.0
+pkgrel=0
+pkgdesc="BZRTP is an opensource implementation of ZRTP keys exchange protocol"
+url="https://gitlab.linphone.org/BC/public/bzrtp"
+arch="all"
+license="GPL-3.0-only"
+makedepends="cmake bctoolbox-dev sqlite-dev libxml2-dev"
+options="!check" # no tests
+subpackages="$pkgname-dev"
+source="https://gitlab.linphone.org/BC/public/bzrtp/-/archive/$pkgver/bzrtp-$pkgver.tar.gz"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DENABLE_STATIC=False \
+		$CMAKE_CROSSOPTS .
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="7e4f8d44d78603ec26b2f6c1543ae32e7a29e3302340c7c8ae0a7137050823da315dcff8903ccb8e8128a5088eaf27c0f6141922e7f70dd503b7ba1f3a97fcff  bzrtp-4.4.0.tar.gz"

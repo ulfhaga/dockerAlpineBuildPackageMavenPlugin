@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=cervisia
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/development/org.kde.cervisia"
+pkgdesc="A user friendly version control system front-end"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev kparts-dev kdoctools-dev kinit-dev kiconthemes-dev knotifications-dev kwidgetsaddons-dev kitemviews-dev kdesu-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/cervisia-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="9c6351e443db7ea09d882b4cdac878ccd5ae626878f10018fab0d09c557e2ecc4280088c4571781752ca623197f5d717082a730b56f8ee4d9ae99019485f714a  cervisia-20.08.0.tar.xz"

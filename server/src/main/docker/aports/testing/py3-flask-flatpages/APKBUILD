@@ -1,0 +1,27 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-flask-flatpages
+pkgver=0.7.2
+pkgrel=0
+pkgdesc="Flask static pages extension"
+url="https://pypi.python.org/pypi/Flask-FlatPages"
+arch="noarch"
+license="BSD-3-Clause"
+depends="python3 py3-flask py3-jinja2 py3-markdown py3-yaml"
+makedepends="py3-setuptools"
+checkdepends="py3-pygments"
+source="https://files.pythonhosted.org/packages/source/F/Flask-FlatPages/Flask-FlatPages-$pkgver.tar.gz"
+builddir="$srcdir"/Flask-FlatPages-$pkgver
+
+replaces="py-flask-flatpages" # Backwards compatibility
+provides="py-flask-flatpages=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="0bd42e639f10dae76d60776d6c9baebf06ed003ab55d144091a149a962d1ed7a03eb534953d9ed3d1c2e7abd7e899ad8fc7b90c9029f9a8467c7267011d49624  Flask-FlatPages-0.7.2.tar.gz"

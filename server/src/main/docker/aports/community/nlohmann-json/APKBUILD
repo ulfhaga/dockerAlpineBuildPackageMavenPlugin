@@ -1,0 +1,42 @@
+# Contributor: Nick Black <dankamongmen@gmail.com>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=nlohmann-json
+pkgver=3.9.1
+pkgrel=0
+pkgdesc="JSON for Modern C++"
+url="https://github.com/nlohmann/json"
+arch="noarch"
+license="MIT"
+makedepends="cmake doxygen graphviz"
+subpackages="$pkgname-doc"
+source="nlohmann-json-$pkgver.tar.gz::https://github.com/nlohmann/json/archive/v$pkgver.tar.gz"
+builddir="$srcdir/json-$pkgver"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+
+	make -C doc
+}
+
+check() {
+	cd build
+	local skipped_tests=
+	if [ "$CARCH" = "aarch64" ]; then
+		# test-unicode_all takes too long and times out
+		skipped_tests="$skipped_tests|test-unicode_all"
+	fi
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "($skipped_tests)"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname
+	mv doc/html "$pkgdir"/usr/share/doc/$pkgname/
+}
+
+sha512sums="e0eb4727bea993af984f832e069d03a21219befae0f24ee49e67a1144cf1e8428dcf2e37f683aedb8d14118545d5087f2b7d822a576944cef3e590a12be51642  nlohmann-json-3.9.1.tar.gz"

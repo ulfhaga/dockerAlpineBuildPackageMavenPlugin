@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=krita
+pkgver=4.3.0
+pkgrel=1
+arch="all !aarch64 !armv7 !armhf !mips !mips64" # Blocked by py3-qt5 -> qt5-qtdeclarative, OpenGLES
+url="https://krita.org/"
+pkgdesc="Free digital painting application. Digital Painting, Creative Freedom!"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtmultimedia-dev qt5-qttools-dev kconfig-dev kwidgetsaddons-dev kcompletion-dev kcoreaddons-dev kguiaddons-dev ki18n-dev kitemmodels-dev kitemviews-dev kwindowsystem-dev karchive-dev kcrash-dev libxi-dev boost-dev libraw-dev fftw-dev eigen-dev exiv2-dev lcms2-dev quazip-dev gsl-dev zlib-dev openexr-dev tiff-dev libjpeg-turbo-dev giflib-dev libheif-dev python3-dev py3-qt5 poppler-qt5-dev xcb-util-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/krita/$pkgver/krita-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # Breaks compilation on Musl https://bugs.kde.org/show_bug.cgi?id=412058
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_KRITA_QT_DESIGNER_PLUGINS=ON \
+		-DBUILD_TESTING=OFF
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="5633a6ccacc140b119082f14fe792b1219b8065304fccc55a84a2373a46cb036ad40f718beb8719e1f664e35d679b18e86f5f3db8685166a187d8cf3a77722f4  krita-4.3.0.tar.xz"

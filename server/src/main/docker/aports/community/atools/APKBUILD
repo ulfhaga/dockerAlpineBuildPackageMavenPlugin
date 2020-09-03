@@ -1,0 +1,28 @@
+# Contributor: Kevin Daudt <kdaudt@alpinelinux.org>
+# Maintainer: Kevin Daudt <kdaudt@alpinelinux.org>
+pkgname=atools
+pkgver=19.4.1
+pkgrel=0
+pkgdesc="Auxilary scripts for abuild"
+url="https://gitlab.alpinelinux.org/Leo/atools"
+arch="noarch"
+license="MIT"
+depends="lua5.3 lua5.3-lyaml"
+makedepends="scdoc redo"
+checkdepends="bats"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.alpinelinux.org/Leo/atools/-/archive/$pkgver/atools-$pkgver.tar.gz"
+
+build() {
+	redo build
+}
+
+check() {
+	redo check
+}
+
+package() {
+	DESTDIR="$pkgdir" redo install
+}
+
+sha512sums="c3bc677ad009bd1931f82b27506a60a690beb631c3a733e43896b01b12b846d8354b5cf624bd687bf5fa64d47b4e33cd939d8dfc866d165e8ddb5e13364ae15c  atools-19.4.1.tar.gz"

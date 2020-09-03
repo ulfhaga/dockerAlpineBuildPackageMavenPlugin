@@ -1,0 +1,38 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=ruby-i18n
+_gemname=${pkgname#ruby-}
+pkgver=1.8.5
+pkgrel=0
+pkgdesc="New wave Internationalization support for Ruby"
+url="https://github.com/svenfuchs/i18n"
+# Disabled due to ruby-concurrent-ruby, see its APKBUILD
+arch="all !armhf !mips !mips64 !x86 !armv7 !ppc64le"
+license="MIT"
+depends="ruby ruby-concurrent-ruby ruby-json"
+options="!check"  # tests require additional deps that we don't have yet
+source="$pkgname-$pkgver.tar.gz::https://github.com/svenfuchs/$_gemname/archive/v$pkgver.tar.gz"
+builddir="$srcdir/$_gemname-$pkgver"
+
+build() {
+	gem build $_gemname.gemspec
+}
+
+package() {
+	local gemdir="$pkgdir/$(ruby -e 'puts Gem.default_dir')"
+
+	gem install --local \
+		--install-dir "$gemdir" \
+		--ignore-dependencies \
+		--no-document \
+		--verbose \
+		$_gemname
+
+	# Remove unnecessary files.
+	cd "$gemdir"
+	rm -r cache/ build_info/ doc/
+	cd gems/$_gemname-$pkgver
+	rm -r lib/i18n/tests/ *.md *LICENSE*
+}
+
+sha512sums="0fd51cdc059c17b1581d187f39149bec1de4bcb06e6c9867f084fce26a8d6a6570b0058689cc30ff7ae14ea562b64ecdaf10ab3d4d2fbe246717583ca20100be  ruby-i18n-1.8.5.tar.gz"

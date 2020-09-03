@@ -1,0 +1,44 @@
+# Contributor: Andre Bierwolf <a.b.bierwolf@gmail.com>
+# Maintainer: Andre Bierwolf <a.b.bierwolf@gmail.com>
+pkgname=novnc
+_pkgname=noVNC
+pkgver=1.2.0
+pkgrel=0
+pkgdesc="VNC client using HTML5 (WebSockets, Canvas) with encryption (wss://) support"
+url="https://kanaka.github.io/noVNC/"
+arch="noarch !mips !mips64" # blocking on websockify
+license="MPL-2.0"
+depends="websockify>=0.8.0-r2 net-tools"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/$pkgname/$_pkgname/archive/v$pkgver.tar.gz
+	alpine-specific-launch.js.patch"
+builddir="$srcdir/$_pkgname-$pkgver"
+options="!check"
+
+package() {
+	mkdir -p "$pkgdir"/usr/share/$pkgname
+	cd "$pkgdir"/usr/share/$pkgname
+
+	cp -r "$builddir"/* .
+
+	# Clean up package.
+	rm utils/README.md
+
+	# Move license files.
+	mkdir -p "$pkgdir"/usr/share/licenses/$pkgname
+	mv LICENSE.txt docs/LICENSE.* "$pkgdir"/usr/share/licenses/novnc/
+
+	# Move documentation.
+	mkdir -p "$pkgdir"/usr/share/doc
+	mv docs "$pkgdir"/usr/share/doc/$pkgname
+	mv README.md "$pkgdir"/usr/share/doc/$pkgname/
+
+	# Install launch.sh to /usr/bin.
+	install -D -m 755 utils/launch.sh "$pkgdir"/usr/bin/novnc_server
+
+	# Remove irrelevant utils.
+	rm -r utils
+}
+
+sha512sums="461490da7bb983e9c94b8ce39f8455ee6609b5a9df8d88254bcc37ebaa5153f5ee9db6afbd88b51762d6d55661bc5cde6fbe70616597583bfce1203e337adf75  novnc-1.2.0.tar.gz
+9beb3300206e2e951954fbb02f0ca7f888205b8f38c8210e66f30cdc460d5a08f3e7dd004b1442399cd6df524ae6c80fff9bf52599be8e9d0accf18befc856f9  alpine-specific-launch.js.patch"

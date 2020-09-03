@@ -1,0 +1,35 @@
+# Contributor: Eivind Uggedal <eu@eju.no>
+# Maintainer: Eivind Uggedal <eu@eju.no>
+pkgname=uacme
+pkgver=1.5
+pkgrel=0
+pkgdesc="Lightweight client for the RFC8555 ACMEv2 protocol"
+url="https://github.com/ndilieto/uacme"
+arch="all"
+license="GPL-3.0-or-later ISC MIT"
+makedepends="openssl-dev curl-dev asciidoc"
+subpackages="$pkgname-doc"
+options="!check"  # no test suite
+source="uacme-upstream-$pkgver.tar.gz::https://github.com/ndilieto/uacme/archive/upstream/$pkgver.tar.gz"
+builddir="$srcdir/uacme-upstream-$pkgver"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--disable-maintainer-mode \
+		--with-openssl
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	install -d "$pkgdir"/var/www/.well-known/acme-challenge
+}
+
+sha512sums="ec20c49fbab407c5140a769781486648126c9baa817c9fb9732a6db3db66737b565eb14b101355430e7c7efe7619a95507a25a8c41553d7b681280e62fb9ab1a  uacme-upstream-1.5.tar.gz"

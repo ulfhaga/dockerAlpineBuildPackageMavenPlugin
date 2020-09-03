@@ -1,0 +1,29 @@
+# Contributor: Kiyoshi Aman <kiyoshi.aman@gmail.com>
+# Maintainer: Kiyoshi Aman <kiyoshi.aman@gmail.com>
+pkgname=git-cola
+pkgver=3.7
+pkgrel=0
+pkgdesc="GUI application for git built on Python & Qt5"
+url="https://git-cola.github.io"
+arch="noarch !armhf" # qtdeclarative
+license="GPL-2.0-or-later"
+depends="python3 py3-qt5"
+checkdepends="py3-nose"
+makedepends="py3-setuptools"
+subpackages="$pkgname-doc"
+source="git-cola-$pkgver.tar.gz::https://github.com/git-cola/git-cola/archive/v$pkgver.tar.gz"
+# testsuite hangs after a while.
+options="!check"
+
+build() {
+	make PYTHON=python3
+}
+check() {
+	make PYTHON=python3 test
+}
+
+package() {
+	make PYTHON=python3 prefix=/usr DESTDIR="$pkgdir" install
+}
+
+sha512sums="30d01603fab14c0888eb842583e792139250211db92ea1431ea1462b66fc04e307daf9c679b8a8d0a2bfdade970a2c858f34b857b9e8eb78c0b4a3d798877b80  git-cola-3.7.tar.gz"

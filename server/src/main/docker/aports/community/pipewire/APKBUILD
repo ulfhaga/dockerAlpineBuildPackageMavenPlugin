@@ -1,0 +1,51 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=pipewire
+pkgver=0.3.10
+pkgrel=0
+pkgdesc="Multimedia processing graphs"
+url="https://pipewire.org/"
+arch="all"
+license="LGPL-2.1-or-later"
+makedepends="meson alsa-lib-dev libx11-dev sdl2-dev ffmpeg-dev eudev-dev dbus-dev
+	glib-dev gstreamer-dev gst-plugins-base-dev sbc-dev doxygen xmltoman graphviz
+	bluez-dev jack-dev vulkan-loader-dev pulseaudio-dev"
+options="!check" # no tests
+subpackages="$pkgname-dev $pkgname-doc $pkgname-pulse $pkgname-jack"
+source="$pkgname-$pkgver.tar.gz::https://github.com/PipeWire/pipewire/archive/$pkgver.tar.gz"
+
+build() {
+	abuild-meson \
+		-Ddocs=true \
+		-Dman=true \
+		-Dgstreamer=true \
+		-Dexamples=true \
+		-Dffmpeg=true \
+		-Dsystemd=false \
+		. output
+	ninja -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+pulse() {
+	pkgdesc="Pulseaudio support for pipewire"
+	mkdir -p "$subpkgdir/usr/lib/$pkgname-${pkgver:0:3}"
+	mkdir -p "$subpkgdir/usr/bin"
+	mv "$pkgdir/usr/lib/$pkgname-${pkgver:0:3}/pulse" \
+	   "$subpkgdir/usr/lib/$pkgname-${pkgver:0:3}/"
+	mv "$pkgdir/usr/bin/pw-pulse" "$subpkgdir/usr/bin/"
+}
+
+jack() {
+	pkgdesc="JACK support for pipewire"
+	mkdir -p "$subpkgdir/usr/lib/$pkgname-${pkgver:0:3}"
+	mkdir -p "$subpkgdir/usr/bin"
+	mv "$pkgdir/usr/lib/$pkgname-${pkgver:0:3}/jack" \
+	   "$subpkgdir/usr/lib/$pkgname-${pkgver:0:3}/"
+	mv "$pkgdir/usr/bin/pw-jack" "$subpkgdir/usr/bin/"
+}
+
+sha512sums="f2f3dd7ce9b9f3a5ab55b6da97cd64419dad5115714848ce8893795c0ed2fd2fe0059240ec9fe1c92fb1442caf8d7071e415afe6712500be1c29fd001293cf0d  pipewire-0.3.10.tar.gz"

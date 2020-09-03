@@ -1,0 +1,52 @@
+# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+# Contributor: August Klein <amatcoder@gmail.com>
+# Contributor: Orson Teodoro <orsonteodoro@hotmail.com>
+# Contributor: Max Rees <maxcrees@me.com>
+# Maintainer: Orson Teodoro <orsonteodoro@hotmail.com>
+pkgname=keepassxc
+pkgver=2.6.1
+pkgrel=0
+pkgdesc="Community-driven port of the Windows application Keepass Password Safe"
+url="https://keepassxc.org/"
+arch="all"
+license="GPL-2.0-only OR GPL-3.0-only"
+depends="hicolor-icon-theme"
+makedepends="argon2-dev cmake libgcrypt-dev libqrencode-dev libsodium-dev
+	libxi-dev libxtst-dev qt5-qtbase-dev qt5-qtsvg-dev qt5-qttools-dev
+	qt5-qtx11extras-dev zlib-dev quazip-dev yubico-c-dev ykpers-dev
+	asciidoctor"
+source="https://github.com/keepassxreboot/keepassxc/releases/download/$pkgver/keepassxc-$pkgver-src.tar.xz"
+subpackages="$pkgname-doc"
+provides="dbus:org.freedesktop.Secrets"
+# Smallest priority, unusual setup
+provider_priority=5
+
+build() {
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=/usr/lib \
+		-DCMAKE_BUILD_TYPE=None \
+		-DKEEPASSXC_BUILD_TYPE=None \
+		-DWITH_XC_AUTOTYPE=ON \
+		-DWITH_XC_NETWORKING=ON \
+		-DWITH_XC_BROWSER=ON \
+		-DWITH_XC_YUBIKEY=ON \
+		-DWITH_XC_SSHAGENT=ON \
+		-DWITH_XC_KEESHARE=ON \
+		-DWITH_XC_UPDATECHECK=OFF \
+		-DWITH_XC_FDOSECRETS=ON
+	cmake --build build
+}
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+	install -d "$pkgdir"/usr/share/doc/$pkgname/
+	install -t "$pkgdir"/usr/share/doc/$pkgname/ \
+		   "$builddir"/CHANGELOG.md "$builddir"/README.md
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+sha512sums="9fb2d01d80e2b61c847c0544c280c1f3bfca671268e2dbbe78e0f3c1264f38125a3767ceb4591261f3586cd71f4fff47ecc6eacaecf1e707cea5e8907542313a  keepassxc-2.6.1-src.tar.xz"

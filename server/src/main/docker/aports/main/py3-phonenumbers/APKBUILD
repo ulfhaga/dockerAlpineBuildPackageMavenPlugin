@@ -1,0 +1,30 @@
+# Contributor: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+# Maintainer: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+pkgname=py3-phonenumbers
+pkgver=8.12.8
+pkgrel=0
+pkgdesc="International phone number library for Python"
+url="https://github.com/daviddrysdale/python-phonenumbers"
+arch="noarch"
+license="Apache-2.0"
+depends="python3"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/p/phonenumbers/phonenumbers-$pkgver.tar.gz"
+builddir="$srcdir/phonenumbers-$pkgver"
+
+replaces="py-phonenumbers" # Backwards compatibility
+provides="py-phonenumbers=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="0897a5298b5aaee7c0775e12cbe35a6e25b85a1836d8302abc5eee7e327fc559bc06f3130c63ac5aa14207900d1615f3a7cd4137d6561855e4ad38b6e4af220f  phonenumbers-8.12.8.tar.gz"

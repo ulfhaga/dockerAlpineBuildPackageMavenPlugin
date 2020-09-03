@@ -1,0 +1,21 @@
+From: Mike Crute <mike@crute.us>
+Date: Tue, 24 Dec 2019 16:18:32 +0000
+Subject: Disable broken tests
+
+Patch removes check for git info in server version output. This assumes
+that the binary was built within a git repo which is not the case for
+releases. This test will never work for us.
+
+---
+
+--- a/test/test_server/test_main.cc.orig
++++ b/test/test_server/test_main.cc
+@@ -48,7 +48,7 @@
+   ASSERT_THAT(output.c_str(), HasSubstr(expectedOutput.c_str()));
+ }
+ 
+-TEST_F(ServerTest, ServerOutputsCompileInformationIncludingGit) {
++TEST_F(ServerTest, DISABLED_ServerOutputsCompileInformationIncludingGit) {
+   std::stringstream ss;
+   ss << CMAKE_BINARY_DIR << DIR_SEPARATOR << "gerbera --compile-info 2>&1";
+   std::string cmd = ss.str();

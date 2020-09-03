@@ -1,0 +1,37 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=file-roller
+pkgver=3.36.3
+pkgrel=0
+pkgdesc="File Roller is an archive manager for the GNOME desktop "
+url="https://wiki.gnome.org/Apps/FileRoller"
+arch="all !s390x !mips !mips64" # blocked by nautilus-dev
+license="GPL-2.0-or-later"
+depends="cpio"
+makedepends="meson glib-dev gtk+3.0-dev json-glib-dev libnotify-dev libarchive-dev
+	itstool nautilus-dev"
+subpackages="$pkgname-lang"
+source="https://download.gnome.org/sources/file-roller/${pkgver%.*}/file-roller-$pkgver.tar.xz"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		-Dpackagekit=false \
+		-Dcpio=/usr/bin/cpio \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="41558ca8061276b1248fd3599e856051dcd69ca831fb4d8a33666dc373b4abed56e7ef204a6e041ceace05ea7234448d15bc7be8c48dc1809ac6d445de251370  file-roller-3.36.3.tar.xz"

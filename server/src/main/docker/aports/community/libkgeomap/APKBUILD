@@ -1,0 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libkgeomap
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="A wrapper around world map components for browsing and arranging photos on a map"
+url="https://www.kde.org/applications/graphics/"
+# mips, ppc64le and s390x blocked by marble-dev
+# armhf blocked by libkexiv2
+arch="all !ppc64le !s390x !armhf !mips !mips64"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtwebkit-dev ki18n-dev kconfig-dev kio-dev marble-dev libkexiv2-dev"
+subpackages="$pkgname-dev $pkgname-lang"
+source="https://download.kde.org/stable/release-service/$pkgver/src/libkgeomap-$pkgver.tar.xz"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="4f8914cecf18f8870cf5956cae2128d6d93a4b61d3550b831555b99b023660e4f1bcf8fdc9820b22341fe2c5e8af751fc73a2c6de83ec6835b98a5edc3d0f606  libkgeomap-20.08.0.tar.xz"

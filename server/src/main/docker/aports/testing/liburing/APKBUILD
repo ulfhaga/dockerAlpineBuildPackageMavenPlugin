@@ -1,0 +1,28 @@
+# Maintainer: Milan P. Stanić <mps@arvanta.net>
+pkgname=liburing
+pkgver=0.7
+pkgrel=0
+pkgdesc="Linux kernel io_uring access library"
+url="https://git.kernel.dk/cgit/liburing/"
+arch="all"
+license="LGPL-2.1-or-later"
+makedepends="linux-headers"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://git.kernel.dk/cgit/liburing/snapshot/liburing-$pkgver.tar.gz
+	"
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--mandir=/usr/share/man
+}
+
+check() {
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="fe609bcf41485aa14565118787215f47e1c2358a1ce1d7fd20701f557655ca066e0cc706772298002b426aee5b29af616040c75ddb102c1f1c5a5b69249ae661  liburing-0.7.tar.gz"

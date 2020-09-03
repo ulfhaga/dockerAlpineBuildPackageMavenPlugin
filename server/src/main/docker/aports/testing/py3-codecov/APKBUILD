@@ -1,0 +1,36 @@
+# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+# Maintainer: Justin Berthault <justin.berthault@zaclys.net>
+pkgname=py3-codecov
+pkgver=2.1.9
+pkgrel=0
+pkgdesc="Report uploader for Codecov"
+options="!check" # Requires unpackaged 'ddt'
+url="https://github.com/codecov/codecov-python"
+arch="noarch"
+license="Apache-2.0"
+depends="python3 py3-coverage py3-requests py3-setuptools"
+checkdepends="py3-pytest"
+source="$pkgname-$pkgver.tar.gz::https://github.com/codecov/codecov-python/archive/v$pkgver.tar.gz"
+builddir="$srcdir"/codecov-python-$pkgver
+
+replaces="py-codecov" # Backwards compatibility
+provides="py-codecov=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	py.test-3 tests/test.py
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	local file; for file in "$pkgdir"/usr/bin/*; do
+		mv $file $file-3
+		ln -s "${file##*/}"-3 $file
+	done
+}
+
+sha512sums="f86168bf03920a39b9f71ab3defc640bcef662b02b6e491f735f96fef7e75791fe4673082eef2f30c840b64ea1952f605fff14247d5bf7290cd6401007330852  py3-codecov-2.1.9.tar.gz"

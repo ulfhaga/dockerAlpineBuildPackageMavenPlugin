@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kgoldrunner
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://kde.org/applications/games/kgoldrunner/"
+pkgdesc="A game of action and puzzle solving"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfig-dev kconfigwidgets-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev kdoctools-dev ki18n-dev kio-dev kwidgetsaddons-dev kxmlgui-dev libkdegames-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kgoldrunner-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="4658e278cffe8c085b9e8b4e3633bff0e3c12fa54a96037ea97169d22ddf422e6da8d3e508bfe60590eeb6740e739e06c4672d66181d7aec39b5e80d4456df78  kgoldrunner-20.08.0.tar.xz"

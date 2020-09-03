@@ -1,0 +1,34 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Maintainer:
+pkgname=py3-argcomplete
+_pyname=argcomplete
+pkgver=1.12.0
+pkgrel=0
+pkgdesc="Easy, extensible command line tab completion of arguments for your Python script"
+options="!check" # Tests are py2 dependent
+url="https://github.com/kislyuk/argcomplete"
+arch="noarch"
+license="Apache-2.0"
+depends="python3"
+makedepends="py3-setuptools"
+checkdepends="py3-coverage py3-flake8 py3-pexpect bash"
+source="$pkgname-$pkgver.tar.gz::https://github.com/kislyuk/$_pyname/archive/v$pkgver.tar.gz
+	"
+builddir="$srcdir/$_pyname-$pkgver"
+
+replaces="py-argcomplete" # Backwards compatibility
+provides="py-argcomplete=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir" --optimize=1
+}
+
+sha512sums="d1a493bbd4423af355c781600ef9eac72e17f3dac31e1e64508f6b107c9694115d0762a84a56d0f8a8cb7ea7f34b4d73c02aa934d802974eaee176aaeadff9e0  py3-argcomplete-1.12.0.tar.gz"

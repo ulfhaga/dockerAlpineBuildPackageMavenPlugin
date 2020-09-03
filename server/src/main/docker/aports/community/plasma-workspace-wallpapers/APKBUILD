@@ -1,0 +1,26 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=plasma-workspace-wallpapers
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="Wallpapers for the Plasma Workspace"
+arch="noarch !armhf" # armhf blocked by extra-cmake-modules
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules"
+source="https://download.kde.org/stable/plasma/$pkgver/plasma-workspace-wallpapers-$pkgver.tar.xz"
+options="!check" # No tests available
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="26842ca233f8a60d7506f92a4e84c21dde27e5b60e40a1738f30afe9baa39afb6f38fc102ff46a6bb48a317eca1d2fe55b035b00445ca9ed106eaa1ceff0e04f  plasma-workspace-wallpapers-5.19.4.tar.xz"

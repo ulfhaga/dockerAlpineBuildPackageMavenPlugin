@@ -1,0 +1,81 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer:
+pkgname=telegram-desktop
+pkgver=2.1.17
+pkgrel=2
+pkgdesc="Telegram Desktop messaging app"
+options="!check" # Requires Catch2 to be packaged.
+url="https://desktop.telegram.org/"
+arch="all !s390x !mips !mips64" # Need support on lib_base
+license="GPL-3.0-or-later WITH OpenSSL"
+depends="qt5-qtimageformats ttf-opensans"
+makedepends="
+	cmake
+	samurai
+	zlib-dev
+	opus-dev
+	libva-dev
+	libvdpau-dev
+	ffmpeg-dev
+	portaudio-dev
+	openal-soft-dev
+	openssl-dev
+	libxkbcommon-dev
+	qt5-qtbase-dev
+	libexif-dev
+	xz-dev
+	minizip-dev
+	alsa-lib-dev
+	libexecinfo-dev
+	lz4-dev
+	qtchooser
+	pulseaudio-dev
+	libdbusmenu-glib-dev
+	xxhash-dev
+	enchant2-dev
+	range-v3-dev
+	python3
+	libdbusmenu-qt-dev
+	tl-expected
+	hunspell-dev
+	gtk+3.0-dev
+	"
+source="
+	https://github.com/telegramdesktop/tdesktop/releases/download/v$pkgver/tdesktop-$pkgver-full.tar.gz
+	small-sizes.patch
+	remove-glibc.patch
+	"
+builddir="$srcdir/tdesktop-$pkgver-full"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake -B build -G Ninja \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DDESKTOP_APP_DISABLE_CRASH_REPORTS=ON \
+		-DDESKTOP_APP_DISABLE_SPELLCHECK=OFF \
+		-DDESKTOP_APP_LOTTIE_USE_CACHE=ON \
+		-DDESKTOP_APP_USE_GLIBC_WRAPS=OFF \
+		-DDESKTOP_APP_USE_PACKAGED=ON \
+		-DTDESKTOP_API_ID=17349 \
+		-DTDESKTOP_API_HASH=344583e45741c457fe1862106095a5eb \
+		-DDESKTOP_APP_USE_PACKAGED_RLOTTIE=OFF \
+		-DTDESKTOP_USE_PACKAGED_TGVOIP=OFF \
+		-DTDESKTOP_LAUNCHER_BASENAME=telegram-desktop \
+		-DDESKTOP_APP_USE_PACKAGED_GSL=OFF \
+		-DDESKTOP_APP_USE_PACKAGED_VARIANT=OFF \
+		-DDESKTOP_APP_USE_PACKAGED_FONTS=ON \
+		$CMAKE_CROSSOPTS .
+	ninja -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C build install
+}
+
+sha512sums="8bea14ff32e74c21c6c080b5acf9e3fe11cee51c1e42c196ceb44222c85f39824049a6fc4386798f4b1770693e3f40fe4f56a4ea11d385fd337c99be5f1746cb  tdesktop-2.1.17-full.tar.gz
+3d1b8e6f870fc780f9ae8bc6a67eb676a5c5f686dc79e84cd6d64cb3cfafb1be626d0cc3960ffc67cecca21568764a0137c7303a89045fa59f91ba4eb5d8caed  small-sizes.patch
+b6e16c02f7dafa5e00c9b2ce16df18ccd57d380877d009596261f2e1f631cb0f38088a0d8c48d8e321559cacea64ff9e79fe2d7719382d45e27a339888dc2823  remove-glibc.patch"

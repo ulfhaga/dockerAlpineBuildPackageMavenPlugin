@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=khelpcenter
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="Application to show KDE Applications' documentation"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://userbase.kde.org/KHelpCenter"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev karchive-dev kbookmarks-dev kconfig-dev kcoreaddons-dev kdbusaddons-dev kdoctools-dev ki18n-dev kinit-dev khtml-dev kservice-dev kwindowsystem-dev grantlee-dev xapian-core-dev libxml2-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/khelpcenter-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="c7ef480b9c3efddd61c964e95728f548cecc11c038f8a46cef94dede2774c65da1fc6b8ee0175767aad2ddcd9de0abb7c5b3ed8ddf51d0ba5b6e70036e1cfaa8  khelpcenter-20.08.0.tar.xz"

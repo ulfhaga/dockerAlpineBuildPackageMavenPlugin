@@ -1,0 +1,41 @@
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=borgmatic
+pkgver=1.5.10
+pkgrel=0
+pkgdesc="Simple, configuration-driven backup software for servers and workstations"
+options="!check" # Broken due to new pytest-6.x
+url="https://torsion.org/borgmatic/"
+arch="noarch !s390x !mips !mips64 !armhf" # limited by borgbackup
+license="GPL-3.0-or-later"
+depends="
+	borgbackup
+	python3
+	py3-setuptools
+	py3-pykwalify
+	py3-requests
+	py3-ruamel.yaml
+	py3-colorama
+	"
+checkdepends="
+	py3-pytest
+	py3-pytest-cov
+	py3-flexmock
+	"
+source="$pkgname-$pkgver.tar.gz::https://projects.torsion.org/witten/borgmatic/archive/$pkgver.tar.gz"
+builddir="$srcdir/borgmatic"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	# omit a simple test that requires borgmatic to be available in $PATH
+	pytest -k "not test_borgmatic_version_matches_news_version"
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir" --skip-build
+}
+
+sha512sums="c238a7ac77dab24f46eab27b0dc148f06a5bed7c62a323f02ff86d0e6d9923da2fb441d425a6ef6ecefff142fbe82b93691868ddc5aba1690f4d0d139878373c  borgmatic-1.5.10.tar.gz"

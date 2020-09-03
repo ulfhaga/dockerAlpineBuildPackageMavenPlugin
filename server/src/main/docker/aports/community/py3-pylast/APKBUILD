@@ -1,0 +1,31 @@
+# Contributor: Carlo Landmeter <clandmeter@gmail.com>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-pylast
+pkgver=3.3.0
+pkgrel=1
+pkgdesc="A Python interface to the last.fm API"
+url="https://github.com/pylast/pylast"
+arch="noarch"
+license="Apache-2.0"
+replaces="py-pylast"
+# Requires unpackaged flaky
+options="!check"
+depends="python3"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/p/pylast/pylast-$pkgver.tar.gz"
+builddir="$srcdir"/pylast-$pkgver
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+
+sha512sums="311a711ca9c80798bd4d6df3ad2fc4dedbf010ae7c1b180b941296bb0a96c1636867f6cf4292a4985486ebfd12de1d75e96de2a25f2b2a78b5a65f6b2642814c  pylast-3.3.0.tar.gz"

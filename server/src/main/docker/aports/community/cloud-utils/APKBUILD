@@ -1,0 +1,41 @@
+# Contributor: Vladimir Avinkin <mouzfun@gmail.com>
+# Contributor: Dermot Bradley <dermot_bradley@yahoo.com>
+# Maintainer: Dermot Bradley <dermot_bradley@yahoo.com>
+pkgname=cloud-utils
+pkgver=0.31
+pkgrel=2
+pkgdesc="Utilities for interacting with cloud VM images"
+url="https://launchpad.net/cloud-utils/"
+arch="noarch !mips !mips64 !s390x" # tests are broken on big-endian
+license="GPL-3.0-or-later"
+depends="bash cdrkit coreutils e2fsprogs e2fsprogs-extra eudev mtools
+	python3 qemu-img tar util-linux"
+subpackages="$pkgname-doc $pkgname-ec2metadata $pkgname-growpart"
+source="https://launchpad.net/cloud-utils/trunk/$pkgver/+download/cloud-utils-$pkgver.tar.gz"
+
+build() {
+	make
+}
+
+check() {
+	# the other tests require root permissions
+	PATH=$PATH:$builddir/bin TMPDIR="$srcdir" ./test/test-growpart-fsimage
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+ec2metadata() {
+	pkgdesc="Retrieve metadata on AWS EC2 (and compatible) VMs"
+	depends="python3"
+	amove usr/bin/ec2metadata
+}
+
+growpart() {
+	pkgdesc="Grow the size of disk partitions"
+	depends="blkid coreutils sfdisk util-linux"
+	amove usr/bin/growpart
+}
+
+sha512sums="4ca22def9564e101e228ca363d7f2da593f0644a09581bf862d4aeb4b320cc7c8af5a5e7af6283966ee1a8828715bb94725c0aab584b77e97f77a3ad593c2629  cloud-utils-0.31.tar.gz"

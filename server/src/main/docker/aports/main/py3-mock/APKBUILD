@@ -1,0 +1,34 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-mock
+_pkgname=mock
+pkgver=4.0.2
+pkgrel=0
+pkgdesc="Python3 Mocking and Patching Library for Testing"
+url="https://github.com/testing-cabal/mock"
+arch="noarch"
+license="BSD-2-Clause"
+depends="python3 py3-pbr py3-six"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/m/mock/mock-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+checkdepends="py3-pytest"
+
+replaces="py-mock" # Backwards compatibility
+provides="py-mock=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+check() {
+	# partial test suite as community/py3-pytest-asyncio and
+	# testing/py3-pytest-trio aren't available
+	python3 -m pytest
+}
+
+sha512sums="82bfef0ffa2888be48bc50a0fa2259685aa0f9ddab7ec0f6329806487765e2998e10fe59c1d0600a6bdc1f19b5603de9e380a6db40279cc61cf66081303be7cc  mock-4.0.2.tar.gz"

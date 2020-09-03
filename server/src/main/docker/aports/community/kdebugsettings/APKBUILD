@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdebugsettings
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/utilities/"
+pkgdesc="An application to enable/disable qCDebug"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kcoreaddons-dev kconfig-dev kdbusaddons-dev ki18n-dev kwidgetsaddons-dev kitemviews-dev kcompletion-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kdebugsettings-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="a0ac94b064c58ae92e88791747e7f8039428c7bb476c6ffdf8ab1ca61f0594c03e1be2edeb101f2ccc4084193afbaca1bd18c9264ea1e299a9aed47ee1153c54  kdebugsettings-20.08.0.tar.xz"

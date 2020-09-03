@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ksysguard
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="Track and control the processes running in your system"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://userbase.kde.org/KSysGuard"
+license="GPL-2.0-only"
+makedepends="extra-cmake-modules kconfig-dev kcoreaddons-dev kdbusaddons-dev kdoctools-dev ki18n-dev kiconthemes-dev kinit-dev kitemviews-dev kio-dev knewstuff-dev knotifications-dev kwindowsystem-dev libksysguard-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/ksysguard-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	# ksystemstatstest is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "ksystemstatstest"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="d7cd89865cb5194d496e30a69428ff1b04de66fe2ed1cb694fc267c1e915320205bcb4f9b37e3176a295de57faf8f3809f612477854b2a556b451ce8d03ee9e9  ksysguard-5.19.4.tar.xz"

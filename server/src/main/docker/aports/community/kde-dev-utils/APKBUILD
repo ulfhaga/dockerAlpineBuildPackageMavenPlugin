@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kde-dev-utils
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/development/"
+pkgdesc="Small utilities for developers using KDE/Qt libs/frameworks"
+license="(LGPL-2.0-only OR LGPL-3.0-only) AND GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qttools-dev qt5-qttools-static ki18n-dev kcoreaddons-dev kparts-dev kwidgetsaddons-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kde-dev-utils-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="029fba5a417c5099b54f22166543d6cd4df80f87dd34b309aabb2e8805ca28a4bcabdea7894f31e9b971465f6beea5ff0ed088bf2ddcfb7f0b72a99cd1d92bc8  kde-dev-utils-20.08.0.tar.xz"

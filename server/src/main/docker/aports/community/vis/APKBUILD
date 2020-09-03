@@ -1,0 +1,38 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Maintainer: Sören Tempel <soeren+alpine@soeren-tempel.net>
+pkgname=vis
+pkgver=0.6
+_testver=0.4
+pkgrel=0
+pkgdesc="Modern, legacy free, simple yet efficient vim-like editor"
+url="https://github.com/martanne/vis"
+arch="all"
+license="ISC"
+depends="!outils-vis lua5.3-lpeg"
+makedepends="libtermkey-dev ncurses-dev acl-dev lua5.3-dev"
+checkdepends="vim"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/martanne/vis/archive/v$pkgver.tar.gz
+	$pkgname-test-$pkgver.tar.gz::https://github.com/martanne/vis-test/archive/v$_testver.tar.gz
+	"
+_testdir="$srcdir"/$pkgname-test-$_testver
+
+build() {
+	./configure \
+		--prefix=/usr \
+		--enable-lua \
+		--enable-acl
+	make
+}
+
+check() {
+	cp -r "$_testdir"/* ./test/
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="3809b40f75816e03e47e0c2c16d2681cc1c01ad50a3d051285d5f1e9ff0a333160e668228a129a1596109aa079dc8364d3ad060b88e9dba33bb1d60a15eaf4e2  vis-0.6.tar.gz
+446eea2fdb7b15fd4962901e2076649964981217b9cf47112f16d1404da7cc024ba4b13164df0afa763363cef4f82db4ad9d7283a7554aead2165f29ca0bc9a5  vis-test-0.6.tar.gz"

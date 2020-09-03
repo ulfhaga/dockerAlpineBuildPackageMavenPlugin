@@ -1,0 +1,37 @@
+# Maintainer: Renoir Boulanger <hello@renoirboulanger.com>
+pkgname=php7-pecl-yaml
+_pkgreal=yaml
+pkgver=2.2.0b1
+pkgrel=0
+pkgdesc="YAML syntax bindings for PHP"
+url="https://pecl.php.net/package/yaml"
+arch="all"
+license="MIT"
+makedepends="php7-dev autoconf re2c yaml-dev"
+depends="php7-common"
+# Set source file explicitly, otherwise extracted archive directory breaks the build.
+source="$pkgname-$pkgver.tgz::https://pecl.php.net/get/$_pkgreal-$pkgver.tgz"
+builddir="$srcdir/$_pkgreal-$pkgver"
+provides="php7-yaml=$pkgver-r$pkgrel" # for backward compatibility
+replaces="php7-yaml" # for backward compatibility
+
+build() {
+	phpize7
+	./configure \
+		--prefix=/usr \
+		--with-php-config=php-config7
+	make
+}
+
+# Thanks to @TBK for https://github.com/php/pecl-file_formats-yaml/pull/29
+check() {
+	make NO_INTERACTION=1 REPORT_EXIT_STATUS=1 test
+}
+
+package() {
+	make INSTALL_ROOT="$pkgdir" install
+	install -d $pkgdir/etc/php7/conf.d
+	echo "extension=$_pkgreal.so" > $pkgdir/etc/php7/conf.d/70_$_pkgreal.ini
+}
+
+sha512sums="381e26264d681b415c96a20fdfb7a795cdfecce8fc2901f3e648077efc063ac4312303ed4e0326bfe3ab5657e87ae8a02ed972de183400ebded6ee22e121745f  php7-pecl-yaml-2.2.0b1.tgz"

@@ -1,0 +1,31 @@
+# Maintainer:
+pkgname=apache-mod-auth-gssapi
+pkgver=1.6.2
+pkgrel=0
+pkgdesc="GSSAPI Authentication module for Apache"
+url="https://github.com/modauthgssapi/mod_auth_gssapi"
+arch="all"
+license="MIT"
+depends="apache2"
+makedepends="apache2-dev bison flex krb5-dev"
+source="https://github.com/modauthgssapi/mod_auth_gssapi/releases/download/v$pkgver/mod_auth_gssapi-$pkgver.tar.gz"
+
+builddir="$srcdir"/mod_auth_gssapi-$pkgver
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr
+	make
+}
+
+package() {
+	mkdir -p "$pkgdir"/etc/apache2/conf.d \
+		"$pkgdir"/usr/lib/apache2
+	install -D -m755 ./src/.libs/*.so "$pkgdir"/usr/lib/apache2
+	echo "LoadModule auth_gssapi_module modules/mod_auth_gssapi.so" \
+		> "$pkgdir"/etc/apache2/conf.d/mod-auth-gssapi.conf
+}
+
+sha512sums="b06810788ff0d9f809e88b14184f013ac9871ae13665a9f131f864615d84ac4e26e881d2d584f746c4a3049fa09cfdbe42df22fce9cd962779ebf223b1b78e0a  mod_auth_gssapi-1.6.2.tar.gz"

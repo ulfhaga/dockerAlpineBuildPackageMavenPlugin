@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kldap
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="LDAP access API for KDE"
+arch="all !armhf"
+url="https://github.com/kde/kldap"
+license="LGPL-2.0-or-later"
+depends_dev="kio-dev ki18n-dev kdoctools-dev kcompletion-dev kwidgetsaddons-dev openldap-dev"
+makedepends="$depends_dev extra-cmake-modules cyrus-sasl-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kldap-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="c083e7c20324b5c302876a16ed63eea4223d258c86d59882f27ead5c5adb5365cf370a64afbab43c9720667b3cd2887f9820ff9f54ad9c508faa3f8fee6445bf  kldap-20.08.0.tar.xz"

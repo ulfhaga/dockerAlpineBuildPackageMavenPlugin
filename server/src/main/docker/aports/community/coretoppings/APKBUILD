@@ -1,0 +1,25 @@
+# Contributor: rahmanshaber <rahmanshaber@yahoo.com>
+# Maintainer: rahmanshaber <rahmanshaber@yahoo.com>
+pkgname=coretoppings
+pkgver=3.0.1
+pkgrel=0
+pkgdesc="An activity viewer from the CoreApps family."
+arch="all !armhf" # qt5-qtlocation
+url="https://gitlab.com/cubocore"
+license="GPL-3.0-or-later"
+depends="qt5-qtsvg"
+makedepends="qt5-qtbase-dev libcprime-dev qt5-qtx11extras-dev qt5-qtconnectivity-dev qt5-qtlocation-dev libcsys-dev libxcomposite-dev xcb-util-dev libxrender-dev xcb-util-wm-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/coretoppings/-/archive/v$pkgver/coretoppings-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check" # No test suite
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+}
+
+sha512sums="ec3a46c1f973483a03ec9499e8b6996b9ab10a81eca774e47bc11ea7dab0edf6682a188bd785aafd44f50d4c450333d7ea081dbc31fe98cff556441bdfb68511  coretoppings-3.0.1.tar.gz"

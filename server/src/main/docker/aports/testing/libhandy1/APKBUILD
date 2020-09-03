@@ -1,0 +1,45 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=libhandy1
+pkgver=0.90.0
+pkgrel=0
+pkgdesc="Library full of GTK+ widgets for mobile phones"
+url="https://gitlab.gnome.org/GNOME/libhandy"
+arch="all !s390x !mips !mips64" # Limited by 'ibus'
+license="LGPL-2.0-or-later"
+makedepends="meson glib-dev gtk+3.0-dev vala py3-setuptools gobject-introspection-dev
+	glade-dev"
+checkdepends="xvfb-run ibus adwaita-icon-theme"
+subpackages="$pkgname-dev $pkgname-lang"
+source="https://download.gnome.org/sources/libhandy/${pkgver%.*}/libhandy-$pkgver.tar.xz
+	"
+builddir="$srcdir/libhandy-$pkgver"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		-Dexamples=true \
+		. output
+	ninja -C output
+}
+
+check() {
+	xvfb-run ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+dev() {
+	default_dev
+
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/bin "$subpkgdir"/usr
+}
+
+sha512sums="43c651b2cbe6aaf6783adb59ed5c8025d60c80822947009ef9a41c08d677bfdbb644d0fb828bfb3d81351a46105cbe90e96070188241bd2201999664ca4fd263  libhandy-0.90.0.tar.xz"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-telethon
+pkgver=1.16.4
+pkgrel=0
+pkgdesc="Full-featured Telegram client library"
+url="https://docs.telethon.dev/"
+arch="noarch"
+license="MIT"
+depends="python3 py3-pyaes py3-rsa"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-pytest-asyncio"
+source="https://github.com/LonamiWebs/Telethon/archive/v$pkgver/Telethon-v$pkgver.tar.gz"
+builddir="$srcdir/Telethon-$pkgver"
+
+build() {
+	python3 setup.py sdist
+}
+
+check() {
+	pytest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	# Remove installed tests
+	local _site_packages=$(python3 -c "import site; print(site.getsitepackages()[0])")
+	rm -r "$pkgdir/$_site_packages"/tests/
+}
+
+sha512sums="54a4f087f3b38765ad47395a07ecab734ff23b9aad1340cda73054665babe06338113e8d5b5f4b8ef421b5cf9e5d802d92467617db43a66d081495ab994c2dec  Telethon-v1.16.4.tar.gz"

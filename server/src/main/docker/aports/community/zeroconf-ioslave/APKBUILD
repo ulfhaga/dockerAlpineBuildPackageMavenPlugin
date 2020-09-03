@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=zeroconf-ioslave
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://www.kde.org/applications/internet/"
+pkgdesc="Network Monitor for DNS-SD services (Zeroconf)"
+license="GPL-2.0-or-later AND LGPL-2.0-only AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev kdbusaddons-dev kdnssd-dev ki18n-dev kio-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/zeroconf-ioslave-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="a7bfea5a89fc9178450510b766b9d9532402dd1e56cbfe6e8e10c386fc354035df11ce938fe06a187119301944543acebbcf5dc2d434e68629d871950bdbe73f  zeroconf-ioslave-20.08.0.tar.xz"

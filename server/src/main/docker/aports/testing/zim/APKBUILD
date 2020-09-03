@@ -1,0 +1,27 @@
+# Contributor: Adam Nye <adam@spoontech.biz>
+# Maintainer: Adam Nye <adam@spoontech.biz>
+pkgname=zim
+pkgver=0.73.1
+pkgrel=0
+pkgdesc="Desktop wiki editor"
+options="!check" # Tests broken starting with 0.71.0
+url="http://zim-wiki.org"
+arch="all"
+license="GPL-2.0-or-later"
+depends="python3 py3-gobject3 py3-xdg xdg-utils gtk+3.0"
+makedepends="desktop-file-utils"
+subpackages="$pkgname-doc $pkgname-lang"
+source="https://zim-wiki.org/downloads/zim-$pkgver.tar.gz"
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	install -dm755 "$pkgdir"/usr/share/icons
+	cp -r xdg/hicolor "$pkgdir"/usr/share/icons
+}
+
+sha512sums="85d2da8618fc881012e6ceb409f20096b7039402321f66452c22713d2c1fa5c04d8bb775876383c6fe774bd7d549b20a0679e5e91dc932e03b83a1647cb5eb4a  zim-0.73.1.tar.gz"

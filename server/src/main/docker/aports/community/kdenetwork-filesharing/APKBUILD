@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdenetwork-filesharing
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://www.kde.org/applications/internet/"
+pkgdesc="Properties dialog plugin to share a directory with the local network"
+license="GPL-2.0-only OR GPL-3.0-only"
+depends="samba"
+makedepends="extra-cmake-modules qt5-qtbase-dev kcompletion-dev kcoreaddons-dev ki18n-dev kio-dev kwidgetsaddons-dev kdoctools-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kdenetwork-filesharing-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DSAMBA_INSTALL=OFF
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="f8248eeafc1095a5e51f808569c59bf93f0a8620d1b3f83e8dc67b1dac7b0e3ff6dcc08612990740e6e16779ae1a3012549adbf3168410b89d0b15a6553f0ea4  kdenetwork-filesharing-20.08.0.tar.xz"

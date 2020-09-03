@@ -1,0 +1,32 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=postgresql-orafce
+_pkgname=orafce
+pkgver=3.13.4
+_pkgver=VERSION_${pkgver//./_}
+pkgrel=1
+pkgdesc="Oracle's compatibility functions and packages for PostgreSQL"
+url="https://github.com/orafce/orafce"
+arch="all"
+license="0BSD"
+depends="postgresql"
+makedepends="bison flex postgresql-dev"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/orafce/$_pkgname/archive/$_pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$_pkgver"
+options="!check"  # XXX: installcheck requires running PostgreSQL
+
+build() {
+	make USE_PGXS=1 all
+}
+
+package() {
+	make USE_PGXS=1 DESTDIR="$pkgdir" install
+
+	cd "$pkgdir"
+	mv ./usr/share/doc/postgresql/extension \
+		./usr/share/doc/$pkgname
+	rmdir ./usr/share/doc/postgresql
+}
+
+sha512sums="2322fc270958f908cc868380539842f26a9126b875aec6bff4728de00202b764f7d2d5b1703ce2505461e5802d27fc8ce42ba9f30017ed000d1abcc7d1f1a637  postgresql-orafce-3.13.4.tar.gz"

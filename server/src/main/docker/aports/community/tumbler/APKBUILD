@@ -1,0 +1,37 @@
+# Contributor: Natanael Copa <ncopa@alpinelinux.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=tumbler
+pkgver=0.3.0
+pkgrel=0
+pkgdesc="D-Bus thumbnail service"
+url="http://git.xfce.org/xfce/tumbler"
+arch="all"
+license="GPL-2.0-or-later"
+makedepends="curl-dev dbus-glib-dev gtk+2.0-dev libjpeg-turbo-dev poppler-dev
+	autoconf automake libtool xfce4-dev-tools"
+subpackages="$pkgname-dev $pkgname-lang"
+source="$pkgname-$pkgver.tar.gz::https://github.com/xfce-mirror/tumbler/archive/tumbler-$pkgver.tar.gz"
+builddir="$srcdir/tumbler-tumbler-$pkgver"
+
+prepare() {
+	default_prepare
+	./autogen.sh
+}
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--localstatedir=/var
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="7b230c6b94bb7cb3ca497482f68960a83d63465593f20a24fc82e6565e2f3f84dbc400a6ad779cd0552e56a2f5d0ec2ac8c056ea5d6e2f9489509e7e1d819c35  tumbler-0.3.0.tar.gz"

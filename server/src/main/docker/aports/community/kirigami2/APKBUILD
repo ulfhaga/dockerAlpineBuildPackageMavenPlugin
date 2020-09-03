@@ -1,0 +1,33 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kirigami2
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="A QtQuick based components set"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.0-only"
+depends="qt5-qtgraphicaleffects qt5-qtquickcontrols2"
+depends_dev="qt5-qtbase-dev qt5-qtdeclarative-dev qt5-qtsvg-dev qt5-qtquickcontrols2-dev kcoreaddons-dev kconfig-dev kwindowsystem-dev"
+makedepends="$depends_dev extra-cmake-modules qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/kirigami2-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-libs $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DKDE_INSTALL_LIBDIR=lib \
+		-DBUILD_EXAMPLES=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="e9b7e2ecc7775d418dee172f75e926cd7f3bab0874bcc90f4d0bd9aaa8ddadaf82b592f2ed117085dbb635382ed2f97cc6fb2a4a4927be571565c4adb4fc1f25  kirigami2-5.73.0.tar.xz"

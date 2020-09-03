@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kalarmcal
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://kontact.kde.org/"
+pkgdesc="The KAlarm client library"
+license="LGPL-2.0-or-later"
+makedepends="extra-cmake-modules kconfig-dev ki18n-dev kholidays-dev akonadi-dev kcalendarcore-dev kidentitymanagement-dev kcalutils-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kalarmcal-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+options="!check" # Broken
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="ece1b8390b5ff9a9f2b1cfd8301f396f673eae8dec3c7aeaf23a06b3e8cf6b9853c85a1c473155678f07015015b0a1c52f494eb517d8d8e236535702bf967d5a  kalarmcal-20.08.0.tar.xz"

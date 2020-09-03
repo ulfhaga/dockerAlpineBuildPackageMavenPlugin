@@ -1,0 +1,44 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libcap-ng
+pkgver=0.7.11
+pkgrel=0
+pkgdesc="POSIX capabilities library"
+url="http://people.redhat.com/sgrubb/libcap-ng/index.html"
+arch="all"
+license="GPL-2.0-or-later LGPL-2.1-or-later"
+depends_dev="linux-headers"
+makedepends_host="$depends_dev"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-utils"
+source="https://people.redhat.com/sgrubb/libcap-ng/libcap-ng-$pkgver.tar.gz"
+
+build() {
+	ac_cv_prog_swig_found=no \
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--without-python \
+		--without-python3 \
+		--disable-static
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+utils() {
+	pkgdesc="posix capabilities utils"
+
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/* "$subpkgdir"/usr/bin/
+}
+
+sha512sums="150c4f48d7334966aa7af683e46bc3b8b4d4a2e80be826e6f6a61a0ea0666e2f4dafcd012c536fa321c4954c00059c689cc8d6dc089000ca1dca2fd52e3efe9c  libcap-ng-0.7.11.tar.gz"

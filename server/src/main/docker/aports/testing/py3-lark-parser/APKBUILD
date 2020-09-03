@@ -1,0 +1,28 @@
+# Contributor: Russ Webber <russ@rw.id.au>
+# Maintainer: Russ Webber <russ@rw.id.au>
+pkgname=py3-lark-parser
+pkgver=0.8.6
+pkgrel=0
+pkgdesc="A modern parsing library for Python, implementing Earley & LALR(1) and an easy interface "
+url="https://github.com/lark-parser/lark"
+arch="noarch"
+license="MIT"
+options="!check" # requires python dependency js2py
+depends="python3"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/l/lark-parser/lark-parser-$pkgver.tar.gz"
+builddir="$srcdir/lark-parser-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="7db2980a8e3e2c6d5c5b15f3caac629be91498694a6ff0779623be2ff8ff64bf8f57c2e75896c93aba157da2fc8be6ec2a132b9ace07cfbd954aea6537600942  lark-parser-0.8.6.tar.gz"

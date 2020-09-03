@@ -1,0 +1,27 @@
+# Maintainer: Will Sinatra <wpsinatra@gmail.com>
+# Contributor: Will Sinatra <wpsinatra@gmail.com>
+pkgname=cage
+pkgver=0.1.2.1
+pkgrel=1
+pkgdesc="A Wayland Kiosk"
+url="https://www.hjdskes.nl/projects/cage/"
+options="!check" # no test suite
+arch="all"
+license="MIT"
+depends="xorg-server-xwayland"
+makedepends="meson wlroots-dev wayland-protocols scdoc"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/Hjdskes/cage/archive/v$pkgver.tar.gz"
+
+build() {
+	abuild-meson \
+		-Dxwayland=true \
+		build
+	ninja -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C build install
+}
+
+sha512sums="ae332d747da7b59fd8b53b50ed3033959601db0eade435aff953a2789505eb0cbf4839cb41fe537457158327685c60e4367bfb664d2d524a270a22b1f8707d5e  cage-0.1.2.1.tar.gz"

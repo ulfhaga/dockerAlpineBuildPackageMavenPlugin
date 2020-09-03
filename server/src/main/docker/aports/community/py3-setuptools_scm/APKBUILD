@@ -1,0 +1,36 @@
+# Contributor: Dmitry Romanenko <dmitry@romanenko.in>
+# Maintainer: Dmitry Romanenko <dmitry@romanenko.in>
+pkgname=py3-setuptools_scm
+_pkgname=setuptools_scm
+pkgver=4.1.2
+pkgrel=0
+pkgdesc="The blessed package to manage your versions by scm tags"
+url="https://github.com/pypa/setuptools_scm"
+arch="noarch"
+license="MIT"
+depends="python3"
+makedepends="py3-setuptools py3-pip"
+checkdepends="py3-pytest git mercurial py3-toml"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir"/$_pkgname-$pkgver
+
+replaces="py-setuptools_scm" # Backwards compatibility
+provides="py-setuptools_scm=$pkgver-r$pkgrel" # Backwards compatibility
+
+case "$CARCH" in
+mips*)	options="!check" ;;
+esac
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PYTHONPATH=$PWD/src python3 -m pytest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="3d9d1e0479f00f6159b57f9e5b24e34df035d2009ec50d3779c77b1246aabc6d816f2a2d3e6651791316009e39dfcc8a1b84b779077c39501b9de5740abe6af6  setuptools_scm-4.1.2.tar.gz"

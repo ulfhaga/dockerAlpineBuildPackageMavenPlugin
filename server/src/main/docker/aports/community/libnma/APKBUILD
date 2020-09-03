@@ -1,0 +1,35 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=libnma
+pkgver=1.8.30
+pkgrel=0
+pkgdesc="NetworkManager GUI client library"
+url="https://wiki.gnome.org/Projects/NetworkManager/"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="mobile-broadband-provider-info"
+makedepends="iso-codes-dev networkmanager-dev glib-dev gtk+3.0-dev gcr-dev
+	gobject-introspection-dev vala gtk-doc"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc $pkgname-lang"
+source="https://download.gnome.org/sources/libnma/${pkgver%.*}/libnma-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="4d8f93d035fca4252e5c5dafc756ee6bc8f1d302aaeca77c5c0acb5d7f6cd4214224fb48e2706e69084c5a714aafa7837769be17d0642cc29eded9eb175a1107  libnma-1.8.30.tar.xz"

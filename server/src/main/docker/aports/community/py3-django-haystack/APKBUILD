@@ -1,0 +1,30 @@
+# Contributor: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+# Maintainer: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+pkgname=py3-django-haystack
+pkgver=3.0b2
+pkgrel=0
+pkgdesc="Modular search for Django"
+options="!check" # requires unpackaged pysolr and whoosh
+url="https://github.com/django-haystack/django-haystack"
+arch="noarch"
+license="BSD-3-Clause"
+depends="py3-django"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/d/django-haystack/django-haystack-$pkgver.tar.gz"
+
+builddir="$srcdir/django-haystack-$pkgver"
+
+replaces="py-django-haystack" # Backwards compatibility
+provides="py-django-haystack=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	cd "$builddir"
+	python3 setup.py build
+}
+
+package() {
+	cd "$builddir"
+	python3 setup.py install --root "$pkgdir"
+}
+
+sha512sums="18da1e18aa8fd460cc6b05c9b79d4df0cd0b28d9bd7bb8f7af86570cca00e65dc58e1cb50ff2c60efcaa44c52c8322c96ccff03c11d5db5128c8be0a232e6d59  django-haystack-3.0b2.tar.gz"

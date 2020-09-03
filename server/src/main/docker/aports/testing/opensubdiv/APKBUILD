@@ -1,0 +1,61 @@
+# Contributor: Mark Riedesel <mark@klowner.com>
+# Maintainer: Mark Riedesel <mark@klowner.com>
+pkgname=opensubdiv
+_pkgname=OpenSubdiv
+pkgver=3.4.3
+_pkgver=${pkgver//./_}
+pkgrel=0
+pkgdesc="An Open-Source subdivision surface library"
+url="http://graphics.pixar.com/opensubdiv"
+arch="all"
+license="Apache-2.0"
+makedepends="cmake glew-dev glfw-dev doxygen py3-docutils
+	libxcursor-dev libxrandr-dev"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-tutorials $pkgname-tools"
+source="$pkgname-$pkgver.tar.gz::https://github.com/PixarAnimationStudios/$_pkgname/archive/v$_pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$_pkgver"
+
+build() {
+	mkdir -p "$builddir"/build
+	cd "$builddir"/build
+
+	cmake .. \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_SKIP_RPATH=TRUE \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DNO_TBB=TRUE \
+		-DNO_PTEX=TRUE \
+		-DNO_MAYA=TRUE \
+		-DNO_CUDA=TRUE \
+		-DNO_OPENCL=TRUE
+	make
+}
+
+package() {
+	cd "$builddir"/build
+	make DESTDIR="$pkgdir" install
+}
+
+tutorials() {
+	pkgdesc="$pkgdesc (tutorials)"
+	depends="$pkgname"
+
+	cd "$pkgdir"
+
+	mkdir -p "$subpkgdir"/usr/bin/
+	local tut; for tut in ./usr/bin/tutorials/*; do
+		mv $tut "$subpkgdir"/usr/bin/opensubdiv_${tut##*/}
+	done
+	rmdir ./usr/bin/tutorials
+}
+
+tools() {
+	pkgdesc="$pkgdesc (tools)"
+
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/bin "$subpkgdir"/usr/
+}
+
+sha512sums="44fd1361d9e7f48c3fa84f3420ed34743571220602aefb082a42f769ca5b8e9ac21907ce8714f6e3a2caadd75adae03c535a1949a8e6450dfea9ae7a2247cfc2  opensubdiv-3.4.3.tar.gz"

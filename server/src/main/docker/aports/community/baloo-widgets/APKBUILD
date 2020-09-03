@@ -1,0 +1,43 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=baloo-widgets
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="Widgets for Baloo"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://community.kde.org/Baloo"
+license="LGPL-2.0-only AND LGPL-2.1-or-later"
+depends_dev="qt5-qtbase-dev kconfig-dev kio-dev ki18n-dev kfilemetadata-dev baloo-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/release-service/$pkgver/src/baloo-widgets-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	# filemetadatadatedisplaytest, filemetadatawidgettest and filemetadataitemcounttest
+	# require running dbus server
+	local skipped_tests="("
+	local tests="
+		filemetadatadatedisplay
+		filemetadatawidget
+		filemetadataitemcount"
+	for test in $tests; do
+		skipped_tests="$skipped_tests|$test"
+	done
+	skipped_tests="$skipped_tests)|test"
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "$skipped_tests"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="1b8e0a72f6a69e4fc223d390d09d7837b84c918bcac6403afcb8cde1d948f4976f181312682e57fcb3eaf619938aa2f392dbd2ab5226e177d009c5223c14586a  baloo-widgets-20.08.0.tar.xz"

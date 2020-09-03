@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kdesdk-kioslaves
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/development"
+pkgdesc="KIO-Slaves"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev ki18n-dev kio-dev perl-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kdesdk-kioslaves-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="d177d4de58a7fd6e4fadf9880e3a99bef64bd4f7cfd966bba0360da37f35cfc2626caf7529b0bf36febbd6f7d9e1b0fa47cd0c8c8a4df583c9d61df6d0778b8f  kdesdk-kioslaves-20.08.0.tar.xz"

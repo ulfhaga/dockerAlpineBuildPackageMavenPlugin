@@ -1,0 +1,86 @@
+# Contributor: V.Krishn <vkrishn4@gmail.com>
+# Contributor: Eivind Uggedal <eu@eju.no>
+# Maintainer: TBK <alpine@jjtc.eu>
+pkgname=redis
+pkgver=6.0.5
+pkgrel=0
+pkgdesc="Advanced key-value store"
+url="https://redis.io/"
+arch="all"
+license="BSD-3-Clause"
+pkgusers="redis"
+pkggroups="redis"
+makedepends="linux-headers"
+checkdepends="tcl procps"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-openrc"
+source="http://download.redis.io/releases/redis-$pkgver.tar.gz
+	makefile-dont-duplicate-binary.patch
+	redis.conf.patch
+	sentinel.conf.patch
+	$pkgname.initd
+	$pkgname.confd
+	$pkgname-sentinel.initd
+	$pkgname.logrotate
+	"
+
+# secfixes:
+#   5.0.8-r0:
+#     - CVE-2015-8080
+#   5.0.4-r0:
+#     - CVE-2019-10192
+#     - CVE-2019-10193
+
+prepare() {
+	default_prepare
+	# Disable broken tests:
+	# integration/logging.tcl is not working because musl does not provide BACKTRACE like glibc
+	# https://github.com/antirez/redis/blob/5.0.4/src/config.h#L64-L67
+	sed -i -e '/integration\/logging/d' \
+		tests/test_helper.tcl
+}
+
+build() {
+	case "$CARCH" in
+		mips|mipsel*) _libatomic="-latomic";;
+	esac
+
+	make PREFIX=/usr \
+		INSTALL_BIN="$pkgdir"/usr/bin \
+		MALLOC=libc \
+		FINAL_LIBS="-lm -ldl -pthread $_libatomic" \
+		all
+}
+
+check() {
+	make test
+}
+
+package() {
+	make install PREFIX=/usr INSTALL_BIN="$pkgdir/usr/bin"
+
+	cd "$pkgdir"
+
+	install -D -m 644 "$builddir"/redis.conf etc/redis.conf
+
+	# This file must be writable for redis, otherwise Sentinel fails to start.
+	install -D -m 644 -o redis -g redis "$builddir"/sentinel.conf etc/sentinel.conf
+
+	install -D -m 755 "$srcdir"/redis.initd etc/init.d/redis
+	install -D -m 755 "$srcdir"/redis-sentinel.initd etc/init.d/redis-sentinel
+	install -D -m 644 "$srcdir"/redis.confd etc/conf.d/redis
+	install -D -m 644 "$srcdir"/redis.logrotate etc/logrotate.d/redis
+
+	install -d -o redis -g redis \
+		var/lib/redis \
+		var/log/redis
+}
+
+sha512sums="62ce42bb5ac9443e0736f5dfeffa7609542cef5b3c6c7d689ad8427cf788f3daf321531fdaa0329942e746e2eee47461be9d8771b89ae25adcc5badc225ebf26  redis-6.0.5.tar.gz
+0a7c165307a01ee89935b160fd38628d9982fc5061fae9a51d80a4932437d9504a53af74be15d0505d0d496d24bbdb6cb45dcf2cf50bddb2d4e34f5cf0fd52c2  makefile-dont-duplicate-binary.patch
+72fcc8d828efe30889c48e9c336e2cdf47c2efd73e7d44eb4bf17972e9f3a1dcea1a01a072eedb0e3c08ad77d3f1ac45249e0f82f4a5f60586a7ede0c840d2f5  redis.conf.patch
+a5dc411c2bd7edf61400e29accb375275dd888fda72a8f7e3889be475010c695a22f536be818ef9441e47285c00b451966db924362a7f56806586078c9e3ff8c  sentinel.conf.patch
+f6dcdad1edd6b5fb6aa28ba774bfc8aba035f316695da261fb2ad291b76f00f177479f9d74434d06c26bd15f131edc9a2f55c9880758cf0987800d2031069738  redis.initd
+6752e99df632b14d62a3266929e80c3d667be5c270e4f34e0dcf2b7f9b1754fe0ce9d4569fa413dbbe207e406ff2848a64e0c47629997536ae1d14ca84ebd56b  redis.confd
+e7a60a090df53eef05d58d73709f07536135a93efb34e48ad933e3859d3d1c0f476975a3232df18f57476bf7fc3b0548471e1c86445878457ac8507b3da71384  redis-sentinel.initd
+bf2def2077a989047e9bfff8a7f754bcdf96e020fd4a470f8967ee1fca601e11f044cfb3742f00e932cc013e0d0b199045d78c8878a0e529715c9f77786d353f  redis.logrotate"

@@ -1,0 +1,36 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=eog
+pkgver=3.36.3
+pkgrel=0
+pkgdesc="An image viewer for GNOME"
+url="https://wiki.gnome.org/Apps/EyeOfGnome"
+arch="all !s390x !mips !mips64" # librsvg
+license="GPL-2.0-or-later"
+depends="gsettings-desktop-schemas"
+depends_dev="gvfs-dev libxml2-dev jpeg-dev libexif-dev lcms2-dev
+	libpeas-dev librsvg-dev gnome-desktop-dev exempi-dev"
+makedepends="$depends_dev itstool libxml2-utils meson"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+source="https://download.gnome.org/sources/eog/${pkgver%.*}/eog-$pkgver.tar.xz"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--buildtype=plain \
+		--sysconfdir=/etc \
+		--libdir=/usr/lib \
+		--localstatedir=/var \
+		output .
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="90205561dbc49aa42e60f636ce23d04dcd05513d28176ffa4c1dd6602889c4b2c920bd299086d3d7bfee72fcc6a029e2d34e14eb80ba5f91573161fbd1b85aea  eog-3.36.3.tar.xz"

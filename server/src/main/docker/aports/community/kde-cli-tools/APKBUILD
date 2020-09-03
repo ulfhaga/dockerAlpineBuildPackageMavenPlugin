@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kde-cli-tools
+pkgver=5.19.4
+pkgrel=1
+pkgdesc="Tools based on KDE Frameworks 5 to better interact with the system"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://cgit.kde.org/kde-cli-tools"
+license="(GPL-2.0-only OR GPL-3.0-only) AND GPL-2.0-or-later AND GPL-2.0-only AND LGPL-2.1-only"
+makedepends="extra-cmake-modules kdoctools-dev qt5-qtbase-dev qt5-qtsvg-dev qt5-qtx11extras-dev kconfig-dev kiconthemes-dev kinit-dev ki18n-dev kcmutils-dev kio-dev kservice-dev kwindowsystem-dev kactivities-dev kdeclarative-dev kdesu-dev plasma-workspace-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/plasma/$pkgver/kde-cli-tools-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # Broken
+
+# Workaround a circular dependency https://gitlab.alpinelinux.org/alpine/aports/-/issues/11785
+install_if="plasma-workspace"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="7835867608cac5528b45de334f1180805939692da6362e10ad52c2ede44a1c309913f14751460f74ba2a136688564ea15a41576ec6c1e8c071200d1a260f1015  kde-cli-tools-5.19.4.tar.xz"

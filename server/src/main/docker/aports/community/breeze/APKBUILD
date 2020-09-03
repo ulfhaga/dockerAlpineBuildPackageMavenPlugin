@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=breeze
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="Artwork, styles and assets for the Breeze visual style for the Plasma Desktop"
+arch="all !armhf" # disable on armhf due to missing qt5-qtdeclarative
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+depends_dev="kdecoration-dev kpackage-dev ki18n-dev kguiaddons-dev kconfigwidgets-dev kwindowsystem-dev kiconthemes-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/plasma/$pkgver/breeze-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="0484d380eace08cf2e40d1333d0769e561ba6ddab6afe03b6a26061d74b0d2dcb53fe86530bdf6ae69678915bb4d43ed1b673f9bf1cf90b97896ce64b761c045  breeze-5.19.4.tar.xz"

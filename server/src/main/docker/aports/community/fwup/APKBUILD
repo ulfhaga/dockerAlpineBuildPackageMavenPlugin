@@ -1,0 +1,33 @@
+# Contributor: Frank Hunleth <fhunleth@troodon-software.com>
+# Maintainer: Frank Hunleth <fhunleth@troodon-software.com>
+pkgname=fwup
+pkgver=1.8.1
+pkgrel=0
+pkgdesc="Configurable embedded Linux firmware update creator and runner"
+url="https://github.com/fhunleth/fwup"
+arch="all"
+license="Apache-2.0"
+makedepends="linux-headers confuse-dev libarchive-dev help2man dosfstools mtools zip unzip xdelta3"
+subpackages="$pkgname-doc $pkgname-bash-completion"
+source="$pkgname-$pkgver.tar.gz::https://github.com/fhunleth/fwup/releases/download/v$pkgver/fwup-$pkgver.tar.gz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="6901c38fde99dbdb3c756c36e49e640eb78ab9e3df19c05b1980f0147721152f12c5046243e65476a83d9ac7932a5abc09e4e80838695769a7b4e696df1321f3  fwup-1.8.1.tar.gz"

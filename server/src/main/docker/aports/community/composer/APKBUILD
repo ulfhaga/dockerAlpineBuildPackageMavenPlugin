@@ -1,0 +1,22 @@
+# Contributor: Nathan Johnson <nathan@nathanjohnson.info>
+# Maintainer: Dave Hall <skwashd@gmail.com>
+pkgname=composer
+pkgver=1.10.10
+pkgrel=0
+pkgdesc="Dependency manager for PHP"
+url="https://getcomposer.org/"
+arch="noarch"
+license="MIT"
+depends="php7 php7-phar php7-json php7-openssl php7-mbstring php7-iconv"
+source="$pkgname-$pkgver.phar::https://getcomposer.org/download/$pkgver/composer.phar"
+
+check() {
+	cd "$srcdir"
+	php7 $pkgname-$pkgver.phar -Vn
+}
+
+package() {
+	install -m 0755 -D "$srcdir"/$pkgname-$pkgver.phar "$pkgdir"/usr/bin/$pkgname
+}
+
+sha512sums="d9a2478382d7ed4502593860c958c44327928c989bbf7be363e916d9fcc2e9ad95e041e7845331f096017c1e88f184bbaa9a635c670ca5cbb075736bf297b640  composer-1.10.10.phar"

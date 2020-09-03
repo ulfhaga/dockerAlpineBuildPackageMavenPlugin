@@ -1,0 +1,31 @@
+# Contributor: Matt Dainty <matt+alpine@bodgit-n-scarper.com>
+# Contributor: TBK <alpine@jjtc.eu>
+# Maintainer: Dermot Bradley <dermot_bradley@yahoo.com>
+pkgname=py3-jsonpatch
+_pkgname=jsonpatch
+pkgver=1.26
+pkgrel=1
+pkgdesc="Apply JSON-Patches (RFC 6902)"
+url="https://github.com/stefankoegl/python-json-patch"
+arch="noarch"
+license="BSD-3-Clause"
+depends="py3-jsonpointer"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+builddir="$srcdir"/$_pkgname-$pkgver
+
+replaces="py-jsonpatch" # Backwards compatibility
+provides="py-jsonpatch=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+sha512sums="4ec622d25a53859111670453cd1461bc28d025cd768a06ebb39e4109508306cbf1838ce9343be9552a320fed71242103ceef7d6c4552d0df8fa15c48ab6b2e69  jsonpatch-1.26.tar.gz"

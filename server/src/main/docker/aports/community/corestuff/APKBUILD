@@ -1,0 +1,25 @@
+# Contributor: rahmanshaber <rahmanshaber@yahoo.com>
+# Maintainer: rahmanshaber <rahmanshaber@yahoo.com>
+pkgname=corestuff
+pkgver=3.0.1
+pkgrel=0
+pkgdesc="An activity viewer from the CoreApps family."
+arch="all !armhf" # kglobalaccel-dev
+url="https://gitlab.com/cubocore"
+license="GPL-3.0-or-later"
+depends="qt5-qtsvg"
+makedepends="qt5-qtbase-dev libcprime-dev libcsys-dev qt5-qtx11extras-dev
+	libxcomposite-dev kglobalaccel-dev libxi-dev xcb-util-wm-dev xcb-util-dev"
+source="$pkgname-$pkgver.tar.gz::https://gitlab.com/cubocore/corestuff/-/archive/v$pkgver/corestuff-v$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-v$pkgver"
+options="!check"
+
+build() {
+	qmake-qt5
+	make
+}
+
+package() {
+	INSTALL_ROOT="$pkgdir" make install
+}
+sha512sums="7809074076f4013c4f7e54f4ecd21d199bd39c7d8b7280fb22d46f4cacf3eba457735c2f5961ef5f7272022def0d6b41dbcb37768eafecc8178c7d3e843be036  corestuff-3.0.1.tar.gz"

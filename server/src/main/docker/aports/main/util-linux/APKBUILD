@@ -1,0 +1,146 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=util-linux
+pkgver=2.36
+
+case $pkgver in
+	*.*.*) _v=${pkgver%.*};;
+	*.*) _v=$pkgver;;
+esac
+
+pkgrel=0
+pkgdesc="Random collection of Linux utilities"
+url="https://git.kernel.org/cgit/utils/util-linux/util-linux.git"
+arch="all"
+license="GPL-3.0-or-later AND GPL-2.0-or-later AND GPL-2.0-only AND
+	LGPL-2.1-or-later AND BSD-3-Clause AND BSD-4-Clause-UC AND Public-Domain"
+depends="blkid setpriv findmnt mcookie hexdump lsblk sfdisk cfdisk"
+makedepends_build="autoconf automake libtool"
+makedepends_host="zlib-dev ncurses-dev linux-headers libcap-ng-dev libeconf-dev"
+options="suid"
+source="https://www.kernel.org/pub/linux/utils/util-linux/v$_v/util-linux-$pkgver.tar.xz
+	ttydefaults.h
+	"
+subpackages="$pkgname-doc $pkgname-dev $pkgname-bash-completion:bashcomp:noarch
+	libblkid:_mv_lib
+	libfdisk:_mv_lib
+	libmount:_mv_lib
+	libsmartcols:_mv_lib
+	libuuid:_mv_lib
+
+	lsblk:_mv_bin
+	blkid:_mv_bin
+	cfdisk:_mv_bin
+	findmnt:_mv_bin
+	hexdump:_mv_bin
+	mcookie:_mv_bin
+	setpriv:_mv_bin
+	sfdisk:_mv_bin
+	"
+if [ -z "$BOOTSTRAP" ]; then
+	makedepends_host="$makedepends_host linux-pam-dev python3-dev"
+	subpackages="$subpackages py3-libmount:_py3 runuser:_mv_bin"
+	_bootstrap_config="--enable-runuser"
+else
+	_bootstrap_config="--without-python"
+fi
+makedepends="$makedepends_build $makedepends_host"
+
+prepare() {
+	default_prepare
+
+	cp "$srcdir"/ttydefaults.h include/
+	libtoolize --force && aclocal -I m4 && autoconf \
+		&& automake --add-missing
+}
+
+build() {
+	# login utils are provided by shadow (with PAM) or busybox (no PAM) --nenolod
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--with-sysroot=$CBUILDROOT \
+		--prefix=/usr \
+		--disable-chfn-chsh \
+		--enable-raw \
+		--disable-uuidd \
+		--disable-nls \
+		--disable-tls \
+		--disable-kill \
+		--disable-login \
+		--disable-last \
+		--disable-sulogin \
+		--disable-su \
+		--with-python=3 \
+		--with-econf \
+		--with-vendordir=/usr/lib \
+		$_bootstrap_config
+	make
+}
+
+package() {
+	make -j1 DESTDIR="$pkgdir" -C "$builddir" install
+	# use pkg-config
+}
+
+_mv_bin() {
+	local _bin=$subpkgname
+	pkgdesc="$_bin from util-linux"
+	depends=
+	case "$_bin" in
+		blkid) pkgdesc="Block device identification tool from util-linux";;
+		sfdisk) pkgdesc="Partition table manipulator from util-linux";;
+		cfdisk) pkgdesc="Curses based partition table manipulator from util-linux";;
+		setpriv) pkgdesc="Run a program with different Linux privilege settings";;
+		runuser) pkgdesc="Run a program with substitute user and group ID";;
+		*);;
+	esac
+	local _path; for _path in usr/bin usr/sbin bin sbin; do
+		if [ -e "$pkgdir"/$_path/$_bin ]; then
+			mkdir -p "$subpkgdir"/$_path
+			mv "$pkgdir"/$_path/$_bin "$subpkgdir"/$_path/
+			return 0
+		fi
+	done
+	return 1
+}
+
+_mv_lib() {
+	local _lib="$subpkgname"
+	depends=
+	case "$_lib" in
+		libuuid) pkgdesc="DCE compatible Universally Unique Identifier library";;
+		libblkid) pkgdesc="Block device identification library from util-linux";;
+		libmount) pkgdesc="Block device identification library from util-linux";;
+		libsmartcols) pkgdesc="Formatting library for ls-like programs.";;
+		libfdisk) pkgdesc="Partitioning library for fdisk-like programs";;
+	esac
+	mkdir -p "$subpkgdir"/lib
+	mv "$pkgdir"/lib/$_lib.so.* "$subpkgdir"/lib/
+}
+
+dev() {
+	depends_dev="$depends_dev util-linux=$pkgver-r$pkgrel"
+	default_dev
+}
+
+bashcomp() {
+	pkgdesc="Bash completions for $pkgname"
+	depends=""
+	install_if="$pkgname=$pkgver-r$pkgrel bash-completion"
+
+	mkdir -p "$subpkgdir"/usr/share/
+	mv "$pkgdir"/usr/share/bash-completion \
+		"$subpkgdir"/usr/share/
+}
+
+_py3() {
+	pkgdesc="python3 bindings to libmount"
+	depends=
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/python* "$subpkgdir"/usr/lib/
+}
+
+sha512sums="cbb4975da8d99a1edd45514171d59ea7b019ce0f77a81e88b447a733f725e91c53540d9dc78bc626dc011dca129b8b150aaf9e64ccf62a4202ae816581acf4fd  util-linux-2.36.tar.xz
+876bb9041eca1b2cca1e9aac898f282db576f7860aba690a95c0ac629d7c5b2cdeccba504dda87ff55c2a10b67165985ce16ca41a0694a267507e1e0cafd46d9  ttydefaults.h"

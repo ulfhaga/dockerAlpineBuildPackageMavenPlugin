@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=akonadi-mime
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="Libraries and daemons to implement basic email handling"
+arch="all !armhf"
+url="https://community.kde.org/KDE_PIM"
+license="LGPL-2.0-or-later"
+depends_dev="qt5-qtbase-dev kcodecs-dev kconfigwidgets-dev kdbusaddons-dev kio-dev ki18n-dev kxmlgui-dev kmime-dev kitemmodels-dev akonadi-dev shared-mime-info libxslt-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/release-service/$pkgver/src/akonadi-mime-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	# mailserializerplugintest is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "mailserializerplugintest"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="7d2348f512ee24aebec07402dabd4472fca1d67278889dab43c8c507fb69506c0b37fbeefc1c1bd958565e52be2a9d33a97e809843d370e96235b33602e17c5b  akonadi-mime-20.08.0.tar.xz"

@@ -1,0 +1,59 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=exiv2
+pkgver=0.27.3
+pkgrel=0
+pkgdesc="Exif and Iptc metadata manipulation library and tools."
+url="https://exiv2.org"
+arch="all"
+options="!check"  # No test suite.
+license="GPL-2.0-or-later"
+depends_dev="expat-dev zlib-dev"
+makedepends="$depends_dev cmake"
+subpackages="$pkgname-dev $pkgname-doc"
+source="https://exiv2.org/builds/exiv2-$pkgver-Source.tar.gz"
+builddir="$srcdir"/$pkgname-$pkgver-Source
+
+prepare() {
+	default_prepare
+
+	# -fcf-protection=full is only usable on x86_64 and x86 since those
+	# are the arches where Intel's CET Control-Flow Enforcement Technology
+	# is available
+	case "$CARCH" in
+		x86_64|x86) ;;
+		*) sed -i 's| -fcf-protection||g' cmake/compilerFlags.cmake ;;
+	esac
+}
+
+# secfixes:
+#   0.27.2-r6:
+#     - CVE-2019-20421
+#   0.27.2-r2:
+#     - CVE-2019-17402
+#   0.27.2-r0:
+#     - CVE-2019-13108
+#     - CVE-2019-13109
+#     - CVE-2019-13110
+#     - CVE-2019-13111
+#     - CVE-2019-13112
+#     - CVE-2019-13113
+#     - CVE-2019-13114
+
+build() {
+	cmake -B build . \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DEXIV2_BUILD_SAMPLES=OFF
+	make -C build
+}
+
+check() {
+	make -C build test
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+sha512sums="3f5758ee862b811eeb89cc75fc2bbd8bf10329efa2ce1e68555cdc7729faa6cfd1603e0cc859fbdbe6d8fd5e53bd9b9e6d869d8a20ed17497bf87ce78c005de9  exiv2-0.27.3-Source.tar.gz"

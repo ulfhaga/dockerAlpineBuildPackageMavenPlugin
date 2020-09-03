@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libkexiv2
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="A library to manipulate pictures metadata"
+url="https://www.kde.org/applications/graphics"
+arch="all !armhf" # extra-cmake-modules
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev exiv2-dev"
+subpackages="$pkgname-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/libkexiv2-$pkgver.tar.xz"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="6cd561be8543e47d69dbff8d14674387627ee24943a40af672fa4a74568c80c3fb5198315ea4e69bfc419274da944037809777c9aef0cac0f2720e1055c02b01  libkexiv2-20.08.0.tar.xz"

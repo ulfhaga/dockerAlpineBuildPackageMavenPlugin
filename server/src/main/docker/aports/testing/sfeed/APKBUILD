@@ -1,0 +1,21 @@
+# Maintainer: Miles Alan <m@milesalan.com>
+pkgname=sfeed
+pkgver=0.9.18
+pkgrel=0
+pkgdesc="RSS and Atom feed fetcher"
+url="https://www.codemadness.org/sfeed.html"
+arch="all"
+license="ISC"
+options="!check" # No tests exist
+subpackages="$pkgname-doc"
+source="https://codemadness.org/releases/sfeed/sfeed-$pkgver.tar.gz"
+
+build() {
+	make
+}
+
+package() {
+	make MANPREFIX=/usr/share/man PREFIX=/usr DESTDIR="$pkgdir" install
+}
+
+sha512sums="993b588d93c5db0867497e32518d30dc4a309ef69ef9ddeeb4127924399380d6e6c9d7e45ebd56a57f6020a6f71a6782a563759c5bd00e22dea00e3ecb180762  sfeed-0.9.18.tar.gz"

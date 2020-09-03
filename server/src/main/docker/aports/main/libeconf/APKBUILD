@@ -1,0 +1,27 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Leo <thinkabit.ukim@gmail.com>
+pkgname=libeconf
+pkgver=0.3.8
+pkgrel=0
+pkgdesc="Enhanced Config File Parser"
+url="https://github.com/openSUSE/libeconf"
+arch="all"
+license="MIT"
+makedepends="meson"
+subpackages="$pkgname-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/openSUSE/libeconf/archive/v$pkgver.tar.gz"
+
+build() {
+	abuild-meson . output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="78b2a27748c1dfa9d4a73e99112e2632142136f7d1f842a9a18b1afd26e4238731415c5a103925a8d03941a5cc041288aa5893d5bc86144a1500dad95c362c34  libeconf-0.3.8.tar.gz"

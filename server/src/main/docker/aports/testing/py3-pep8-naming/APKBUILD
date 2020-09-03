@@ -1,0 +1,35 @@
+# Contributor: Fabian Affolter <fabian@affolter-engineering.ch>
+# Maintainer: Fabian Affolter <fabian@affolter-engineering.ch>
+pkgname=py3-pep8-naming
+pkgver=0.11.1
+pkgrel=0
+pkgdesc="Check PEP-8 naming conventions plugin for flake8"
+url="https://github.com/flintwork/pep8-naming"
+arch="noarch"
+license="MIT"
+depends="python3 py3-flake8"
+makedepends="py3-setuptools"
+checkdepends="
+	py3-six
+	py3-tox
+	py3-virtualenv
+	"
+source="https://files.pythonhosted.org/packages/source/p/pep8-naming/pep8-naming-$pkgver.tar.gz"
+builddir="$srcdir/pep8-naming-$pkgver"
+
+replaces="py-pep8-naming" # Backwards compatibility
+provides="py-pep8-naming=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="daebe1077a5ff83b3266cbef87833959d49fd2d3bf196450cef2b8423c094c7cbf4ec8096823d8c48d522978097873b928e25ed4e6e86104f7b97ab5577e3b20  pep8-naming-0.11.1.tar.gz"

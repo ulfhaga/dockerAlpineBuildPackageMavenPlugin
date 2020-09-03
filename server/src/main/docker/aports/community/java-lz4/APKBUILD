@@ -1,0 +1,43 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=java-lz4
+_pkgname=lz4-java
+pkgver=1.7.1
+pkgrel=0
+pkgdesc="LZ4 compression for Java"
+url="https://github.com/jpountz/lz4-java"
+arch="all !mips !mips64"
+license="Apache-2.0"
+depends="openjdk8-jre-base $pkgname-native lz4-dev xxhash-dev"
+makedepends="apache-ant openjdk8"
+subpackages="$pkgname-native"
+source="$_pkgname-$pkgver.tar.gz::https://github.com/jpountz/$_pkgname/archive/$pkgver.tar.gz
+	0001-ivy-location.patch
+	0002-dont-bundle-natives.patch
+	"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build() {
+	mkdir -p src/lz4/lib
+	ant ivy-bootstrap
+	ant jar -lib .ant -Divy.default.ivy.user.dir=/tmp/ivy2
+}
+
+package() {
+	install -m644 -D "$builddir"/dist/lz4-java.jar \
+		"$pkgdir"/usr/share/java/lz4-$pkgver.jar
+	ln -sf lz4-$pkgver.jar "$pkgdir"/usr/share/java/lz4.jar
+}
+
+native() {
+	depends=""
+	local soname="liblz4-java.so"
+
+	install -m755 -D "$builddir"/build/jni/*/*/*/*/*/$soname \
+		"$subpkgdir"/usr/lib/$soname.$pkgver
+	ln -sf $soname.$pkgver "$subpkgdir"/usr/lib/$soname
+}
+
+sha512sums="13fd89a9564f1f504348ce30a51ca22d5581a6661658d55c96f3f0c1e43126de04d2df87683251a8ec5bf53726f529b60bb1ec666863b7e33810df8ed73bb586  lz4-java-1.7.1.tar.gz
+bd80cac3454db4cd95fab162d0031d4866cc7a9f9822f1231d5f9c766aa550398b9e27fad48c8150c0c8a538673ca3ad7de95edff9bd790d3351ba318ea44c49  0001-ivy-location.patch
+9d435cd35af15988d8844b38d7d00ad423062680323e9d5d395f431e736668ee10148bc3a0147a430cea522983a4ca54e57557d7330c42347bd71c2c9a06d622  0002-dont-bundle-natives.patch"

@@ -1,0 +1,212 @@
+# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+# Contributor: Mateusz Mikuła <matti@marinelayer.io>
+# Contributor: Tiago Ilieve <tiago.myhro@gmail.com>
+# Contributor: Dave <dj.2dixx@gmail.com>
+# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+pkgname=kubernetes
+pkgver=1.19.0
+pkgrel=0
+pkgdesc="Container Cluster Manager"
+url="https://kubernetes.io/"
+arch="x86_64 aarch64 ppc64le"
+license="Apache-2.0"
+options="!check chmod-clean" # Tests hang
+depends="bash"
+
+_kube_proxy_deps="iptables"
+_kubelet_deps="cni-plugins"
+_kubeadm_deps="iproute2 socat ethtool conntrack-tools cri-tools"
+makedepends="coreutils findutils go go-bindata linux-headers rsync grep
+	$_kube_proxy_deps
+	$_kubelet_deps
+	$_kubeadm_deps
+	"
+subpackages="
+	kubeadm:_kubeadm
+	kubectl:_kubectl
+	kubelet:_kubelet
+	kubelet-openrc:_kubelet_openrc
+	kube-apiserver:_apiserver
+	kube-apiserver-openrc:_apiserver_openrc
+	kube-controller-manager:_controllermanager
+	kube-controller-manager-openrc:_controllermanager_openrc
+	kube-proxy:_proxy
+	kube-proxy-openrc:_proxy_openrc
+	kube-scheduler:_scheduler
+	kube-scheduler-openrc:_scheduler_openrc
+	kubeadm-bash-completion:_kubeadm_bash:noarch
+	kubectl-bash-completion:_kubectl_bash:noarch
+"
+
+source="$pkgname-$pkgver.tar.gz::https://github.com/kubernetes/kubernetes/archive/v$pkgver.tar.gz
+	ensure-cgo-usage.patch
+	make-e2e_node-run-over-distro-bins.patch
+	make-test-cmd-run-over-hyperkube-based-kubectl.patch
+
+	kube-apiserver.initd
+	kube-apiserver.confd
+	kube-apiserver.logrotated
+
+	kube-controller-manager.initd
+	kube-controller-manager.confd
+	kube-controller-manager.logrotated
+
+	kube-proxy.initd
+	kube-proxy.confd
+	kube-proxy.logrotated
+
+	kube-scheduler.initd
+	kube-scheduler.confd
+	kube-scheduler.logrotated
+
+	kubelet.initd
+	kubelet.confd
+	kubelet.logrotated"
+
+_agent="kubelet"
+_cli="kubeadm kubectl"
+_services="kube-apiserver kube-controller-manager kube-proxy kube-scheduler"
+
+build() {
+	for _pkgs in $_agent $_cli $_services ; do
+		make GOFLAGS=-v WHAT=cmd/$_pkgs
+	done
+}
+
+package() {
+	for bin in $_agent $_cli $_services; do
+		install -Dm755 _output/local/bin/linux/*/$bin "$pkgdir"/usr/bin/$bin
+	done
+	mkdir -p "$pkgdir"/etc/kubernetes
+}
+
+
+_do_subpkg() {
+	local _pkg=$1
+	pkgdesc="Kubernetes - $_pkg"
+	case "$_pkg" in
+		kubelet) depends="$_kubelet_deps" ;;
+		kubeadm) depends="$_kubeadm_deps" ;;
+	esac
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/$_pkg "$subpkgdir"/usr/bin
+	return 0
+}
+
+_kubeadm() { _do_subpkg kubeadm; }
+_kubectl() { _do_subpkg kubectl; }
+
+_kubeadm_bash() { _do_bashcomp kubeadm; }
+_kubectl_bash() { _do_bashcomp kubectl; }
+
+_kubelet() {
+	_do_subpkg kubelet
+	install -d "$subpkgdir"/var/lib/kubelet
+	install -d "$subpkgdir"/var/log/kubelet
+
+	install -Dm644 "$srcdir"/kubelet.logrotated "$subpkgdir"/etc/logrotate.d/kubelet
+}
+
+_kubelet_openrc() {
+	pkgdesc="Kubernetes - kubelet (OpenRC init scripts)"
+	depends="openrc"
+	install_if="openrc kubelet=$pkgver-r$pkgrel"
+
+	install -Dm755 "$srcdir"/kubelet.initd "$subpkgdir"/etc/init.d/kubelet
+	install -Dm644 "$srcdir"/kubelet.confd "$subpkgdir"/etc/conf.d/kubelet
+}
+
+_apiserver() {
+	_do_subpkg kube-apiserver
+
+	install -d "$subpkgdir"/var/log/kube-apiserver
+	install -Dm644 "$srcdir"/kube-apiserver.logrotated "$subpkgdir"/etc/logrotate.d/kube-apiserver
+}
+
+_apiserver_openrc() {
+	pkgdesc="Kubernetes - kube-apiserver (OpenRC init scripts)"
+	depends="openrc"
+	install_if="openrc kube-apiserver=$pkgver-r$pkgrel"
+	install -Dm755 "$srcdir"/kube-apiserver.initd "$subpkgdir"/etc/init.d/kube-apiserver
+	install -Dm644 "$srcdir"/kube-apiserver.confd "$subpkgdir"/etc/conf.d/kube-apiserver
+}
+
+_controllermanager() {
+	_do_subpkg kube-controller-manager
+
+	install -d "$subpkgdir"/var/log/kube-controller-manager
+	install -Dm644 "$srcdir"/kube-controller-manager.logrotated "$subpkgdir"/etc/logrotate.d/kube-controller-manager
+}
+
+_controllermanager_openrc() {
+	pkgdesc="Kubernetes - kube-controller-manager (OpenRC init scripts)"
+	depends="openrc"
+	install_if="openrc kube-controller-manager=$pkgver-r$pkgrel"
+
+	install -Dm755 "$srcdir"/kube-controller-manager.initd "$subpkgdir"/etc/init.d/kube-controller-manager
+	install -Dm644 "$srcdir"/kube-controller-manager.confd "$subpkgdir"/etc/conf.d/kube-controller-manager
+}
+
+_proxy() {
+	_do_subpkg kube-proxy
+	depends="$_kube_proxy_deps"
+
+	install -d "$subpkgdir"/var/lib/kube-proxy
+	install -d "$subpkgdir"/var/log/kube-proxy
+	install -Dm644 "$srcdir"/kube-proxy.logrotated "$subpkgdir"/etc/logrotate.d/kube-proxy
+}
+
+_proxy_openrc() {
+	pkgdesc="Kubernetes - kube-proxy (OpenRC init scripts)"
+	depends="openrc"
+	install_if="openrc kube-proxy=$pkgver-r$pkgrel"
+	install -Dm755 "$srcdir"/kube-proxy.initd "$subpkgdir"/etc/init.d/kube-proxy
+	install -Dm644 "$srcdir"/kube-proxy.confd "$subpkgdir"/etc/conf.d/kube-proxy
+}
+
+_scheduler() {
+	_do_subpkg kube-scheduler
+	install -d "$subpkgdir"/var/log/kube-scheduler
+	install -Dm644 "$srcdir"/kube-scheduler.logrotated "$subpkgdir"/etc/logrotate.d/kube-scheduler
+}
+
+_scheduler_openrc() {
+	pkgdesc="Kubernetes - kube-scheduler (OpenRC init scripts)"
+	depends="openrc"
+	install_if="openrc kube-scheduler=$pkgver-r$pkgrel"
+	install -Dm755 "$srcdir"/kube-scheduler.initd "$subpkgdir"/etc/init.d/kube-scheduler
+	install -Dm644 "$srcdir"/kube-scheduler.confd "$subpkgdir"/etc/conf.d/kube-scheduler
+}
+
+_do_bashcomp() {
+	local _pkgname=$1
+	pkgdesc="Bash completions for $_pkgname"
+	install_if="$_pkgname=$pkgver-r$pkgrel bash-completion"
+
+	mkdir -p "$subpkgdir"/usr/share/bash-completion/completions
+	"$builddir"/_output/local/bin/linux/*/$_pkgname completion bash>"$subpkgdir"/usr/share/bash-completion/completions/$_pkgname
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+sha512sums="abc47f5c840894824adba3b3763b694fce89981fd90eaead9d540b9e282c9bfd97092c93d279efe26416e544393a33e95e20f953981de48e2f9f3cd4acf6bcba  kubernetes-1.19.0.tar.gz
+bfe072d2f53543b8d704319755f3cfe5ed2467b54879e22117a25a9d7d6d4d238356e45824deaf4d18b8e9eb6f34d1de43be4840b9906f7909478ffe9e8a65ff  ensure-cgo-usage.patch
+8faa8f1c777740ed33ac4e46e8e47e9092098b6e672cf57a10caab2212b9b5c6965361fe7107d1311227e6145e2ad312982dc0340feb36b03ebb04e1202366f0  make-e2e_node-run-over-distro-bins.patch
+56201491d2dfe3a487931cbf5c6e60af898701b9541a936d80e3823948fcfb98508e3d51f4aaa415ce971f7bd20a7b51f74f025c76b83f58d5a8de8ce0ab679b  make-test-cmd-run-over-hyperkube-based-kubectl.patch
+e690daff2adb1013c92124f32e71f8ed9a18c611ae6ae5fcb5ce9674768dbf9d911a05d7e4028488cda886e63b82e8ac0606d14389a05844c1b5538a33dd09d1  kube-apiserver.initd
+302b2a7ec715967c0aa7d1c177d4e55b26e37ebba8d04dd37ecf627d20042fe91cd7e6192ff9d71422129b0ea54a9eec6046f505af550548bd450998924f37ee  kube-apiserver.confd
+1a4bcd54dafaedc614e34bbadc2a1163f003b5925d47552fb2c47049c033c147e612171e263d9659d189fc2d95688a0b7153322d8dba97c083c079fdef6c400e  kube-apiserver.logrotated
+90b9a9708e6d7c9084de17c8b28cbf6ff543400128d47f4d168883d8d3461b4dcbbb1796950a12ffc79b0f341b3881b48bba7651e3c232c1731a7e6dbddb62b8  kube-controller-manager.initd
+347dcf514abec4bc94036955d0fb2d32f141a39d1a70d7fb37e7bf8eb5792e5c29560d500a08aafcd3e19422d04466004b832bca7108eb2815610feb144688fe  kube-controller-manager.confd
+e00cd9297d8ac75fcd504a2bfb80d5c5e145e7d475dd15edf9361dc28721afdc069c5b6e79438b75a774e972028841a17e8f7842dcfb3d7835c436a3e503704c  kube-controller-manager.logrotated
+cd43587f69bd9fc6f1fdf0896d99df89377f677f4fa9b367dcaee1bf6f66469577dd79c60833ba0cd60ffdb68deedd0fb9bc00caa2b06854af4e6e56f1ffe365  kube-proxy.initd
+4c8c34ae8668bcfa5167c2d2af006fc46b461a5dafb3ec5b64cb8cdf2a830c22ddb5cf806c93b1404f60dabf91b4153724947fa2d2c494376f20e637eeed5018  kube-proxy.confd
+d7e022ee22da191bda7382f87cb293d9c9d115a3df0c2054bf918279eb866f99c6d5c21e4c98eae84bacf925f7793bbe3087e0bcf6732ccb33844d15e4386fb5  kube-proxy.logrotated
+561bef5633ba4b9021720624443d9c279a561e5fabea76e5d0fbee2e7ad8999029a2511a45895fbec8448026212a3c5b4c197b248a6afa7f8bd945f705524ea7  kube-scheduler.initd
+af88b382ab75657d0ff13c3f8f6d924cef9f2df7807a9a27daa63495981801bc4b607998f65c0758c11a7e070e43c24f7184ba7720711109c74b1c4d57919e34  kube-scheduler.confd
+3692da349dd6ed0f5acc09d7b95ac562ffecb103e2270bebdfe4a7808d48dada9d2debff262d85b11c47f9ca3f0c20000712d03629ed813ff08a3e02d69267e6  kube-scheduler.logrotated
+3233f9c3eb699e187f6f15189438db61331c6c85c9565487856a74d7c252e51ff08fac05bf54cdd99be51399d228a8d81ee0108593b82432eb06f87c62b50ace  kubelet.initd
+e6a1d33e8b986b076fd7144ed74abda6aed20d45c138dca6d88c5a27fbf61d6bf10c4b8530b8c7a1ea9df63deb70ab47273142169e79e0b3c7a135d0b11017ec  kubelet.confd
+dda5fb57b55926fd2e9cebe6c1593da699afba0398c58dfa8b923c53a9ae6e63d765778577211460047f20863a6095e8e2ab3e7769e38c4f6a1c55c0e3485501  kubelet.logrotated"

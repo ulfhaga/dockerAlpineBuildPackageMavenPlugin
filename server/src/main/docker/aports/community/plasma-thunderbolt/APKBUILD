@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=plasma-thunderbolt
+pkgver=5.19.4
+pkgrel=0
+arch="all !armhf !armv7" # Limited by bolt -> polkit, armhf also limited by qt5-qtdeclarative
+url="https://www.kde.org/workspaces/plasmadesktop/"
+pkgdesc="Plasma integration for controlling Thunderbolt devices"
+license="GPL-2.0-only OR GPL-3.0-only"
+depends="bolt"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtdeclarative-dev kcoreaddons-dev kcmutils-dev kdeclarative-dev ki18n-dev kdbusaddons-dev knotifications-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/plasma/$pkgver/plasma-thunderbolt-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+options="!check" # Requires running dbus server
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="8b52756f924497ec24d2b1615d9034e75f5386445e12cf9e7c46071f0e030ca34f7540baecfbc92446edcce46305ccc2c41bbfac7e48c547948f7ebce9cbc772  plasma-thunderbolt-5.19.4.tar.xz"

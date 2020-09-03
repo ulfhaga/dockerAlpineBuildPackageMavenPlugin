@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-lmdb
+pkgver=0.99
+pkgrel=0
+pkgdesc="Universal Python binding for the LMDB 'Lightning' Database"
+url="https://github.com/jnwatson/py-lmdb/"
+arch="all"
+license="OLDAP-2.8"
+depends="python3"
+makedepends="py3-setuptools python3-dev lmdb-dev"
+checkdepends="py3-pytest"
+source="https://github.com/jnwatson/py-lmdb/archive/py-lmdb_$pkgver.tar.gz"
+builddir="$srcdir/py-lmdb-py-lmdb_$pkgver"
+
+case "$CARCH" in
+	x86) _arch="i686" ;;
+	arm*) _arch="armv8l" ;;
+	*) _arch="$CARCH" ;;
+esac
+
+build() {
+	LMDB_FORCE_SYSTEM=1 python3 setup.py build
+}
+
+check() {
+	PYTHONPATH="$PWD/build/lib.linux-$_arch-3.8" pytest
+}
+
+package() {
+	LMDB_FORCE_SYSTEM=1 python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="dab359ada28d60a7083920bf0725c2f11119186fcea8ac697455698c4b4519c97d8c7e9305392b38ccd2eab124f096e068091fc09ccc0863d87f6633156f2a32  py-lmdb_0.99.tar.gz"

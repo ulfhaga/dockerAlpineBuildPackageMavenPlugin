@@ -1,0 +1,36 @@
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=ginkgo
+pkgver=1.14.0
+pkgrel=0
+pkgdesc="BDD-style Go testing framework"
+url="https://onsi.github.io/ginkgo/"
+options="chmod-clean"
+arch="all !armhf !mips !mips64" # armhf: test failures; mips: limited by go
+license="MIT"
+makedepends="go"
+source="$pkgname-$pkgver.tar.gz::https://github.com/onsi/ginkgo/archive/v$pkgver.tar.gz
+	pie-and-race-conflict.patch
+	"
+
+export GOPATH="$srcdir"
+
+build() {
+	go build -v -ldflags "-s -w" -o bin/ginkgo ./ginkgo
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 bin/ginkgo "$pkgdir"/usr/bin/ginkgo
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="4cc725868ef291c380f544199b186277ead1e5a5ab9ee581418ee0e6a494be1f609aa0f54a88e9530090097fa6671ab92f08f1dc8f129eb94cb5e6bbea60a685  ginkgo-1.14.0.tar.gz
+6d8a1ad1160ccede8eeda204277bb974b9a678efaa5624ab03d8eb204202c26c60e37b3aadd6e6368ac2d57cd073720f9faf4e397bcebb50bc643f680ca45534  pie-and-race-conflict.patch"

@@ -1,0 +1,113 @@
+# Contributor: Mike Crute <mike@crute.us>
+# Maintainer: Mike Crute <mike@crute.us>
+pkgname=gerbera
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="A UPnP Media Server"
+url="https://gerbera.io"
+arch="all"
+license="GPL-2.0-or-later"
+makedepends="
+	cmake
+	curl-dev
+	duktape-dev
+	e2fsprogs-dev
+	exiv2-dev
+	ffmpeg-dev
+	ffmpegthumbnailer-dev
+	file-dev
+	fmt-dev
+	gnu-libiconv-dev
+	inotify-tools-dev
+	libexif-dev
+	libmatroska-dev
+	libupnp-dev
+	pugixml-dev
+	spdlog-dev
+	sqlite-dev
+	taglib-dev
+	zlib-dev
+	"
+checkdepends="
+	gtest-dev
+	gmock
+	"
+install="$pkgname.pre-install"
+subpackages="$pkgname-doc $pkgname-openrc"
+pkgusers="$pkgname"
+pkggroups="$pkgname"
+#
+# Patches
+#
+# disable-git-test.patch:
+#	Patch removes check for git info in server version output. This assumes
+#	that the binary was built within a git repo which is not the case for
+#	releases. This test will never work for us.
+#
+# 0001-Remove-IN-and-OUT-dropped-upstream.patch: (Drop for release after 1.4.0)
+#	Removes IN and OUT macros defined by older versions of libupnp. This
+#	was fixed in upstream shortly after the 1.4.0 release. We can drop this
+#	patch after the next upstream gerbera release.
+#
+# upnp-updates.patch: (Drop for release after 1.4.0)
+#	Disables some tests that don't work with the latest version of libupnp.
+#	Upstream has very seriously overhauled these tests and there's noting
+#	feasible to pull forward. We can drop this patch after the next
+#	upstream gerbera release.
+#
+source="gerbera-$pkgver.tar.gz::https://github.com/gerbera/gerbera/archive/v$pkgver.tar.gz
+	disable-git-test.patch
+	0001-Remove-IN-and-OUT-dropped-upstream.patch
+	upnp-updates.patch
+	$pkgname.initd
+	$pkgname.confd"
+
+build() {
+	cmake -B build \
+		-Wno-dev \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DWITH_SYSTEMD=0 \
+		-DWITH_TESTS=1 \
+		-DWITH_JS=1 \
+		-DWITH_CURL=1 \
+		-DWITH_TAGLIB=1 \
+		-DWITH_MAGIC=1 \
+		-DWITH_MATROSKA=1 \
+		-DWITH_AVCODEC=1 \
+		-DWITH_EXIF=1 \
+		-DWITH_EXIV2=1 \
+		-DWITH_FFMPEGTHUMBNAILER=1 \
+		-DWITH_INOTIFY=1
+
+	make -C build
+}
+
+check() {
+	make -C build test
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+
+	"$builddir/build"/gerbera --create-config > config.xml
+	sed -i 's#<home>.*#<home>/var/lib/gerbera</home>#' config.xml
+
+	install -dm750 -o $pkgusers -g $pkggroups \
+		"$pkgdir/var/lib/$pkgname" \
+		"$pkgdir/var/log/$pkgname" \
+		"$pkgdir/etc/$pkgname"
+	install -m755 -D "$srcdir/$pkgname.initd" \
+		"$pkgdir/etc/init.d/$pkgname"
+	install -m644 -D "$srcdir/$pkgname.confd" \
+		"$pkgdir/etc/conf.d/$pkgname"
+	install -m644 -D "config.xml" \
+		"$pkgdir/etc/$pkgname/config.xml"
+}
+
+sha512sums="989716bc60bc7e171448e18aff58d8f17dbbed28ca31cfeaa7dc0e6f1cb646da88041deff6481e15ba398090a01f07e00f74b12e84c423b7ca5b82eb97b918cd  gerbera-1.4.0.tar.gz
+f4cd58f52e4ab932d282ad8166c4c9c445140cbed6740ba292317aab28ddb2814803fa8c862846aa8f6f2c02f957176b99fc61437ada51b6219486270cb43cb5  disable-git-test.patch
+47e1953c49ceae3eeaea50b4ecd2bf44d4da2286c315a3bdbfcbe7e7fc8500e2f27438acebe16f6a72a0c97efd7b8a1b185282d73b12e730e1a8fbec19c18046  0001-Remove-IN-and-OUT-dropped-upstream.patch
+965b356fafff92548b7189edf3763a638cd3dc42e173c5f656612a9cb22c34bde719b86cac3152a166f726c786d2001c42ad772fcac9b90c33b2b12c803cb67d  upnp-updates.patch
+b8609b8ec46d8e61087b76ea9be34639786014f6545a2eb8dae977e56dcc3841715c0691417382d93d96eefd4c5a629e46cd9605c893445a66ac2815ec141c2b  gerbera.initd
+392d7e964b0328778847f871e88ffd475ddac99b6cf8c8ded4825eb2f970e084db692552790a1b30ff96f59eabcd9fff50164d9dedf328badab95a1cec833c02  gerbera.confd"

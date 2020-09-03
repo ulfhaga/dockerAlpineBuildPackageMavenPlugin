@@ -1,0 +1,76 @@
+# Contributor Eric Molitor <eric@molitor.org>
+# Contributor Travis Tilley <ttilley@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=compiler-rt
+# Note: Update together with llvm.
+pkgver=10.0.1
+pkgrel=0
+_llvmver=${pkgver%%.*}
+pkgdesc="LLVM compiler-rt runtime libraries"
+arch="aarch64 armv7 x86 x86_64"
+url="https://llvm.org/"
+license="Apache-2.0"
+makedepends="
+	cmake
+	linux-headers
+	clang
+	llvm-dev>=$_llvmver
+	llvm-static>=$_llvmver
+	samurai
+	python3
+	"
+checkdepends="gtest-dev llvm-test-utils>=$_llvmver"
+subpackages="$pkgname-static"
+options="!check" # Doesn't seem to work with linux ld: /lib/ld-musl-x86_64.so.1: cannot load --version: No such file or directory
+source="https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver/compiler-rt-$pkgver.src.tar.xz
+	https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver/llvm-$pkgver.src.tar.xz"
+builddir="$srcdir/$pkgname-$pkgver.src"
+
+build() {
+	mkdir -p "$builddir"/build
+	cd "$builddir"/build
+
+	# compiler-rt uses llvm intrinsic types for testing
+	# and therefore requires clang
+	# It also needs LLVM source for testing purposes
+	cmake .. \
+		-DCMAKE_C_COMPILER=clang \
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_BUILD_TYPE=MinSizeRel \
+		-DCMAKE_C_FLAGS_MINSIZEREL_INIT="$CFLAGS" \
+		-DCMAKE_CXX_FLAGS_MINSIZEREL_INIT="$CXXFLAGS" \
+		-DCMAKE_EXE_LINKER_FLAGS_MINSIZEREL_INIT="$LDFLAGS" \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCOMPILER_RT_INCLUDE_TESTS=ON \
+		-DCOMPILER_RT_BUILD_SANITIZERS=OFF \
+		-DCOMPILER_RT_BUILD_XRAY=OFF \
+		-DLLVM_EXTERNAL_LIT="/usr/bin/lit" \
+		-DLLVM_MAIN_SRC_DIR="$srcdir/llvm-$pkgver.src" \
+		-G Ninja
+	ninja
+}
+
+check() {
+	cd "$builddir"/build
+	# remove test that does not work with PaX kernel
+	rm ../test/builtins/Unit/enable_execute_stack_test.c \
+		../test/builtins/Unit/clear_cache_test.c
+	ninja check-compiler-rt
+}
+
+package() {
+	cd "$builddir"/build
+
+	DESTDIR="$pkgdir" ninja install
+
+	cd "$pkgdir"
+
+	mkdir -p usr/lib/clang/$pkgver/lib
+	case "$CARCH" in
+		ppc64le | s390x) ;;
+		*) mv usr/lib/linux usr/lib/clang/$pkgver/lib;;
+	esac
+}
+
+sha512sums="a1d2e3f5ad529a04f87059903b31fc3c9803cd86f44aed1aebd87ce7e423d8dd2b6776be12e85a0374a6215f581420438d224c130aad5e6355920af32c02aa7b  compiler-rt-10.0.1.src.tar.xz
+cf34d037c1684d09e7e38d5fc131714eac93c78353d6186b2f806a8fb22dcae0f4748ce22d6faf178c95cfcf20bdc3fa7c5238518a154b3112781f5ab70edaa4  llvm-10.0.1.src.tar.xz"

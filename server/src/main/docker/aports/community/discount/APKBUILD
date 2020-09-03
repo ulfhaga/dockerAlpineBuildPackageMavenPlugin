@@ -1,0 +1,44 @@
+# Contributor: Daniel Sabogal <dsabogalcc@gmail.com>
+# Maintainer: Carlo Landmeter <clandmeter@alpinelinux.org>
+pkgname=discount
+pkgver=2.2.7
+pkgrel=0
+pkgdesc="A Markdown to HTML translator written in C"
+url="http://www.pell.portland.or.us/~orc/Code/discount/"
+arch="all"
+license="BSD-3-Clause"
+depends="!markdown"
+checkdepends="diffutils"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-libs"
+source="$pkgname-$pkgver.tar.gz::https://github.com/Orc/discount/archive/v$pkgver.tar.gz
+	configure.inc.patch
+	"
+
+build() {
+	./configure.sh \
+		--prefix=/usr \
+		--mandir=/usr/share/man \
+		--enable-all-features \
+		--with-fenced-code \
+		--pkg-config \
+		--shared
+	make -j1
+}
+
+check() {
+	msg "Running testsuites..."
+	make test
+}
+
+package() {
+	make PREFIX=/usr DESTDIR="$pkgdir" install.everything
+	local bin; for bin in theme makepage mkd2html; do
+		mv "$pkgdir"/usr/bin/$bin \
+			"$pkgdir"/usr/bin/$pkgname-$bin
+		mv "$pkgdir"/usr/share/man/man1/$bin.1 \
+			"$pkgdir"/usr/share/man/man1/$pkgname-$bin.1
+	done
+}
+
+sha512sums="6998080f7348504f544d18594adf99b5c81ea50eee9e990602cde6467cb7490ca17cd43b376f6eb4b3ca20f7d6cf616781079ed6c602dbe2a0799e22a0e0dfca  discount-2.2.7.tar.gz
+6935a52d3fa1ee70e21cf6290bd83e045e8da349ef48ab7241c4eb075caded11945c9d1eabc7e9cdf549a4101daf81e10675464b84876838da669d2086f1de43  configure.inc.patch"

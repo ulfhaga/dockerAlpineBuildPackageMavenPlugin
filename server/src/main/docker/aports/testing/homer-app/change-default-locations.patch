@@ -1,0 +1,49 @@
+commit bea36c3b70074c7f8c89ba199e7b706c96cd255c
+Author: Leonardo Arena <rnalrd@alpinelinux.org>
+Date:   Thu Jun 25 06:15:02 2020 +0000
+
+    change default path locations
+
+diff --git a/etc/webapp_config.json b/etc/webapp_config.json
+index b193189..8e30626 100644
+--- a/etc/webapp_config.json
++++ b/etc/webapp_config.json
+@@ -52,14 +52,14 @@
+     "help": "Settings for the HOMER Webapp Server. If you have gzip_static = false, please be sure that your dist directory has uncompressed .js files",
+     "host": "0.0.0.0",
+     "port": 9080,
+-    "root": "/usr/local/homer/dist",
++    "root": "/usr/share/webapps/homer/dist",
+     "gzip": true,
+     "gzip_static": true,
+     "debug": false
+   },
+   "system_settings": {
+     "help": "Settings for HOMER logs",
+-    "logpath": "/usr/local/homer/log",
++    "logpath": "/var/log/homer",
+     "logname": "homer-app.log",
+     "_loglevels": "can be: fatal, error, warn, info, debug, trace",
+     "loglevel": "error",
+diff --git a/main.go b/main.go
+index aa6e5a0..df0e60c 100644
+--- a/main.go
++++ b/main.go
+@@ -171,7 +171,7 @@ func initFlags() {
+ 	appFlags.DatabaseHomerConfig = flag.String("database-homer-config", "homer_config", "database-homer-config")
+ 	appFlags.DatabaseHomerData = flag.String("database-homer-data", "homer_data", "database-homer-data")
+ 
+-	appFlags.PathWebAppConfig = flag.String("webapp-config-path", "/usr/local/homer/etc", "the path to the webapp config file")
++	appFlags.PathWebAppConfig = flag.String("webapp-config-path", "/etc/homer", "the path to the webapp config file")
+ 	appFlags.LogName = flag.String("webapp-log-name", "", "the name prefix of the log file.")
+ 	appFlags.LogPathWebApp = flag.String("webapp-log-path", "", "the path for the log file.")
+ 	appFlags.APIPrefix = flag.String("webapp-api-prefix", "", "API prefix.")
+@@ -354,7 +354,7 @@ func configureAsHTTPServer() {
+ 	/* static */
+ 	rootPath := viper.GetString("http_settings.root")
+ 	if rootPath == "" {
+-		rootPath = "/usr/local/homer/dist"
++		rootPath = "/usr/share/webapps/homer/dist"
+ 	}
+ 	/* static */
+ 	e.Use(middleware.Static(rootPath))

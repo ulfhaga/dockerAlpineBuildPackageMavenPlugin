@@ -1,0 +1,38 @@
+# Contributor: Justin Berthault <justin.berthault@zaclys.net>
+# Maintainer: Justin Berthault <justin.berthault@zaclys.net>
+pkgname=jgmenu
+pkgver=4.2.1
+pkgrel=0
+pkgdesc="Simple, independent X11 menu"
+url="https://github.com/johanmalm/jgmenu"
+arch="all !s390x !mips !mips64" # missing dep: librsvg
+license="GPL-2.0-only"
+depends="
+	bash
+	desktop-file-utils
+	python3
+	"
+makedepends="
+	librsvg-dev
+	libxrandr-dev
+	libxml2-dev
+	pango-dev
+	"
+checkdepends="perl"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/johanmalm/jgmenu/archive/v$pkgver.tar.gz"
+
+build() {
+	./configure --prefix=/usr
+	make
+}
+
+check() {
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="6849a78feefcff5ff078d4f2aaa3b7a4f05656d337e2be57c19079cb57dc6e4652c980c47b2d89f1f45eeaaf2a4e910e68f32f4f63869f13b40e3dd6759d4898  jgmenu-4.2.1.tar.gz"

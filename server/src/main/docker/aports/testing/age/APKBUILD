@@ -1,0 +1,38 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Contributor: Michał Polański <michal@polanski.me>
+# Maintainer: Michał Polański <michal@polanski.me>
+pkgname=age
+pkgver=1.0.0_p4
+_realver=${pkgver/_p/-beta}
+pkgrel=0
+pkgdesc="Simple, modern and secure encryption tool"
+url="https://github.com/FiloSottile/age"
+arch="all !mips !mips64" # limited by go
+license="BSD-3-Clause"
+makedepends="go"
+options="net"
+source="https://github.com/FiloSottile/age/archive/v$_realver/age-$_realver.tar.gz"
+builddir="$srcdir/$pkgname-$_realver"
+
+export GOPATH="$srcdir"
+
+
+build() {
+	mkdir bin
+	go build -o bin filippo.io/age/cmd/...
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 bin/* -t "$pkgdir"/usr/bin
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="5c323e21637cb92f4036152555c4f75a451667ed4ef65480d4fcc55a5660a1b68f55bdddccabc20f0bac3669ce544430c201bbeed5657f6330336051d1ff1f4c  age-1.0.0-beta4.tar.gz"

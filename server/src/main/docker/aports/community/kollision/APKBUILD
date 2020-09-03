@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kollision
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="A simple ball dodging game"
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://kde.org/applications/games/kollision/"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfig-dev kcoreaddons-dev kcrash-dev kdbusaddons-dev kdoctools-dev ki18n-dev kwidgetsaddons-dev kxmlgui-dev libkdegames-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kollision-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="d9f8a406d43eafd171cdad80082aaf816c6f88acd0055756588a72913312bf7819f2f7125ce252343bee8ee37d46f43d5fe7ededdb90224bc03ca911fd258ab4  kollision-20.08.0.tar.xz"

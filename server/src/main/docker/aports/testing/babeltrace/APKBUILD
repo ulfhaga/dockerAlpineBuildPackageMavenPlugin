@@ -1,0 +1,45 @@
+# Contributor: Michael Jeanson <mjeanson@efficios.com>
+# Maintainer: Michael Jeanson <mjeanson@efficios.com>
+pkgname=babeltrace
+pkgver=2.0.3
+pkgrel=1
+pkgdesc="Trace converter and read/write library"
+url="https://www.efficios.com/babeltrace"
+arch="all !mips !mips64" # Test failures
+license="MIT"
+depends_dev="glib-dev"
+makedepends="$depends_dev python3-dev swig"
+checkdepends="bash grep"  # test cases use both Bash and grep tools
+subpackages="$pkgname-dev $pkgname-doc py3-babeltrace:py3bindings"
+source="https://www.efficios.com/files/babeltrace/babeltrace2-$pkgver.tar.bz2"
+builddir="$srcdir/babeltrace2-$pkgver"
+
+build() {
+	# This package uses _init functions to initialise extensions. With
+	# --as-needed this will not work.
+	export LDFLAGS="$LDFLAGS -Wl,--no-as-needed"
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--disable-static \
+		--disable-debug-info \
+		--enable-python-bindings \
+		--enable-python-plugins
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+py3bindings() {
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/python* "$subpkgdir"/usr/lib
+}
+
+sha512sums="5e7b3df35d894d67a327bbdafc4e599872b9bb63f1857819b84f4ac46872d06d19172f880a736ec1b05b21d3a0c5e7ac347a20e1a1afacefc9f5484cf619ac39  babeltrace2-2.0.3.tar.bz2"

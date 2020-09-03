@@ -1,0 +1,50 @@
+# Contributor: Michael Mason <ms13sp@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=nano
+pkgver=5.2
+pkgrel=0
+pkgdesc="Enhanced clone of the Pico text editor"
+url="https://www.nano-editor.org"
+arch="all"
+license="GPL-3.0-or-later"
+makedepends="file-dev linux-headers ncurses-dev"
+subpackages="$pkgname-doc $pkgname-syntax::noarch"
+source="https://www.nano-editor.org/dist/v${pkgver%.*}/nano-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--disable-nls
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	install -Dm644 doc/sample.nanorc \
+		"$pkgdir"/etc/nanorc
+
+	# Proper syntax highlighting for APKBUILDs
+	sed -i "/syntax/s/\"$/\" \"APKBUILD&/" \
+		"$pkgdir"/usr/share/nano/sh.nanorc
+
+	rm -rf "$pkgdir"/usr/lib/charset.alias
+}
+
+syntax() {
+	pkgdesc="Syntax highlighting definitions for $pkgname"
+
+	mkdir -p "$subpkgdir"/usr/share/$pkgname/
+	mv "$pkgdir"/usr/share/$pkgname/*.nanorc \
+		"$subpkgdir"/usr/share/$pkgname/
+}
+
+sha512sums="d101e7f4802c079254e79340b433749dcd699fa9adec3f96e4218ec12f066a1f6b0954c27254bb6f019bc370ee2116817717870f4e2bc782c552442f2cc75195  nano-5.2.tar.xz"

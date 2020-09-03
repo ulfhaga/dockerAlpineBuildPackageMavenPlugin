@@ -1,0 +1,81 @@
+# Contributor: Rasmus Thomsen <oss@cogitri.dev>
+# Contributor: Carlo Landmeter <clandmeter@gmail.com>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=transmission
+pkgver=3.00
+pkgrel=0
+pkgdesc="Lightweight GTK BitTorrent client"
+url="https://transmissionbt.com/"
+install="transmission-daemon.pre-install transmission-daemon.post-upgrade"
+arch="all"
+license="GPL-2.0-or-later AND MIT"
+pkgusers="transmission"
+pkggroups="transmission"
+makedepends="cmake bsd-compat-headers curl-dev dbus-glib-dev
+	gtk+3.0-dev intltool libevent-dev libnotify-dev openssl-dev tar"
+options="!check" # no tests
+source="https://github.com/transmission/transmission-releases/raw/master/transmission-$pkgver.tar.xz
+	transmission-daemon.initd
+	transmission-daemon.confd
+	disable-missing-lang.patch
+	"
+subpackages="$pkgname-cli $pkgname-daemon $pkgname-doc $pkgname-lang $pkgname-static"
+
+# secfixes:
+#   3.00-r0:
+#     - CVE-2018-10756
+
+build() {
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DENABLE_GTK=TRUE \
+		-DENABLE_CLI=TRUE \
+		-DENABLE_TESTS=FALSE \
+		-DWITH_SYSTEMD=FALSE \
+		-DINSTALL_LIB=TRUE
+	make -C build
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+daemon() {
+	pkgdesc="Lightweight BitTorrent client (daemon and webinterface)"
+
+	install -d "$subpkgdir"/usr/share \
+		"$subpkgdir"/usr/bin
+	install -d -o transmission -g transmission \
+		"$subpkgdir"/var/lib/transmission \
+		"$subpkgdir"/var/log/transmission
+	mv "$pkgdir"/usr/bin/transmission-daemon \
+		"$subpkgdir"/usr/bin/
+	mv "$pkgdir"/usr/share/transmission \
+		"$subpkgdir"/usr/share/
+	install -D -m755 "$srcdir"/transmission-daemon.initd \
+		"$subpkgdir"/etc/init.d/transmission-daemon
+	install -D -m644 "$srcdir"/transmission-daemon.confd \
+		"$subpkgdir"/etc/conf.d/transmission-daemon
+}
+
+cli() {
+	pkgdesc="Lightweight BitTorrent client (cli and remote)"
+
+	install -d "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/transmission-cli \
+		"$pkgdir"/usr/bin/transmission-create \
+		"$pkgdir"/usr/bin/transmission-edit \
+		"$pkgdir"/usr/bin/transmission-show \
+		"$pkgdir"/usr/bin/transmission-remote \
+		"$subpkgdir"/usr/bin/
+}
+
+sha512sums="eeaf7fe46797326190008776a7fa641b6341c806b0f1684c2e7326c1284832a320440013e42a37acda9fd0ee5dca695f215d6263c8acb39188c5d9a836104a61  transmission-3.00.tar.xz
+d31275fba7eb322510f9667e66a186d626889a6e3143be2923aae87b9c35c5cf0c508639f1cb8c1b88b1e465bc082d80bb1101385ebde736a34d4eeeae0f6e15  transmission-daemon.initd
+a3b9ac2b7bbe30e33060c8b6a693dc7072d3c6ac44f92ddd567969d8f57a0bfc1a561e781ae167703ccb4b2fd5b0e6d8f8a66c5ba14fe01d8d89a501d4501474  transmission-daemon.confd
+a09db6628d618b75fe5688638256b87042987f3e3df2210a93ba0ddf5d7602150d28f2a9f85c1fbc7654b1e32be101871d24a466f2cccaf05b34abe07133edc9  disable-missing-lang.patch"

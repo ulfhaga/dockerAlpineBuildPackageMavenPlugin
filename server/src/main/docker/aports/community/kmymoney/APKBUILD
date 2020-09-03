@@ -1,0 +1,38 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kmymoney
+pkgver=5.1.0
+pkgrel=0
+arch="all !armhf !mips !mips64" # Limited by qt5-qtwebkit
+url="https://kmymoney.org/"
+pkgdesc="Personal finance manager for KDE which operates similarly to MS-Money or Quicken"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev qt5-qtwebkit-dev kdewebkit-dev kdoctools-dev kholidays-dev kcontacts-dev akonadi-dev kidentitymanagement-dev kactivities-dev karchive-dev kcoreaddons-dev kconfig-dev kconfigwidgets-dev ki18n-dev kcompletion-dev kcmutils-dev kitemmodels-dev kitemviews-dev kservice-dev kwallet-dev kiconthemes-dev kxmlgui-dev ktextwidgets-dev knotifications-dev kio-dev alkimia-dev kdiagram-dev gpgme-dev doxygen"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/kmymoney/$pkgver/src/kmymoney-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+case $CARCH in
+	aarch64) options="!check";; # Segfault / child aborted errors on 3-12 builder
+esac
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	# reports-chart-test requires OpenGL
+	# csvimport-csvdate-test is broken
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "(reports-chart|csvimport-csvdate)-test"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="143161efd708ae05923d68510945c24f08d85cd6482b3e6015c6061bc28c80e095ca56b768e595bfae50ea3340855e021dde5c715546c0641f94adcd91639334  kmymoney-5.1.0.tar.xz"

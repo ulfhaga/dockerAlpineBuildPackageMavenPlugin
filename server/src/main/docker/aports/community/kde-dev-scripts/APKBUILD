@@ -1,0 +1,27 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kde-dev-scripts
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/development/"
+pkgdesc="Scripts and setting files useful during development of KDE software"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules kdoctools-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kde-dev-scripts-$pkgver.tar.xz"
+subpackages="$pkgname-doc"
+options="!check" # No code to test
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="373e8dcecda213c454c2b03210b0f28165be409ae657619a6c3fb1e3cf7a123cc4682e21016becea36530ba4d05459b626e0db6382f1545565116b3bb60920f6  kde-dev-scripts-20.08.0.tar.xz"

@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=gnome-2048
+pkgver=3.36.4
+pkgrel=0
+arch="all"
+url="https://wiki.gnome.org/Apps/2048"
+pkgdesc="Obtain the 2048 tile"
+license="GPL-3.0-or-later"
+makedepends="meson ninja itstool vala gtk+3.0-dev clutter-dev clutter-gtk-dev
+	libgee-dev libgnome-games-support-dev"
+checkdepends="appstream-glib desktop-file-utils"
+source="https://download.gnome.org/sources/gnome-2048/${pkgver%.*}/gnome-2048-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--buildtype=plain \
+		. output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="4b2e564aaf304e8e97e364a02eb8faf3a0169eab7fe73e8d716f03fd0156fe2796dca1332f257f335c1e7574774d2eb7ed0b97c13925d3300598b34c96fcd561  gnome-2048-3.36.4.tar.xz"

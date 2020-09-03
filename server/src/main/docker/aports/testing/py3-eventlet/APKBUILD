@@ -1,0 +1,28 @@
+# Maintainer: Elizabeth Jennifer Myers <elizabeth@sporksirc.net>
+# Contributor: Elizabeth Jennifer Myers <elizabeth@sporksirc.net>
+pkgname=py3-eventlet
+pkgver=0.26.1
+pkgrel=0
+pkgdesc="Python library for seamless coroutine-based concurrency"
+options="!check" # Some tests fail
+url="http://eventlet.net/"
+arch="noarch"
+license="MIT"
+depends="python3 py3-greenlet py3-openssl"
+makedepends="py3-setuptools"
+checkdepends="py3-nose"
+source="https://files.pythonhosted.org/packages/source/e/eventlet/eventlet-$pkgver.tar.gz"
+
+builddir="$srcdir"/eventlet-$pkgver
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --root "$pkgdir"
+}
+sha512sums="55b9b214130d0482ea005ea570a5aa3eafdf66e6d315a95c5ba60186a2d9a9df5c2638c86d886968954ce39e5ac2153e1f9e11631e6aef237078c3776af7d6c5  eventlet-0.26.1.tar.gz"

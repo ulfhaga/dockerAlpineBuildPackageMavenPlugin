@@ -1,0 +1,44 @@
+# Contributor: Holger Jaekel <holger.jaekel@gmx.de>
+# Maintainer: Holger Jaekel <holger.jaekel@gmx.de>
+pkgname=qhull
+pkgver=2020.1
+pkgrel=0
+pkgdesc="Calculate convex hulls and related structures"
+url="https://www.qhull.org/"
+arch="all"
+license="custom"
+makedepends="cmake"
+subpackages="
+	$pkgname-static
+	$pkgname-dev
+	$pkgname-doc
+	"
+source="qhull-$pkgver.tar.gz::https://github.com/qhull/qhull/archive/$pkgver.tar.gz"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DCMAKE_SKIP_INSTALL_RPATH=YES \
+		$CMAKE_CROSSOPTS
+	make -C build
+}
+
+check() {
+	cd build && ctest
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+
+	install -Dm644 $builddir/COPYING.txt $pkgdir/usr/share/licenses/$pkgname/LICENSE
+}
+
+sha512sums="aa9d97564290718a0983d252dd88193533264c97987942848d5b78d0dec33e27c71a7e909f520955368f8be2799a00844ffb47c49717aee072b949aace0f37da  qhull-2020.1.tar.gz"

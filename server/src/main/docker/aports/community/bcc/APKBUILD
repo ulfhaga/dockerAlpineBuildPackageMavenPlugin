@@ -1,0 +1,82 @@
+# Maintainer: Adam Jensen <acjensen@gmail.com>
+pkgname=bcc
+pkgver=0.16.0
+pkgrel=0
+pkgdesc="A toolkit for creating efficient kernel tracing and manipulation programs"
+url="https://github.com/iovisor/bcc/"
+arch="all !s390x !mips !mips64" # build fails
+license="Apache-2.0"
+# bcc's test suite requires privileged access to run BPF programs
+options="!check"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc:_doc $pkgname-tools:_tools py3-$pkgname:_py:noarch"
+_llvmver=10
+makedepends="tar git llvm$_llvmver-dev llvm$_llvmver-static clang-dev clang-static cmake
+	python3 flex-dev bison build-base iperf linux-headers elfutils-dev zlib-dev"
+source="$pkgname-$pkgver.tar.gz::https://github.com/iovisor/bcc/releases/download/v$pkgver/bcc-src-with-submodule.tar.gz"
+builddir="$srcdir/$pkgname"
+
+case "$CARCH" in
+	ppc64le) ;;
+	*) makedepends="$makedepends luajit-dev"
+	   subpackages="$subpackages $pkgname-lua:_lua"
+	   ;;
+esac
+
+prepare() {
+	rm -rf tests/* && touch tests/CMakeLists.txt
+	rm -rf examples/* && touch examples/CMakeLists.txt
+
+	default_prepare
+}
+
+build() {
+	mkdir build && cd build
+	cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+		-DCMAKE_INSTALL_LIBDIR=/usr/lib \
+		-DPYTHON_CMD=python3 \
+		-DREVISION=$pkgver \
+		..
+	make
+}
+
+package() {
+	cd "$builddir/build"
+	make install DESTDIR="$pkgdir"
+}
+
+_doc() {
+	pkgdesc="$pkgdesc (documentation)"
+
+	mkdir -p "$subpkgdir"/usr/share/bcc/tools
+	mv "$pkgdir"/usr/share/bcc/man "$subpkgdir"/usr/share/bcc
+	mv "$pkgdir"/usr/share/bcc/tools/doc "$subpkgdir"/usr/share/bcc/tools
+}
+
+_tools() {
+	depends="$pkgname py3-$pkgname"
+	pkgdesc="$pkgdesc (tools)"
+
+	mkdir -p "$subpkgdir"/usr/share/bcc
+	mv "$pkgdir"/usr/share/bcc/tools "$subpkgdir"/usr/share/bcc
+	mv "$pkgdir"/usr/share/bcc/introspection "$subpkgdir"/usr/share/bcc
+	find "$subpkgdir"/usr/share/bcc/tools -type f -exec \
+		sed -ie "s/^#!\/usr\/bin\/python$/#!\/usr\/bin\/python3/" \{\} \;
+}
+
+_py() {
+	depends="$pkgname python3"
+	pkgdesc="$pkgdesc (python3 bindings)"
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/python3* "$subpkgdir"/usr/lib
+}
+
+_lua() {
+	depends="$pkgname"
+	pkgdesc="$pkgdesc (lua bindings)"
+
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/bcc-lua "$subpkgdir"/usr/bin
+}
+
+sha512sums="ec2eec46ef45e96a269fe252de85734e12182bac839c7ee958852c6e7f4935b86f83536d6fd127933549f521d9b7af440544207818d5bd72a94567d41c6f3b75  bcc-0.16.0.tar.gz"

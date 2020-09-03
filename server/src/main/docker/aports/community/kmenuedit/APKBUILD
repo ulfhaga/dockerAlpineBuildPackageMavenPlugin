@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kmenuedit
+pkgver=5.19.4
+pkgrel=0
+pkgdesc="KDE menu editor"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://www.kde.org/workspaces/plasmadesktop/"
+license="GPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev ki18n-dev kxmlgui-dev kdbusaddons-dev kiconthemes-dev kio-dev kitemviews-dev sonnet-dev kdoctools-dev kglobalaccel-dev kinit-dev"
+source="https://download.kde.org/stable/plasma/$pkgver/kmenuedit-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="c580dc9df22e3d6f2850ef1ccca1b8a72e5a4c9cc635e01794c92d2255515e9f2f8304d2412e115ac62356780ce60e45f8d320471cc23be968338c0d99e85ed0  kmenuedit-5.19.4.tar.xz"

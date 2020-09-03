@@ -1,0 +1,31 @@
+# Contributor: dai9ah <dai9ah@protonmail.com>
+# Maintainer: dai9ah <dai9ah@protonmail.com>
+pkgname=ddgr
+pkgver=1.9
+pkgrel=0
+pkgdesc="DuckDuckGo from the terminal"
+url="https://github.com/jarun/ddgr"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="python3"
+subpackages="$pkgname-doc
+	$pkgname-bash-completion
+	$pkgname-fish-completion
+	$pkgname-zsh-completion
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/jarun/ddgr/archive/v$pkgver.tar.gz"
+options="!check" # no test suite
+
+package() {
+	make DESTDIR="$pkgdir" PREFIX=/usr install
+
+	install -Dm644 "$builddir"/auto-completion/bash/* \
+		-t "$pkgdir"/usr/share/bash-completion/completions/
+	install -Dm644 "$builddir"/auto-completion/fish/* \
+		-t "$pkgdir"/usr/share/fish/completions/
+	install -Dm644 "$builddir"/auto-completion/zsh/* \
+		-t "$pkgdir"/usr/share/zsh/site-functions/
+
+}
+
+sha512sums="25fb995d32cf19ed1d4493ec463f60db39f4728ffe052dabccb49b721e65250e444bb4cc54f5f41dd1d6365d4e8bd1139277c44a9bd1d39394dec998ccb93b7c  ddgr-1.9.tar.gz"

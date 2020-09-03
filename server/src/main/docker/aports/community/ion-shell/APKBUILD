@@ -1,0 +1,29 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer: Leo <thinkabit.ukim@gmail.com>
+pkgname=ion-shell
+pkgver=1.0.5_git20200630
+pkgrel=0
+_commit=044565f9d2817bcea4f8549578a8bfa52f849c32
+pkgdesc="The Ion Shell"
+url="https://gitlab.redox-os.org/redox-os/ion"
+# ppc64le: Rust SIGSEGVs when compiling
+arch="all !s390x !mips !mips64 !ppc64le"
+license="MIT"
+makedepends="cargo"
+install="$pkgname.post-install $pkgname.post-upgrade $pkgname.pre-deinstall"
+source="$pkgname-$_commit.tar.gz::https://gitlab.redox-os.org/redox-os/ion/-/archive/$_commit.tar.gz"
+builddir="$srcdir/ion-$_commit"
+
+build() {
+	cargo build --release --locked
+}
+
+check() {
+	cargo test --release --locked
+}
+
+package() {
+	install -Dm0755 target/release/ion -t "$pkgdir"/usr/bin
+}
+
+sha512sums="371ef80b451f3148d2be0d576d4a0d5c84ce7793b106af42dcc8fa7d715eb1d9821c3f26cd3bdb8fb5df1d6534d0529215cf61d71a689c0c2f3b8b8175aec861  ion-shell-044565f9d2817bcea4f8549578a8bfa52f849c32.tar.gz"

@@ -1,0 +1,23 @@
+# Contributor: Breno Leitao <breno.leitao@gmail.com>
+# Maintainer: Breno Leitao <breno.leitao@gmail.com>
+pkgname=unifont
+pkgver=13.0.03
+pkgrel=0
+pkgdesc="GNU Unifont glyphs"
+url="http://unifoundry.com/unifont.html"
+arch="all"
+options="!check"  # No way to test fonts.
+license="GFDL-1.3-or-later GPL-2.0-or-later WITH Font-exception-2.0"
+depends="bdftopcf perl-gd"
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://unifoundry.com/pub/unifont/unifont-$pkgver/unifont-$pkgver.tar.gz"
+
+build() {
+	make DESTDIR="$pkgdir"
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="5dd6576bbc158e5dac4f8812a724c4fc8ed2702b7ea22d4b2d9265d9d58bfddc4d4607eacdb7053896559b218986bec3709cbe734656a7cf9daa328de4a21bee  unifont-13.0.03.tar.gz"

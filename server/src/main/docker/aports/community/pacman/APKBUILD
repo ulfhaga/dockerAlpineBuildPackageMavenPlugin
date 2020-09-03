@@ -1,0 +1,53 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Maintainer:
+pkgname=pacman
+pkgver=5.2.2
+pkgrel=0
+pkgdesc="A simple library-based package manager"
+options="!check" # Depends on not packaged fakechroot
+url="https://www.archlinux.org/pacman/"
+arch="all"
+license="GPL-2.0-or-later"
+depends="bash libarchive-tools"
+depends_dev="gettext-dev"
+makedepends="$depends_dev autoconf automake coreutils curl-dev libtool
+	libarchive-dev m4 openssl-dev sed gpgme-dev"
+subpackages="
+	$pkgname-static
+	$pkgname-dev
+	$pkgname-doc
+	$pkgname-lang
+	$pkgname-bash-completion
+	$pkgname-zsh-completion
+	"
+source="https://sources.archlinux.org/other/pacman/pacman-$pkgver.tar.gz"
+
+# secfixes:
+#   5.2.0-r0:
+#     - CVE-2019-18183
+#     - CVE-2019-18182
+#   5.1.3-r0:
+#     - CVE-2019-9686
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--localstatedir=/var \
+		--with-scriptlet-shell=/usr/bin/bash
+	make V=1
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	mkdir -p "$pkgdir"/usr/lib/pkgconfig
+	mv "$pkgdir"/usr/share/pkgconfig/* "$pkgdir"/usr/lib/pkgconfig
+	rmdir -p "$pkgdir"/usr/share/pkgconfig || true
+}
+
+sha512sums="1f9c569fb9cfe90afeeb7e3715bfa821ec4c57fdbbd7e09cd1e2519fad1a555b2f5378dedb2c2e551d2e92db92f1db9684969b472507f676c5bb932cdf436eda  pacman-5.2.2.tar.gz"

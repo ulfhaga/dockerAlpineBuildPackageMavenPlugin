@@ -1,0 +1,35 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=ki18n
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Advanced internationalization framework"
+arch="all !armhf" # armhf blocked by qt5-qtdeclarative
+url="https://community.kde.org/Frameworks"
+license="LGPL-2.0-or-later AND (LGPL-2.1-only OR LGPL-3.0-or-later)"
+depends_dev="qt5-qtdeclarative-dev qt5-qtscript-dev"
+makedepends="$depends_dev extra-cmake-modules doxygen qt5-qttools-dev"
+source="https://download.kde.org/stable/frameworks/${pkgver%.*}/ki18n-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-doc $pkgname-lang"
+options="!check"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_QCH=ON
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="39f663092f7697f711fcf1e4e9f4081d73d7f73f3b110a151063967712bbdcab18ecf5e96350ff4db494b58f48cf1976e7fb002a7ba298386fa77cef2f8766b1  ki18n-5.73.0.tar.xz"

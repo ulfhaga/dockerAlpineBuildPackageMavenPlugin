@@ -1,0 +1,29 @@
+# Contributor: wener <wenermail@gmail.com>
+# Maintainer: wener <wenermail@gmail.com>
+pkgname=timescaledb
+pkgver=1.7.2
+pkgrel=0
+pkgdesc="An open-source database designed to make SQL scalable for time-series data"
+url="https://github.com/timescale/timescaledb"
+arch="all"
+license="Apache-2.0"
+makedepends="postgresql-dev cmake bash"
+source="$pkgname-$pkgver.tar.gz::https://github.com/timescale/timescaledb/archive/$pkgver.tar.gz"
+
+build() {
+	# REGRESS_CHECKS=OFF - disable regress test
+	# regress need https://github.com/timescale/timescaledb/blob/master/test/pg_isolation_regress.sh
+	# which need to compile pg - https://github.com/timescale/timescaledb/issues/1655#issuecomment-578683986
+	BUILD_FORCE_REMOVE=true ./bootstrap -DREGRESS_CHECKS=OFF
+	make -C build USE-PGXS=1
+}
+
+check() {
+	make -C build test
+}
+
+package() {
+	make -C build USE_PGXS=1 DESTDIR="$pkgdir" install
+}
+
+sha512sums="43f108fd23860dbe1719c0d49f073e88257268e13b25155f62e88a0ab1583dad83bf8a739ec8046ba4f1e1e6cffafcad0e10302e5cd7841abffb25a39daea577  timescaledb-1.7.2.tar.gz"

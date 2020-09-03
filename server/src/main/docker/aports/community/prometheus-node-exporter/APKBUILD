@@ -1,0 +1,45 @@
+# Contributor: Tiago Ilieve <tiago.myhro@gmail.com>
+# Maintainer: Tiago Ilieve <tiago.myhro@gmail.com>
+pkgname=prometheus-node-exporter
+_pkgname=node_exporter
+pkgver=1.0.1
+pkgrel=0
+pkgdesc="Prometheus exporter for machine metrics"
+url="https://github.com/prometheus/node_exporter"
+arch="all !mips64" # go
+license="Apache-2.0"
+makedepends="go>=1.14 bash sed"
+install="$pkgname.pre-install $pkgname.pre-upgrade"
+subpackages="$pkgname-openrc"
+source="$_pkgname-$pkgver.tar.gz::https://github.com/prometheus/node_exporter/archive/v$pkgver.tar.gz
+	node-exporter.initd
+	node-exporter.confd
+	disable-go-race-detector.patch"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+build() {
+	go build \
+		-ldflags "-s -w -X github.com/prometheus/common/version.Version=$pkgver" \
+		-v -o node_exporter
+}
+
+check() {
+	make test
+}
+
+package() {
+	install -Dm755 node_exporter "$pkgdir"/usr/bin/node_exporter
+
+	install -Dm755 "$srcdir"/node-exporter.initd "$pkgdir"/etc/init.d/node-exporter
+	install -Dm644 "$srcdir"/node-exporter.confd "$pkgdir"/etc/conf.d/node-exporter
+}
+
+cleanup_srcdir() {
+	go clean -modcache
+	default_cleanup_srcdir
+}
+
+sha512sums="0643042a04494a65d1ebdedf78671a1e3473b7ac6f3bc606fa2c52e893dfc68b591ef7e38ac6768c4c529c25b831811c01839475a4fde9baeb0a6c581a57839f  node_exporter-1.0.1.tar.gz
+67b16a002daf45893e7d814e6d921f92dfc26d31ea802a4c511dc3affd8143d3827b7d895bb3efc13337894a893f4feac01d2a0f0e381ef53d00dffe9ff0577a  node-exporter.initd
+592d3f17a3cf487d97a14c803dded07d2dfb112b159ab1a3575310fc0176fc3255ddad6657f16a8d6d3c161bfb03c203a6271ec6e6395b75716a14b0de8baced  node-exporter.confd
+36952039e5db39aa06a2ca16fa5d318f22eb967e3e9b1363508b2f3d3d0b14e5df111c77ce951bea2f65dd2be0a0a1582be245acfe4641623381a940204e53d9  disable-go-race-detector.patch"

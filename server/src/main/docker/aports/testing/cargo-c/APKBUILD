@@ -1,0 +1,40 @@
+# Contributor: Oleg Titov <oleg.titov@gmail.com>
+# Maintainer: Oleg Titov <oleg.titov@gmail.com>
+pkgname=cargo-c
+pkgver=0.6.12
+pkgrel=0
+pkgdesc="A cargo subcommand to build and install C-ABI compatibile dynamic and static libraries"
+url="https://github.com/lu-zero/cargo-c"
+arch="all !s390x !mips !mips64" # no cargo for these archies
+license="MIT"
+makedepends="cargo openssl-dev"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/lu-zero/cargo-c/archive/v$pkgver.tar.gz
+	$pkgname-$pkgver-Cargo.lock::https://github.com/lu-zero/cargo-c/releases/download/v$pkgver/Cargo.lock"
+
+prepare() {
+	default_prepare
+
+	cp "$srcdir"/$pkgname-$pkgver-Cargo.lock Cargo.lock
+	cargo fetch --locked
+}
+
+build() {
+	cargo build --release --frozen
+}
+
+check() {
+	cargo test --release --frozen
+}
+
+package() {
+	cargo install --locked --root "$pkgdir/usr" --path .
+
+	install -Dm 644 -t "$pkgdir/usr/share/doc/cargo-c" README.md
+
+	rm "$pkgdir"/usr/.crates.toml
+	rm "$pkgdir"/usr/.crates2.json
+}
+
+sha512sums="ff129096a738e5bf18e3a2b1fdbeb365e9a662b7bb5918b05d79ce5517135253ea207dcf949351a761579ff4203d1d72a265b349b2ab7869291101e3a1def91c  cargo-c-0.6.12.tar.gz
+c64536145a877ca284415b39dba495ff4f24f51e4f53f40f87355928c74c665cb227b5c14e542f2baff50b1a906cd2635c161349a14cffeb22c36e9c06b0ebd7  cargo-c-0.6.12-Cargo.lock"

@@ -1,0 +1,27 @@
+# Maintainer: Thomas Liske <thomas@fiasko-nw.net>
+pkgname=ifstate
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Manage host interface settings in a declarative manner"
+url="https://liske.github.io/ifstate/"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="iproute2 py3-pyroute2 py3-yaml py3-jsonschema"
+makedepends="py3-setuptools"
+options="!check" # no tests available
+source="https://files.pythonhosted.org/packages/source/i/ifstate/ifstate-$pkgver.tar.gz
+	ifstate.initd
+	"
+subpackages="$pkgname-openrc"
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+	install -Dm755 "$srcdir"/ifstate.initd "$pkgdir"/etc/init.d/ifstate
+}
+
+sha512sums="d030141affe8313cadb9ef7cb2ac60a78257c8c0f6be4fe688caf4bb941f3dc42b53da184dec928e1c7c638ff029ae53bf8713a167d31fdea09662e5ce605997  ifstate-1.0.0.tar.gz
+e583c764c65dbf00ce6a4269cef5d8a78c2ec47851671cc25bbebd2d6095c42f0a10eccfd021728e05b3b67d8b950f9e4359da63226da551b8dc5ebd5d8aa0ef  ifstate.initd"

@@ -1,0 +1,82 @@
+LXD's tarball includes sources for Go dependencies, so all `go get` steps can
+safely be skipped.
+diff --git a/Makefile b/Makefile
+index c4f605a6b..fe52b5293 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,7 +16,6 @@ ifeq ($(TAG_SQLITE3),)
+ 	exit 1
+ endif
+ 
+-	go get -t -v -d ./...
+ 	CC=$(CC) go install -v -tags "$(TAG_SQLITE3)" $(DEBUG) ./...
+ 	CGO_ENABLED=0 go install -v -tags netgo ./lxd-p2c
+ 	CGO_ENABLED=0 go install -v -tags agent,netgo ./lxd-agent
+@@ -24,7 +23,6 @@ endif
+ 
+ .PHONY: client
+ client:
+-	go get -t -v -d ./...
+ 	go install -v -tags "$(TAG_SQLITE3)" $(DEBUG) ./lxc
+ 	@echo "LXD client built successfully"
+ 
+@@ -111,7 +109,6 @@ deps:
+ 
+ .PHONY: update
+ update:
+-	go get -t -v -d -u ./...
+ 	@echo "Dependencies updated"
+ 
+ .PHONY: update-protobuf
+@@ -132,7 +129,6 @@ ifeq ($(TAG_SQLITE3),)
+ 	exit 1
+ endif
+ 
+-	go get -t -v -d ./...
+ 	CC=$(CC) go install -v -tags "$(TAG_SQLITE3) logdebug" $(DEBUG) ./...
+ 	CGO_ENABLED=0 go install -v -tags "netgo,logdebug" ./lxd-p2c
+ 	CGO_ENABLED=0 go install -v -tags "agent,netgo,logdebug" ./lxd-agent
+@@ -145,7 +141,6 @@ ifeq ($(TAG_SQLITE3),)
+ 	exit 1
+ endif
+ 
+-	go get -t -v -d ./...
+ 	CC=$(CC) go install -a -v -tags "$(TAG_SQLITE3)" $(DEBUG) ./...
+ 	CGO_ENABLED=0 go install -a -v -tags netgo ./lxd-p2c
+ 	CGO_ENABLED=0 go install -a -v -tags agent,netgo ./lxd-agent
+@@ -157,7 +152,6 @@ ifeq ($(TAG_SQLITE3),)
+ 	exit 1
+ endif
+ 
+-	go get -t -v -d ./...
+ 	CC=$(CC) go install -race -v -tags "$(TAG_SQLITE3)" $(DEBUG) ./...
+ 	CGO_ENABLED=0 go install -v -tags netgo ./lxd-p2c
+ 	CGO_ENABLED=0 go install -v -tags agent,netgo ./lxd-agent
+@@ -165,9 +159,6 @@ endif
+ 
+ .PHONY: check
+ check: default
+-	go get -v -x github.com/rogpeppe/godeps
+-	go get -v -x github.com/tsenart/deadcode
+-	go get -v -x github.com/golang/lint/golint
+ 	go test -v -tags "$(TAG_SQLITE3)" $(DEBUG) ./...
+ 	cd test && ./main.sh
+ 
+@@ -182,9 +173,6 @@ dist:
+ 	mkdir -p $(TMP)/_dist/src/github.com/lxc
+ 	ln -s ../../../../lxd-$(VERSION) $(TMP)/_dist/src/github.com/lxc/lxd
+ 
+-	# Download dependencies
+-	cd $(TMP)/lxd-$(VERSION) && GOPATH=$(TMP)/_dist go get -t -v -d ./...
+-
+ 	# Download the cluster-enabled sqlite/dqlite
+ 	mkdir $(TMP)/_dist/deps/
+ 	git clone --depth=1 https://github.com/canonical/dqlite $(TMP)/_dist/deps/dqlite
+@@ -222,7 +210,6 @@ update-po:
+ 	done
+ 
+ update-pot:
+-	go get -v -x github.com/snapcore/snapd/i18n/xgettext-go/
+ 	xgettext-go -o po/$(DOMAIN).pot --add-comments-tag=TRANSLATORS: --sort-output --package-name=$(DOMAIN) --msgid-bugs-address=lxc-devel@lists.linuxcontainers.org --keyword=i18n.G --keyword-plural=i18n.NG lxc/*.go lxc/*/*.go
+ 
+ build-mo: $(MOFILES)

@@ -1,0 +1,37 @@
+# Maintainer: Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+pkgname=wlrobs
+pkgver=0_hg20200608
+pkgrel=0
+pkgdesc="obs-studio plugin that allows you to screen capture on wlroots"
+url="https://hg.sr.ht/~scoopta/wlrobs"
+arch="x86 x86_64" # obs-stduio not provided on other platforms
+license="GPL-3.0-only"
+makedepends="meson ninja obs-studio-dev wayland-dev"
+source="https://dev.alpinelinux.org/archive/wlrobs/wlrobs-$pkgver.tar.gz "
+_srcrev="ee7200c605742e4c4cb75870066b98b78e6ee340"
+builddir="$srcdir/$pkgname-$_srcrev"
+options="!check" # No tests provided
+
+_srcurl="https://hg.sr.ht/~scoopta/wlrobs/archive/$_srcrev.tar.gz"
+
+snapshot() {
+	mkdir -p "$srcdir"
+	wget "$_srcurl" -O "$srcdir/$pkgname-$pkgver.tar.gz"
+	scp "$srcdir/$pkgname-$pkgver.tar.gz" \
+		dev.alpinelinux.org:/archive/$pkgname/
+}
+
+build() {
+	# Disable dmabuf backend, this requires a patched version of obs-studio,
+	# which is not packaged
+	abuild-meson \
+		-Duse_dmabuf=false \
+		build
+	ninja -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C build install
+}
+
+sha512sums="057125035bef093070aeb9123a32522610384db4fb61cb7ec155eb99b5c35abe2d923d1159e58bb42ab290a47108a008a5b4bb83b14ed6b06047d0fa0ffde6f9  wlrobs-0_hg20200608.tar.gz"

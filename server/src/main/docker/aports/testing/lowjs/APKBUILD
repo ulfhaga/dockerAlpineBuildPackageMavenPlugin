@@ -1,0 +1,93 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Maintainer: Jakub Jirutka <jakub@jirutka.cz>
+pkgname=lowjs
+pkgver=1.5.1
+# Keep in sync with submodules in deps/.
+_gitrev_open62541="9f1cbfa96fd050220c86d3e5939d88cab1b680ce"
+_gitrev_duktape="10486db548732957ba9fc8c9e4ad01a857d268bd"
+pkgrel=1
+pkgdesc="A port of Node.JS with far lower system requirements"
+url="https://www.neonious.com/lowjs/"
+arch="all !s390x !ppc64le !mips !mips64"  # excluded archs are not supported
+license="custom"
+makedepends="
+	c-ares-dev
+	cmake
+	jq
+	mbedtls-dev
+	npm
+	py2-setuptools
+	python3
+	python3-dev
+	yaml-dev
+	"
+subpackages="$pkgname-doc"
+source="https://github.com/neonious/lowjs/archive/v$pkgver/$pkgname-$pkgver.tar.gz
+	https://github.com/neonious/open62541/archive/$_gitrev_open62541/open62541-$_gitrev_open62541.tar.gz
+	https://github.com/svaarala/duktape/archive/$_gitrev_duktape/duktape-$_gitrev_duktape.tar.gz
+	https://pypi.org/packages/source/p/pyaml/pyaml-20.4.0.tar.gz
+	use-npm-ci.patch
+	open62541-gcc9.patch
+	unbundle-c-ares.patch
+	unbundle-mbedtls.patch
+	make-flags.patch
+	test.js
+	"
+builddir="$srcdir/$pkgname-$pkgver"
+
+prepare() {
+	cd "$builddir"
+
+	rm -Rf deps/open62541
+	mv ../open62541-$_gitrev_open62541 deps/open62541
+
+	rm -Rf deps/duktape
+	mv ../duktape-$_gitrev_duktape deps/duktape
+
+	easy_install-2.7 --user ../pyaml-*
+
+	default_prepare
+}
+
+build() {
+	local resp=$(curl -fsSL https://api.github.com/repos/neonious/lowjs/commits/v$pkgver)
+	local commit_sha=$(echo "$resp" | jq -r '.sha | .[0:10]')
+	local commit_date=$(echo "$resp" | jq -r '.commit.committer.date | .[0:4]+.[5:7]+.[8:10]')
+	[ "$commit_sha" ] && [ "$commit_date" ] || { eerror "Failed to get commit SHA or date"; return 1; }
+
+	unset LDFLAGS  # fails to build with -Wl,--as-needed
+
+	make -j1 \
+		LOW_LIB_PATH="../lib/low/" \
+		LOW_VERSION="${commit_date}_${commit_sha}"
+}
+
+check() {
+	# XXX: See https://github.com/neonious/lowjs/issues/81
+	#( cd test/tests_script && npm ci )
+	#npm run test -- run
+
+	test -L lib/low || ln -s . lib/low
+	./bin/low "$srcdir"/test.js
+	rm lib/low
+}
+
+package() {
+	install -d "$pkgdir"/usr/lib/low
+	cp -r lib/* "$pkgdir"/usr/lib/low/
+	rm "$pkgdir"/usr/lib/low/BUILT
+
+	install -D -m 0755 bin/low "$pkgdir"/usr/bin/low
+	install -D -m 0644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+sha512sums="254f005f0ca21e2d1efdca7546dad549c1f4b23aab838dfd65f24e8ba165bb9adad6b18a81d5147e3c833539bc6e9090c9fc51e15a3a8179191a2c4e6c7b695d  lowjs-1.5.1.tar.gz
+7c71ff0ce8cda56e4a4cc8e416172fd847f7289d45c4e44e54e56f3081b914d9401c86341ae3d0a4bccd7b6e9c3b274c92892e67e3cd300824bf900cd9f02ac1  open62541-9f1cbfa96fd050220c86d3e5939d88cab1b680ce.tar.gz
+7f34ae3f6f0d9bfd039ef3ba14939eb4d59cf513b5c7fac7e9aec915cb3551751a95c2e8d91d56bae9343d2a834a572516827a7997cf8596cb3e9b127e1f32d5  duktape-10486db548732957ba9fc8c9e4ad01a857d268bd.tar.gz
+432fd215e034beafc07270a6aa8b726d5a16ef8946a95c1db9a34b4f492bbe2089dffbb1ce856d3e8153ec18ac943973a23e3aa9283d53ee0b2e7ba5dcd3d317  pyaml-20.4.0.tar.gz
+b8aecec6aa87eb2ab7ffecaca1989f922042ee534612229872bad10bc0e304951cb66a1d1aa3ba4e76384ca2ea28b8c5b7176eacf6b7df3d59ea7435b7894a48  use-npm-ci.patch
+c2c7f10d327d2e56d2824db02c647c05773c652179f40eff7b376dfbf7eecd72b7d07c18458d59fd195993b261cb9a48e9f521ccb1a519807270c036ed8d5746  open62541-gcc9.patch
+4298f2a26716a01a7bc1175a6f272f3681a6bcb29d916805d825f214b8bf9b7d2ed02d2c51b1c149109118a38391fd3ec8e6ac17c9c72ab926ea12dae5259835  unbundle-c-ares.patch
+4d761c495d09c555b664a0bda9b4bc4d01793bcdce161e16a54f786478a15bbab9feda4c139f38e179158786305399d0edac8348785981c98747c1eca0433b26  unbundle-mbedtls.patch
+002833f2adef30e29fde97f06aa29f4d9ab7244a5cfddd77e9565f898c8a04a7c496bec617492937a54548586da44abf5dd2e979365a44ccfe186b7b654039d0  make-flags.patch
+9ee7d585c9ce17ca00e86e0f74976883fa14e70f3728cf230256f2570dafdaa3adeae1922de5f0dcb74bba8577f9394c54441bc3729c1bb58bb6a298c26651d0  test.js"

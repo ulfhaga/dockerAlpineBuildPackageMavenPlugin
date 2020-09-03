@@ -1,0 +1,164 @@
+# Contributor Eric Molitor <eric@molitor.org>
+# Contributor Patrick Gansterer <paroga@paroga.com>
+# Contributor Travis Tilley <ttilley@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=clang
+# Note: Update together with llvm.
+pkgver=10.0.1
+pkgrel=0
+_llvmver=${pkgver%%.*}
+pkgdesc="A C language family front-end for LLVM"
+arch="all"
+url="https://llvm.org/"
+license="Apache-2.0"
+options="!check" # some 170 failing tests...
+makedepends="
+	cmake
+	isl-dev
+	libedit-dev
+	libexecinfo-dev
+	libxml2-dev
+	libxml2-utils
+	llvm$_llvmver-dev
+	llvm$_llvmver-static
+	llvm$_llvmver-test-utils
+	samurai
+	python3
+	py3-sphinx
+	"
+checkdepends="diffutils bash"
+depends_dev="$pkgname=$pkgver-r$pkgrel $pkgname-extra-tools=$pkgver-r$pkgrel"
+subpackages="$pkgname-static $pkgname-dev $pkgname-doc $pkgname-libs
+	$pkgname-analyzer::noarch
+	$pkgname-extra-tools:extra
+	py3-$pkgname:python:noarch
+	"
+source="https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver/clang-$pkgver.src.tar.xz
+	https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver/clang-tools-extra-$pkgver.src.tar.xz
+	10-add-musl-triples.patch
+	20-Enable-stack-protector-by-default-for-Alpine-Linux.patch
+	30-fix-python-shebangs.patch
+	40-fix-ld-name-on-x86.patch
+	"
+
+builddir="$srcdir/clang-$pkgver.src"
+
+prepare() {
+	mv "$srcdir/clang-tools-extra-$pkgver.src" "$builddir/tools/extra"
+	default_prepare
+}
+
+build() {
+	mkdir -p "$builddir"/build
+	cd "$builddir"/build
+
+	python_version=$(python3 -V | sed 's/.*\([0-9]\{1,\}\.[0-9]\{1,\}\)\..*/\1/')
+
+	cmake .. -G Ninja -Wno-dev \
+		-DCMAKE_BUILD_TYPE=MinSizeRel \
+		-DCMAKE_C_FLAGS_MINSIZEREL_INIT="$CFLAGS" \
+		-DCMAKE_CXX_FLAGS_MINSIZEREL_INIT="$CXXFLAGS" \
+		-DCMAKE_EXE_LINKER_FLAGS_MINSIZEREL_INIT="$LDFLAGS -Wl,-z,stack-size=2097152" \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_VERBOSE_MAKEFILE=OFF \
+		-DCLANG_VENDOR=Alpine \
+		-DCLANG_BUILD_EXAMPLES=OFF \
+		-DCLANG_INCLUDE_DOCS=ON \
+		-DCLANG_PYTHON_BINDINGS_VERSIONS="$python_version" \
+		-DLLVM_BUILD_DOCS=ON \
+		-DLLVM_ENABLE_SPHINX=ON \
+		-DSPHINX_WARNINGS_AS_ERRORS=OFF \
+		-DCLANG_INCLUDE_TESTS=ON \
+		-DCLANG_PLUGIN_SUPPORT=ON \
+		-DLIBCLANG_BUILD_STATIC=ON \
+		-DLLVM_ENABLE_EH=ON \
+		-DLLVM_ENABLE_RTTI=ON
+
+	ninja clang-tblgen
+	ninja
+}
+
+check() {
+	cd "$builddir"/build
+
+	case "$CARCH" in
+	armhf) return;; # FIXME: tests fails on armhf
+	esac
+	lit -sv --param clang_site_config=$builddir/build/test/lib.site.cfg $builddir/build/test
+}
+
+package() {
+	cd "$builddir"/build
+
+	DESTDIR="$pkgdir" ninja install
+	install -m 644 lib/libclang.a "$pkgdir"/usr/lib
+}
+
+static() {
+	pkgdesc="Static libraries for clang"
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/*.a "$subpkgdir"/usr/lib/
+}
+
+dev() {
+	default_dev
+
+	# move back usr/lib/clang/x.y.z/include with files such as altivec.h, msa.h etc
+	# these are needed to build programs *with* clang, not *against* it.
+	mv "$subpkgdir"/usr/lib/clang "$pkgdir"/usr/lib/
+}
+
+analyzer() {
+	pkgdesc="Clang source code analysis framework"
+	depends="$pkgname=$pkgver-r$pkgrel perl python3"
+
+	cd "$pkgdir"
+
+	mkdir -p "$subpkgdir"/usr/bin \
+		"$subpkgdir"/usr/libexec \
+		"$subpkgdir"/usr/share/
+	mv usr/bin/scan-* "$subpkgdir"/usr/bin/
+	mv usr/libexec/*-analyzer "$subpkgdir"/usr/libexec/
+	mv usr/share/scan-* "$subpkgdir"/usr/share/
+}
+
+extra() {
+	pkgdesc="Extra tools built using Clang’s tooling APIs"
+
+	cd "$pkgdir"
+
+	mkdir -p "$subpkgdir"/usr/bin "$subpkgdir"/usr/share/clang
+
+	mv usr/bin/clang-apply-replacements "$subpkgdir"/usr/bin/
+	mv usr/bin/clang-reorder-fields "$subpkgdir"/usr/bin/
+	mv usr/bin/modularize "$subpkgdir"/usr/bin/
+	mv usr/bin/clang-tidy "$subpkgdir"/usr/bin/
+	mv usr/share/clang/*clang-tidy* "$subpkgdir"/usr/share/clang
+	mv usr/bin/clang-change-namespace "$subpkgdir"/usr/bin/
+	mv usr/bin/clang-doc "$subpkgdir"/usr/bin/
+	mv usr/bin/clang-include-fixer "$subpkgdir"/usr/bin/
+	#mv usr/bin/clang-move "$subpkgdir"/usr/bin/
+	mv usr/bin/find-all-symbols "$subpkgdir"/usr/bin/
+	mv usr/share/clang/clang-include-fixer* "$subpkgdir"/usr/share/clang
+	mv usr/share/clang/run-find-all-symbols.py "$subpkgdir"/usr/share/clang
+	mv usr/bin/clang-query "$subpkgdir"/usr/bin/
+	mv usr/bin/clangd* "$subpkgdir"/usr/bin/
+	#mv usr/bin/pp-trace "$subpkgdir"/usr/bin/
+	#mv usr/bin/tool-template "$subpkgdir"/usr/bin/
+}
+
+python() {
+	pkgdesc="Clang Python Bindings"
+	depends="$pkgname-libs=$pkgver-r$pkgrel python3"
+
+	mkdir -p "$subpkgdir"/usr/lib
+	mv "$pkgdir"/usr/lib/python* "$subpkgdir"/usr/lib/
+}
+
+sha512sums="c6712d491ce5e166ef72724cf855d742d88da825ffc25585612d7f2eb7770343e3ae48fa78e0af3e5d5efdde3a9686a7361dac3b546a4378de22448ea6e4026c  clang-10.0.1.src.tar.xz
+7833197fd1f6d65e8f1fa1c169844a40e8b64f6a5cff984b29333d92527dcef532749907df2ea35b20643898baa0f49bb64b03e4ef54f9a3c4dd77bf1750a634  clang-tools-extra-10.0.1.src.tar.xz
+533558863dc7247202b2a739e1bd2d81a99a16be329370cb734d338284b5408ecd14fe78ac836aaf922e377334b7a3ebef532cf8395d91aafe346bf71eb8b7fc  10-add-musl-triples.patch
+a8557c5a26774bf98548b9fe77cd54a1b0591bc75beffcb5fbd070986ba954d82255dddbcfcc884c07c3f433b1428c2a6ce649c3a158f4352f30e7057872335b  20-Enable-stack-protector-by-default-for-Alpine-Linux.patch
+c7f34b425b0dcea9752eeb7ff3d3a33af9cc45740fd3e77d52e4d610c5fd3daaa4d59138a255b057ef886915615a77ec1e6a447f3818b4b2724129c0ba354932  30-fix-python-shebangs.patch
+c945455cd02345ba84343fc69c82a684566fa7a38d59806035b5f07dce0a4b1892b428283005883f1c202ea87d75de60066497c127ab9292c060700e8f8081d7  40-fix-ld-name-on-x86.patch"

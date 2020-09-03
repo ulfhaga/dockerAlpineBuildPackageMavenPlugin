@@ -1,0 +1,29 @@
+# Contributor: ScrumpyJack <scrumpyjack@st.ilet.to>
+# Maintainer:
+pkgname=twm
+pkgver=1.0.11
+pkgrel=0
+pkgdesc="Tom's or Tab Window Manager for the X Window System"
+url="https://www.x.org/archive/X11R6.8.1/doc/twm.1.html"
+arch="all"
+license="MIT"
+options="!check"  # No test suite.
+makedepends="bison util-macros libxext-dev libx11-dev libxt-dev libice-dev
+	libxmu-dev"
+subpackages="$pkgname-doc"
+source="https://www.x.org/releases/individual/app/twm-$pkgver.tar.xz"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--datarootdir=/usr/share
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="948034bba23e6b6c4412fcd2e46bb11a9980297601218a54a5055165ab0229a44dde0d50f338b24e82d76f390597e2fa09d11ff7f3fe1b1d736b10083c7da20d  twm-1.0.11.tar.xz"

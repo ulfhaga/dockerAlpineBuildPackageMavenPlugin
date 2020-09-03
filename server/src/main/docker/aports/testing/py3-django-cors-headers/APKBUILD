@@ -1,0 +1,29 @@
+# Contributor: Leonardo Arena <rnalrd@alpinelinux.org>
+# Maintainer: Justin Berthault <justin.berthault@zaclys.net>
+pkgname=py3-django-cors-headers
+pkgver=3.5.0
+pkgrel=0
+pkgdesc="Django app for handling the server headers required for Cross-Origin Resource Sharing (CORS)"
+options="!check" # Requires running django instance
+url="https://github.com/OttoYiu/django-cors-headers"
+arch="noarch"
+license="MIT"
+depends="py3-django"
+makedepends="py3-setuptools"
+checkdepends="py3-tz py3-mock py3-pytest py3-coverage py3-pytest-cov"
+source="https://files.pythonhosted.org/packages/source/d/django-cors-headers/django-cors-headers-$pkgver.tar.gz"
+builddir="$srcdir"/django-cors-headers-$pkgver
+
+build() {
+	python3 setup.py --quiet build
+}
+
+check() {
+	python3 runtests.py ./tests
+}
+
+package() {
+	python3 setup.py --quiet install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="54a77f0da445f91d8ec9747dcd1d3be0db7be865819621f7d0c8ad3caa8aadeb03e8e8b486a0d6b5864b7ccbe856915f2604a28e9d824ca2561d828bc52019bf  django-cors-headers-3.5.0.tar.gz"

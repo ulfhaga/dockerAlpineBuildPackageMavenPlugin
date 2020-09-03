@@ -1,0 +1,48 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=akonadi-search
+pkgver=20.08.0
+pkgrel=0
+pkgdesc="Libraries and daemons to implement searching in Akonadi"
+arch="all !armhf"
+url="https://community.kde.org/KDE_PIM"
+license="(GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only)"
+depends_dev="qt5-qtbase-dev ki18n-dev kconfig-dev kcrash-dev kdbusaddons-dev kcmutils-dev kio-dev krunner-dev xapian-core-dev akonadi-dev kcontacts-dev kmime-dev akonadi-mime-dev kcalendarcore-dev"
+makedepends="$depends_dev extra-cmake-modules"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/release-service/$pkgver/src/akonadi-search-$pkgver.tar.xz"
+subpackages="$pkgname-dev $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+
+	# akonadi-sqlite-schedulertest, konadi-sqlite-collectionindexingjobtest,
+	# akonadi-mysql-schedulertest and akonadi-mysql-collectionindexingjobtest
+	# require running dbus server
+
+	# Prevent the lines using more than 80 characters by looping
+	local skipped_tests="("
+	local tests="
+		akonadi-sqlite-scheduler
+		akonadi-sqlite-collectionindexingjob
+		akonadi-mysql-scheduler
+		akonadi-mysql-collectionindexingjob"
+	for test in $tests; do
+		skipped_tests="$skipped_tests|$test"
+	done
+	skipped_tests="$skipped_tests)test"
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "$skipped_tests"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+sha512sums="a3d0449324e1921aebeb58899aacf59c5139ea71987977d9add7915accb7f46749924cea7b0f6ee5c55b848020e8aa413a80c5047c51ab8a4f4aeefc6b65d979  akonadi-search-20.08.0.tar.xz"

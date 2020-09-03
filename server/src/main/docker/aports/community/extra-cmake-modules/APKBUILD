@@ -1,0 +1,35 @@
+# Contributor: k0r10n <k0r10n.dev@gmail.com>
+# Contributor: Ivan Tham <pickfire@riseup.net>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=extra-cmake-modules
+pkgver=5.73.0
+pkgrel=0
+pkgdesc="Extra CMake modules"
+url="https://projects.kde.org/projects/kdesupport/extra-cmake-modules"
+arch="noarch !armhf" # Blocked by qt5-qtdeclarative
+license="BSD-3-Clause"
+depends="cmake"
+makedepends="py3-sphinx"
+checkdepends="qt5-qtbase-dev qt5-qtquickcontrols2-dev"
+source="http://download.kde.org/stable/frameworks/${pkgver%.*}/extra-cmake-modules-$pkgver.tar.xz"
+subpackages="$pkgname-doc"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DSphinx_BUILD_EXECUTABLE=/usr/bin/sphinx-build
+	cmake --build build
+}
+
+check() {
+	cd build
+	# Broken tests
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest -E "(KDEFetchTranslations|KDEInstallDirsTest.relative_or_absolute_usr|KDEInstallDirsTest.relative_or_absolute_qt)"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="2ecfbfb757de92e6f0855c102c1b9374807fbffdf2b38a9e5c270baae2382b649c88944ed95c27f2519fb8432a0da32122735eb6f986569ed3229cc5d7f74cad  extra-cmake-modules-5.73.0.tar.xz"

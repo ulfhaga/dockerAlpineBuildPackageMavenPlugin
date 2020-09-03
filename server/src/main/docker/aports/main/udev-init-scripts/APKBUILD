@@ -1,0 +1,28 @@
+# Contributor: Valery Kartel <valery.kartel@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=udev-init-scripts
+pkgver=34
+pkgrel=0
+pkgdesc="udev startup scripts for openrc"
+url="https://gitweb.gentoo.org/repo/gentoo.git/tree/sys-fs/udev-init-scripts"
+arch="noarch"
+options="!check" # They are only scripts
+license="GPL-2.0-only"
+replaces="udev"
+subpackages="$pkgname-openrc"
+install="$pkgname.post-install $pkgname.post-upgrade"
+source="https://gitweb.gentoo.org/proj/udev-gentoo-scripts.git/snapshot/udev-gentoo-scripts-$pkgver.tar.gz
+	modloop.patch
+	"
+builddir="$srcdir/udev-gentoo-scripts-$pkgver"
+
+build() {
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="ed48bcd0815e235b2b3fa38f857cd97f164aac7c6ea805be87890eb06a0d52064bd733da240c6e2a34c8c73e10fd047b5e53096de06f17bc81d8266d70c0cc9d  udev-gentoo-scripts-34.tar.gz
+8ae5b7574bff461006f5f4034313e6e5f3a88d5bb00fbb850c169a4685abafcb592c82283418e2b9dc8a238b460fa1a153d992905b9b8edd1c0949f7c8dfc274  modloop.patch"

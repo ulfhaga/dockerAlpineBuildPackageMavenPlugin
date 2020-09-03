@@ -1,0 +1,36 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: David Demelier <markand@malikania.fr>
+pkgname=libretro-mupen64plus
+pkgver=0_git20200430
+pkgrel=0
+_commit="f68044fe275ef49ea142a304af873aa08aca78a3"
+arch="x86_64" # Seems to be broken on non 64-bit platforms
+url="https://github.com/libretro/mupen64plus-libretro-nx"
+pkgdesc="libretro port of Mupen64 Plus with GLideN64"
+license="GPL-2.0-or-later"
+makedepends="mesa-dev zlib-dev libpng-dev nasm"
+source="$pkgname-$pkgver.tar.gz::https://github.com/libretro/mupen64plus-libretro-nx/archive/$_commit.tar.gz
+	musl-incompatibility.patch"
+builddir="$srcdir/mupen64plus-libretro-nx-$_commit"
+options="!check" # No tests
+
+build() {
+	case "$CARCH" in
+		x86)
+			WITH_DYNAREC=x86 make
+			;;
+		x86_64)
+			WITH_DYNAREC=x86_64 make
+			;;
+		armhf|armv7|aarch64)
+			WITH_DYNAREC=arm make
+			;;
+	esac
+}
+
+package() {
+	install -Dm644 mupen64plus_next_libretro.so "$pkgdir"/usr/lib/libretro/mupen64plus_next_libretro.so
+}
+
+sha512sums="d0ad09dfbcfcfa5826857a30bac2c798f171abfa077064bc2089274388a3bdba03195b088dad1c932c9534a2e7f069f920535ce26f2b3d29b29ece5cbb2c5711  libretro-mupen64plus-0_git20200430.tar.gz
+8680a71cbecd1dfc30e1150d0cf258b20b928aa4eff341087a031c72459fc8a11415ebc5c8ff4fdd5b43915a6450f4dcad1aa9fb7ecbaceeed62aec3c45b5761  musl-incompatibility.patch"

@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=libkdcraw
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://kde.org"
+pkgdesc="RAW image file format support for KDE"
+license="GPL-2.0-or-later AND LGPL-2.0-or-later"
+depends_dev="qt5-qtbase-dev libraw-dev"
+makedepends="$depends_dev extra-cmake-modules"
+source="https://download.kde.org/stable/release-service/$pkgver/src/libkdcraw-$pkgver.tar.xz"
+subpackages="$pkgname-dev"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="318f9b092950cc529ff8b4b426d5029a60885d166e1c95ad9eda423a46cd94187125ced4a431612a94dbb6b0aae00cff8048681a70c5ba50101d8b27aa1f9d6f  libkdcraw-20.08.0.tar.xz"

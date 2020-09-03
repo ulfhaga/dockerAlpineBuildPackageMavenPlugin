@@ -1,0 +1,76 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kate
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by extra-cmake-modules
+url="https://kde.org/applications/utilities/org.kde.kate"
+pkgdesc="A multi-document, multi-view text editor"
+license="LGPL-2.0-only AND LGPL-2.0-or-later"
+makedepends="extra-cmake-modules qt5-qtbase-dev kconfig-dev kcrash-dev ki18n-dev kjobwidgets-dev kio-dev kparts-dev ktexteditor-dev kwindowsystem-dev kxmlgui-dev kiconthemes-dev kactivities-dev kdoctools-dev plasma-framework-dev kitemmodels-dev threadweaver-dev knewstuff-dev kuserfeedback-dev"
+checkdepends="xvfb-run"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kate-$pkgver.tar.xz"
+subpackages="kwrite:kwrite kwrite-doc:kwrite_doc kwrite-lang:kwrite_lang $pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build/kate \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_kwrite=FALSE
+	cmake --build build/kate
+	cmake -B build/kwrite \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_kate=FALSE \
+		-DBUILD_addons=FALSE
+	cmake --build build/kwrite
+}
+
+check() {
+	cd build/kate
+	# kateapp-session_manager_test broken
+	# kateapp-sessions_action_test requires OpenGL
+	CTEST_OUTPUT_ON_FAILURE=TRUE xvfb-run ctest -E "(kateapp-session_manager|kateapp-sessions_action)_test"
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build/kate --target install
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname
+	mv "$pkgdir"/usr/share/doc/HTML "$pkgdir"/usr/share/doc/$pkgname/
+}
+
+kwrite() {
+	cd "$builddir"
+	DESTDIR="$subpkgdir" cmake --build build/kwrite --target install
+
+	mkdir -p "$subpkgdir"/usr/share/doc/$subpkgname
+	mv "$subpkgdir"/usr/share/doc/HTML "$subpkgdir"/usr/share/doc/$subpkgname/
+
+	# Man package only exists for Kate
+	rm -rf "$subpkgdir"/usr/share/man
+}
+
+kwrite_doc() {
+	pkgdesc="KWrite documentation"
+	install_if="docs kwrite=$pkgver-r$pkgrel"
+
+	mkdir -p "$subpkgdir"/usr/share/doc/kwrite
+	mv "$subpkgdir"/../kwrite/usr/share/doc/kwrite/HTML \
+		"$subpkgdir"/usr/share/doc/kwrite
+}
+
+kwrite_lang() {
+	pkgdesc="Languages for package KWrite"
+	install_if="kwrite=$pkgver-r$pkgrel lang"
+
+	local dir
+	for dir in ${langdir:-/usr/share/locale}; do
+		mkdir -p "$subpkgdir"/${dir%/*}
+		mv "$subpkgdir"/../kwrite/"$dir" "$subpkgdir"/"$dir"
+	done
+}
+
+sha512sums="223b90e9e17a4b3e41df64cb923b9d62783e49215d4e68722cfd81db0278b122aea5be61cc6fdd9ba87051992c1f3cf2fe3a74042f8d1b4b9a225e7fa93b6e41  kate-20.08.0.tar.xz"

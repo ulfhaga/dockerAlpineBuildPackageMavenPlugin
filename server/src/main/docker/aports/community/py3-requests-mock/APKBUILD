@@ -1,0 +1,33 @@
+# Contributor: Robert Sacks <robert@sacks.email>
+# Maintainer: Robert Sacks <robert@sacks.email>
+pkgname=py3-requests-mock
+pkgver=1.8.0
+pkgrel=0
+pkgdesc="Mock out responses from the requests package"
+url="https://pypi.org/project/requests-mock/"
+arch="noarch"
+license="Apache-2.0"
+depends="python3 py3-requests py3-six"
+makedepends="py3-pbr"
+checkdepends="py3-fixtures py3-mock py3-purl py3-pytest py3-sphinx py3-testrepository py3-testtools"
+source="https://files.pythonhosted.org/packages/source/r/requests-mock/requests-mock-$pkgver.tar.gz"
+builddir="$srcdir/requests-mock-$pkgver"
+
+prepare() {
+	default_prepare
+	sed -i 's/python/python3/' .testr.conf
+}
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py testr
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="252bce965e0fca03cd5ce09912c726045f9c632e90bfee13b06c9f3e2c6b70eab7f39cf8e7efb3b7d2cf2b5d79cc5c5ba6e2379b3d48ce33bf78861ada911918  requests-mock-1.8.0.tar.gz"

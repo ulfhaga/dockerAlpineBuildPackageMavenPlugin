@@ -1,0 +1,55 @@
+# Contributor: Francesco Colista <fcolista@alpinelinux.org>
+# Maintainer: Francesco Colista <fcolista@alpinelinux.org>
+pkgname=mediastreamer2
+pkgver=4.4.0
+pkgrel=1
+pkgdesc="A library written in C that allows you to create and run audio and video streams"
+url="https://www.linphone.org/technical-corner/mediastreamer2/overview"
+arch="all"
+license="GPL-2.0-or-later"
+options="!check" # no test available
+makedepends="cmake gettext-dev ffmpeg-dev ortp-dev
+	libxv-dev speex-dev speexdsp-dev libsrtp-dev
+	v4l-utils-dev bctoolbox-dev mesa-dev glew-dev
+	opus-dev libpcap-dev spandsp-dev tiff-dev libtheora-dev
+	alsa-lib-dev python3-dev gsm-dev sqlite-dev libxml2-dev
+	jpeg-dev libvpx-dev bzrtp-dev"
+subpackages="$pkgname-dev"
+source="https://gitlab.linphone.org/BC/public/mediastreamer2/-/archive/$pkgver/mediastreamer2-$pkgver.tar.gz"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DCMAKE_MODULE_PATH=/usr/lib/cmake \
+		-DCMAKE_SKIP_INSTALL_RPATH=ON \
+		-DENABLE_STRICT=NO \
+		-DENABLE_ALSA=YES \
+		-DENABLE_STATIC=NO \
+		-DENABLE_RESAMPLE=YES \
+		-DENABLE_JPEG=YES \
+		-DENABLE_PCAP=YES \
+		-DENABLE_FFMPEG=YES \
+		-DENABLE_SPEEX_CODEC=YES \
+		-DENABLE_SPEEX_DSP=YES \
+		-DENABLE_SHARED=YES \
+		-DENABLE_VPX=YES \
+		-DENABLE_UNIT_TESTS=NO
+	make -C build
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+dev() {
+	default_dev
+	mkdir -p "$subpkgdir"/usr/lib/cmake/Mediastreamer2
+	mv "$pkgdir"/usr/share/Mediastreamer2/cmake/* "$subpkgdir"/usr/lib/cmake/Mediastreamer2
+	# Remove empty dirs
+	rmdir "$pkgdir"/usr/share/Mediastreamer2/cmake
+	rmdir "$pkgdir"/usr/share/Mediastreamer2
+}
+
+sha512sums="2a80a82d51416bbf13c2ef9c5275ac13e40db52be62fea41f619d7af5f96531e18421bba02c5365c6a53e908e77c93dbf3255baa302bbbc3e6a3c0499464f5a0  mediastreamer2-4.4.0.tar.gz"

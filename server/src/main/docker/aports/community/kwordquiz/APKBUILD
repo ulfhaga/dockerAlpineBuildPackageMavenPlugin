@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kwordquiz
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://edu.kde.org/kwordquiz"
+pkgdesc="Flash Card Trainer"
+license="GPL-2.0-or-later AND LGPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev ki18n-dev kcrash-dev kconfig-dev kconfigwidgets-dev kdoctools-dev kguiaddons-dev kiconthemes-dev kitemviews-dev knotifyconfig-dev knewstuff-dev knotifications-dev kwindowsystem-dev kxmlgui-dev phonon-dev libkeduvocdocument-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kwordquiz-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="0d7d5f66fcb16b92aa373f97f7f7af7da89e199af31ea01856d1ea7bf1b64c66cd0b5e4f82035dc744016fdd8d49a4a9be659000556ad1345c3fa0c71e422e9d  kwordquiz-20.08.0.tar.xz"

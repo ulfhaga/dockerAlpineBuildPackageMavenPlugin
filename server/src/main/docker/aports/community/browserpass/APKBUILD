@@ -1,0 +1,44 @@
+# Maintainer: Rasmus Thomsen <oss@cogitri.dev>
+pkgname=browserpass
+pkgver=3.0.7
+pkgrel=0
+pkgdesc="Browser extension for pass"
+url="https://github.com/browserpass/browserpass-native"
+arch="all !mips64" # go
+license="MIT"
+depends="pass"
+makedepends="go git"
+source="$pkgname-$pkgver.tar.gz::https://github.com/browserpass/browserpass-native/archive/$pkgver.tar.gz"
+builddir="$srcdir/github.com/browserpass/browserpass-native"
+
+prepare() {
+	mkdir -p "${builddir%/*}"
+	mv "$srcdir/browserpass-native-$pkgver" "$builddir"
+	default_prepare
+}
+
+build() {
+	make browserpass configure
+}
+
+check() {
+	make test
+}
+
+package() {
+	install -dm0755 "$pkgdir"/usr/bin \
+		"$pkgdir"/usr/lib/mozilla/native-messaging-hosts \
+		"$pkgdir"/etc/chromium/native-messaging-hosts \
+		"$pkgdir"/etc/chromium/policies/managed
+
+	install -m0755 browserpass "$pkgdir"/usr/bin/browserpass
+
+	local targetname=com.github.browserpass.native.json
+
+	install -m644 browser-files/firefox-host.json "$pkgdir"/usr/lib/mozilla/native-messaging-hosts/$targetname
+
+	install -m644 browser-files/chromium-host.json "$pkgdir"/etc/chromium/native-messaging-hosts/$targetname
+	install -m644 browser-files/chromium-policy.json "$pkgdir"/etc/chromium/policies/managed/$targetname
+}
+
+sha512sums="bc9fba22b744c169ea901b452223aff585a8787c8bd1067318e28fb4763ad4435dfdcd4fbf2900f5e2779eef7d3dedc7d45f48434d2b4c3dcfe9c164e4f048a7  browserpass-3.0.7.tar.gz"

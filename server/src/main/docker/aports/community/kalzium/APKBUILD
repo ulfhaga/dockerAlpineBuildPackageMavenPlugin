@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kalzium
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf !mips !mips64"
+url="https://edu.kde.org/kalzium/"
+pkgdesc="Periodic Table of Elements "
+license="GPL-2.0-or-later AND LGPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev karchive-dev kconfig-dev kcoreaddons-dev kdoctools-dev ki18n-dev khtml-dev kparts-dev kplotting-dev solid-dev kunitconversion-dev kwidgetsaddons-dev knewstuff-dev eigen-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kalzium-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang $pkgname-dev"
+options="!check" # No tests
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="21827886d0831e4845964aa8bc24194bc2c2381d169194a947e483a157d3058954e296cfbcacf437573685db2d0317242ca977c75933842c5b8a4ebc18723d8b  kalzium-20.08.0.tar.xz"

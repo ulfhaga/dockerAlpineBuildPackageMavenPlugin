@@ -1,0 +1,34 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-dask
+pkgver=2.24.0
+pkgrel=0
+pkgdesc="Parallel computing with task scheduling"
+url="https://dask.org/"
+arch="noarch !mips !mips64 !s390x" # Blocked by py3-partd
+license="BSD-3-Clause"
+depends="python3 py3-toolz py3-numpy py3-pandas py3-fsspec py3-partd py3-yaml"
+makedepends="py3-setuptools"
+checkdepends="py3-pytest py3-pytest-runner"
+source="https://pypi.python.org/packages/source/d/dask/dask-$pkgver.tar.gz"
+builddir="$srcdir/dask-$pkgver"
+
+case "$CARCH" in
+	# Python segfaults while running the tests
+	ppc64le) options="$options !check" ;;
+esac
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	# test_parquet.py requires not available packages
+	pytest --ignore=dask/dataframe/io/tests/test_parquet.py
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="cf9a781c64eca4be84b82d026cfa1883d54ce18c93625e28c085a7bd63ac129befeded808c817e4adab790c28aa2eeca4f79c7086be683f1a7d30c6d1961c0ae  dask-2.24.0.tar.gz"

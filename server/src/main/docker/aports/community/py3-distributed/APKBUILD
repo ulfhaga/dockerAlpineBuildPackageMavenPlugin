@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=py3-distributed
+pkgver=2.24.0
+pkgrel=0
+pkgdesc="A library for distributed computation"
+url="https://distributed.dask.org/"
+arch="noarch !mips !mips64 !s390x" # Blocked by py3-dask
+license="BSD-3-Clause"
+depends="python3"
+depends="py3-dask py3-yaml py3-tornado py3-tblib py3-click py3-cloudpickle py3-msgpack py3-psutil py3-sortedcontainers py3-zict"
+makedepends="py3-setuptools python3-dev linux-headers yaml-dev"
+checkdepends="py3-pytest py3-pytest-asyncio py3-requests py3-paramiko py3-arrow py3-h5py py3-scipy py3-lz4 py3-jsonschema"
+source="https://pypi.python.org/packages/source/d/distributed/distributed-$pkgver.tar.gz"
+# Tests require ipv6 stack which might not always be available yet
+# Net required for tests
+options="!check"
+builddir="$srcdir/distributed-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	PYTHONPATH="$PWD/build/lib" pytest
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="d29747bba7ccfd3de8999f54e28ced0b176523803d1def50ba88ff48ae906dd2a7effcc40ba86ab782b662335e2e3ef5017dd4e155a94d34a2ef5c58639d887d  distributed-2.24.0.tar.gz"

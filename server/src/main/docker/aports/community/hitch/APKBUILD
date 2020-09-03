@@ -1,0 +1,44 @@
+# Contributor: Raphael Cohn <raphael.cohn@stormmq.com>
+# Contributor: prez <prez@national.shitposting.agency>
+# Maintainer: Raphael Cohn <raphael.cohn@stormmq.com>
+pkgname=hitch
+pkgver=1.6.0
+pkgrel=0
+pkgdesc="hitch is a TLS / SSL endpoint like stunnel"
+url="https://hitch-tls.org/"
+arch="all"
+license="BSD-2-Clause"
+makedepends="libev-dev openssl-dev py3-docutils bison flex"
+install="$pkgname.pre-install"
+subpackages="$pkgname-doc $pkgname-openrc"
+source="https://hitch-tls.org/source/hitch-$pkgver.tar.gz
+	hitch.initd
+	hitch.conf
+	"
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--localstatedir=/var \
+		--enable-tcp-fastopen
+	make
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
+	install -Dm644 "$srcdir/$pkgname.conf" "$pkgdir/etc/$pkgname/hitch.conf"
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname/examples/
+	install -m644 hitch.conf.example \
+		"$pkgdir"/usr/share/doc/$pkgname/examples/
+}
+
+sha512sums="56e40960e188549ec4d211b98bee3647acd3ed75168e29bb65e64137d5b270b0cae1c100c4dcbb6674e311223f056aeb44ff0265610cd6bf848b75828769d973  hitch-1.6.0.tar.gz
+961dfe4eab08e96e77def9858617537e10a6b709412cb19add060dbd397c11fbfe7f4db120fc2f6863154aec9b4eef1d18c2a325938f2dbef23775e053f1e4fc  hitch.initd
+c2db10a0fec44958f9e3056b013743b4f6c4d0aa21e030120bf7e2f9a3941e276ca1f85ab2a1c051ac17aacd857cae13f308f4d192edc61b2322ab9dbe99f99c  hitch.conf"

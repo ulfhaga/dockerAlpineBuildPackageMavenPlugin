@@ -1,0 +1,33 @@
+# Contributor: Łukasz Jendrysik
+# Contributor: Eivind Uggedal <eu@eju.no>
+# Maintainer: prspkt <prspkt@protonmail.com>
+pkgname=herbstluftwm
+pkgver=0.8.3
+pkgrel=0
+pkgdesc="Manual tiling window manager"
+url="https://herbstluftwm.org"
+arch="all"
+license="BSD-2-Clause"
+makedepends="asciidoc cmake glib-dev libxinerama-dev libxrandr-dev"
+subpackages="$pkgname-doc
+	$pkgname-bash-completion
+	$pkgname-zsh-completion
+	$pkgname-fish-completion
+	"
+source="https://herbstluftwm.org/tarballs/herbstluftwm-$pkgver.tar.gz"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DBASHCOMPLETIONDIR=/usr/share/bash-completion/completions \
+		-DFISHCOMPLETIONDIR=/usr/share/fish/completions \
+		-DZSHCOMPLETIONDIR=/usr/share/zsh/site-functions
+	make -C build
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+sha512sums="ff6acb64a6609030abfe315452567f7011088b39e123f3fd988448183c4bf1c65aa0ba49ba1b0ab18b959448e12638a8198093db25bcfba828791e3305966ef1  herbstluftwm-0.8.3.tar.gz"

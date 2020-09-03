@@ -1,0 +1,76 @@
+# Contributor: Matt Dainty <matt+alpine@bodgit-n-scarper.com>
+# Contributor: Dermot Bradley <dermot_bradley@yahoo.com>
+# Maintainer: Dermot Bradley <dermot_bradley@yahoo.com>
+pkgname=cloud-init
+pkgver=20.3
+pkgrel=0
+pkgdesc="Cloud instance init scripts"
+url="https://cloud-init.io"
+# Dependant package "cloud-utils-growpart" is not available for mips,
+# mips64, or s390x so disable these archs for this package too.
+arch="noarch !mips !mips64 !s390x"
+license="Apache-2.0 OR GPL-3.0-only"
+depends="
+	blkid
+	cloud-utils-growpart
+	e2fsprogs-extra
+	eudev
+	ifupdown-ng
+	iproute2-minimal
+	python3
+	py3-configobj
+	py3-jinja2
+	py3-jsonpatch
+	py3-jsonschema
+	py3-oauthlib
+	py3-requests
+	py3-six
+	py3-yaml
+	shadow
+	sudo
+	"
+makedepends="py3-setuptools"
+subpackages="$pkgname-doc $pkgname-bash-completion $pkgname-openrc"
+source="cloud-init-$pkgver.tar.gz::https://github.com/canonical/cloud-init/archive/$pkgver.tar.gz
+	interfaces
+	"
+
+prepare() {
+	default_prepare
+}
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py check
+}
+
+package() {
+	python3 setup.py install \
+		--prefix=/usr --root="$pkgdir" --init-system=sysvinit_openrc
+
+	mkdir -p \
+		"$pkgdir"/etc/network
+	install -m644 \
+		"$srcdir"/interfaces \
+		"$pkgdir"/etc/network/
+
+	# Delete non-Alpine distribution template files
+	for distro in \
+		debian fedora freebsd opensuse redhat rhel sles suse ubuntu
+	do
+		for file in \
+			"$pkgdir"/etc/cloud/templates/*."$distro".tmpl
+		do
+			rm "$file"
+		done
+	done
+
+	# Delete systemd template file
+	rm "$pkgdir"/etc/cloud/templates/timesyncd.conf.tmpl
+}
+
+sha512sums="10008710f1876538dab445b07e768953adf8ee31c8848bdf4c95201d6bc894b15ed042e7c90b2cf59491c9dc4b163f64d2be275fbd954f52cb6e4bf37b8e227b  cloud-init-20.3.tar.gz
+48b25ec4457c2b3772a7d210033551d041749a0d1869818d888030e6df7fd9bbc13a38b95cf465de3d46d96881a722f94a337584ce48f280c4a52b819586563a  interfaces"

@@ -1,0 +1,28 @@
+# Contributor: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+# Maintainer: Kaarle Ritvanen <kaarle.ritvanen@datakunkku.fi>
+pkgname=py3-django-phonenumber-field
+pkgver=4.0.0
+pkgrel=0
+pkgdesc="An international phone number field for django models"
+url="https://github.com/stefanfoulis/django-phonenumber-field"
+arch="noarch"
+license="MIT"
+depends="py3-babel py3-django py3-phonenumbers"
+makedepends="py3-setuptools"
+source="https://files.pythonhosted.org/packages/source/d/django-phonenumber-field/django-phonenumber-field-$pkgver.tar.gz"
+builddir="$srcdir/django-phonenumber-field-$pkgver"
+options="!check" # test fails. its unclear how tests are supposed to be executed
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --root "$pkgdir"
+}
+
+sha512sums="ee6eab8b91082b4e316d1a0511891b5ad0af9a867694be9a43b9c1a9e6fa0202c262b186641e840da678954d0968d4a956aba8a923f955a38d4c87aeae34d819  django-phonenumber-field-4.0.0.tar.gz"

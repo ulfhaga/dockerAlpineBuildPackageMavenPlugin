@@ -1,0 +1,55 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=libvpx
+pkgver=1.9.0
+pkgrel=0
+pkgdesc="Library for the vp8 codec"
+url="https://www.webmproject.org/"
+arch="all"
+license="BSD-3-Clause"
+makedepends="coreutils yasm bash perl diffutils linux-headers" # linux-headers is needed on ppc64le
+subpackages="$pkgname-dev $pkgname-utils"
+source="$pkgname-$pkgver.tar.gz::https://github.com/webmproject/libvpx/archive/v$pkgver.tar.gz
+	fix-arm-float-abi.patch
+	"
+
+# secfixes:
+#   1.8.2-r0:
+#     - CVE-2020-0034
+#   1.8.1-r0:
+#     - CVE-2019-9371
+#     - CVE-2019-9433
+#     - CVE-2019-9325
+#     - CVE-2019-9232
+
+build() {
+	# build fix for arm
+	export CROSS=" "
+	bash ./configure \
+		--enable-pic \
+		--enable-libs \
+		--enable-runtime-cpu-detect \
+		--enable-vp8 \
+		--enable-vp9 \
+		--enable-shared \
+		--disable-install-srcs \
+		--enable-postproc \
+		--disable-static
+	make
+}
+
+package() {
+	make DIST_DIR="$pkgdir"/usr install
+	chmod 644 "$pkgdir"/usr/include/vpx/*.h \
+		"$pkgdir"/usr/lib/pkgconfig/*
+	chown root:root -R "$pkgdir"
+	chmod 755 "$pkgdir"/usr/lib/*
+}
+
+utils() {
+	pkgdesc="VP8 utilities and tools"
+	install -d "$subpkgdir"/usr
+	mv "$pkgdir"/usr/bin "$subpkgdir"/usr/
+}
+
+sha512sums="8d544552b35000ea5712aec220b78bb5f7dc210704b2f609365214cb95a4f5a0e343b362723d829cb4a9ac203b10d5443700ba84b28fd6b2fefbabb40663e298  libvpx-1.9.0.tar.gz
+4eadbc2f4eb68eaff35cf85515aef271d6fd47293a53cba7b7a6e9e0fb71106dfb5ded45b9e9ba83264a91846e4a5fa4db42e39fc3eaff6ac37769e622f90f6c  fix-arm-float-abi.patch"

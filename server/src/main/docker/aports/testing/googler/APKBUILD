@@ -1,0 +1,33 @@
+# Contributor: Ivan Tham <pickfire@riseup.net>
+# Maintainer: Ivan Tham <pickfire@riseup.net>
+pkgname=googler
+pkgver=4.2
+pkgrel=0
+pkgdesc="Google Search, Google Site Search, Google News from the terminal"
+url="https://github.com/jarun/googler"
+arch="noarch"
+license="GPL-3.0-or-later"
+depends="python3"
+subpackages="$pkgname-doc
+	$pkgname-bash-completion
+	$pkgname-fish-completion
+	$pkgname-zsh-completion
+	"
+source="$pkgname-$pkgver.tar.gz::https://github.com/jarun/googler/archive/v$pkgver.tar.gz"
+
+build() {
+	make disable-self-upgrade
+}
+
+package() {
+	make install DESTDIR="$pkgdir" PREFIX=/usr
+
+	install -Dm644 "$builddir"/auto-completion/bash/* \
+		-t "$pkgdir"/usr/share/bash-completion/completions
+	install -Dm644 "$builddir"/auto-completion/fish/* \
+		-t "$pkgdir"/usr/share/fish/completions
+	install -Dm644 "$builddir"/auto-completion/zsh/* \
+		-t "$pkgdir"/usr/share/zsh/site-functions
+}
+
+sha512sums="e9fe2fb66a28e7ddf79461186f679d0bce40c02e5fcfe82e11b3eed48143a4479cb2fd5ad8003b3280d9d1a0f3195e806e0dd597d84d31313a2be78114afbd51  googler-4.2.tar.gz"

@@ -1,0 +1,28 @@
+# Contributor: Justin Berthault <justin.berthault@zaclys.net>
+# Maintainer: Justin Berthault <justin.berthault@zaclys.net>
+pkgname=py3-mypy
+pkgver=0.782
+pkgrel=0
+pkgdesc="Optional static typing for Python (PEP484)"
+url="https://www.mypy-lang.org/"
+arch="noarch"
+license="MIT"
+depends="py3-mypy-extensions py3-typing-extensions py3-typed-ast"
+makedepends="python3-dev py3-setuptools"
+checkdepends="py3-tox"
+source="https://files.pythonhosted.org/packages/source/m/mypy/mypy-$pkgver.tar.gz"
+builddir="$srcdir/"mypy-$pkgver
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	tox --sitepackages
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="f94433f79ea76b53ebb70589ca04ba3f39847050f73cf6deac00a3db13d742613a8ecb1a11fb84a878458025c6776b236b074e93e577c1b597e31d1300974767  mypy-0.782.tar.gz"

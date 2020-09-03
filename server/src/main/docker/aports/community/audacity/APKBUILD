@@ -1,0 +1,69 @@
+# Contributor: Natanael Copa <ncopa@alpinelinux.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=audacity
+pkgver=2.4.2
+pkgrel=0
+pkgdesc="Multitrack audio editor"
+url="https://www.audacityteam.org/"
+arch="all"
+license="GPL-2.0-or-later"
+makedepends="
+	alsa-lib-dev
+	bash
+	cmake
+	expat-dev
+	flac-dev
+	jack-dev
+	lame-dev
+	libid3tag-dev
+	libmad-dev
+	libogg-dev
+	libsndfile-dev
+	libvorbis-dev
+	soundtouch-dev
+	soxr-dev
+	taglib-dev
+	wxgtk3-dev
+	ffmpeg-dev
+	"
+subpackages="$pkgname-doc $pkgname-lang"
+source="https://github.com/audacity/audacity/archive/Audacity-$pkgver.tar.gz
+	lame.pc"
+
+builddir="$srcdir"/audacity-Audacity-$pkgver
+
+prepare() {
+	default_prepare
+	# included in src/AboutDialog.cpp but not supplied in source tarball
+	touch include/RevisionIdent.h
+	# cmake can't find libmp3lame without a .pc file
+	cp "$srcdir"/lame.pc "$builddir"/lame.pc
+}
+
+build() {
+	local _arch
+	case "$CARCH" in
+		x86) _arch="-DHAVE_SSE=OFF -DHAVE_SSE2=OFF";;
+	esac
+
+	if [ "$CBUILD" != "$CHOST" ]; then
+		CMAKE_CROSSOPTS="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+	fi
+	export WX_CONFIG=wx-config-gtk3
+	export PKG_CONFIG_PATH="$PWD:$PKG_CONFIG_PATH"
+	cmake  -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DBUILD_SHARED_LIBS=True \
+		-DCMAKE_BUILD_TYPE=None \
+		$CMAKE_CROSSOPTS \
+		$_arch
+	make -C build
+}
+
+package() {
+	make -C build DESTDIR="$pkgdir" install
+}
+
+sha512sums="0d9cdabf5ba2c7207e8d8e4a8bdfc3e7d32277386436ecb480e3ff781720f5449a56b310ba91c78ca67afb752e2ab736abd5b7ce40d19d153bfc4a2067343a3d  Audacity-2.4.2.tar.gz
+c82375495c8332c600a636c87db3ef884b86b6e854afab5ff93f1214e96e18f3b8704cdaead017046fda1b0ae29ccf39ff14754aebf4c397911f1506cd7da6f2  lame.pc"

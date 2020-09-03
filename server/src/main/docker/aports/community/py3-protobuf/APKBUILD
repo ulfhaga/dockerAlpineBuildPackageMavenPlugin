@@ -1,0 +1,35 @@
+# Maintainer: Corentin Henry <corentinhenry@gmail.com>
+# Contributor: Corentin Henry <corentinhenry@gmail.com>
+pkgname=py3-protobuf
+pkgver=3.12.3
+pkgrel=0
+pkgdesc="Google's data interchange format."
+url="https://github.com/google/protobuf"
+arch="noarch"
+license="BSD-3-Clause"
+depends="py3-six>=1.9"
+makedepends="protobuf py3-setuptools"
+# NOTE: Always use releases of protobuf, not pypi or auto-generated GitHub
+# tarballs as they do not contain the necessary components to run tests.
+source="https://github.com/protocolbuffers/protobuf/releases/download/v$pkgver/protobuf-python-$pkgver.tar.gz"
+builddir="$srcdir"/protobuf-$pkgver/python
+
+replaces="py-protobuf" # Backwards compatibility
+provides="py-protobuf=$pkgver-r$pkgrel" # Backwards compatibility
+
+build() {
+	python3 setup.py build
+}
+
+check() {
+	python3 setup.py test
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+
+	# correct permissions
+	chmod +r "$subpkgdir"/usr/lib/*/site-packages/*/*
+}
+
+sha512sums="ab5ad771840bb4e5abde47e807078ea355442a9aeb198b6f475fd8aa9a728f98522c716a74cddec5a83485812a0483eaba060085fc1d4f1f8ed79853f78f235a  protobuf-python-3.12.3.tar.gz"

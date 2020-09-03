@@ -1,0 +1,32 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=kirigami-gallery
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf" # armhf blocked by kirigami2 -> qt5-qtdeclarative
+url="https://kde.org/applications/development/org.kde.kirigami2.gallery"
+pkgdesc="Gallery application built using Kirigami"
+license="LGPL-2.0-or-later"
+depends="kirigami2"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtquickcontrols2-dev qt5-qtsvg-dev qt5-qttools-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/kirigami-gallery-$pkgver.tar.xz"
+subpackages="$pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="3a51823df457a6c324ba2f74fd7fb3b54f5546a788c41e4f656e4abbad482cce1591a861a497f9490904e7855b330fa1be40c1bc1348f6014da689b85409d053  kirigami-gallery-20.08.0.tar.xz"

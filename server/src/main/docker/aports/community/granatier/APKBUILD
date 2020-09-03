@@ -1,0 +1,31 @@
+# Contributor: Bart Ribbers <bribbers@disroot.org>
+# Maintainer: Bart Ribbers <bribbers@disroot.org>
+pkgname=granatier
+pkgver=20.08.0
+pkgrel=0
+arch="all !armhf"
+url="https://kde.org/applications/games/org.kde.granatier"
+pkgdesc="A clone of the classic Bomberman game"
+license="GPL-2.0-or-later AND GFDL-1.2-only"
+makedepends="extra-cmake-modules qt5-qtbase-dev qt5-qtsvg-dev kcoreaddons-dev kconfig-dev kcrash-dev kdbusaddons-dev kwidgetsaddons-dev kconfig-dev ki18n-dev kconfigwidgets-dev kxmlgui-dev knewstuff-dev kdoctools-dev libkdegames-dev"
+source="https://download.kde.org/stable/release-service/$pkgver/src/granatier-$pkgver.tar.xz"
+subpackages="$pkgname-doc $pkgname-lang"
+
+build() {
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_INSTALL_LIBDIR=lib
+	cmake --build build
+}
+
+check() {
+	cd build
+	CTEST_OUTPUT_ON_FAILURE=TRUE ctest
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --build build --target install
+}
+
+sha512sums="8e9bee116234653b7f17ca0f3daa28a2eb9bb93b1f12d4ebef0afa5b0b84c995398784bb61f3ae374fdeaa1aa82b6111624d40dac0188e647bf2585fc489d18e  granatier-20.08.0.tar.xz"

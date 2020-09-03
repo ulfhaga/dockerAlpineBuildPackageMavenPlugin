@@ -1,0 +1,29 @@
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Maintainer: Sören Tempel <soeren+alpine@soeren-tempel.net>
+pkgname=sparse
+pkgver=0.6.2
+pkgrel=0
+pkgdesc="A semantic parser of source files"
+url="http://sparse.wiki.kernel.org/"
+arch="all"
+license="MIT"
+depends="gcc"
+makedepends="libxml2-dev"
+subpackages="$pkgname-doc"
+source="https://www.kernel.org/pub/software/devel/sparse/dist/sparse-$pkgver.tar.xz"
+
+build() {
+	make CFLAGS="$CFLAGS" LD="${LD:-gcc}" \
+		AR="${AR:-ar}" CC="${CC:-gcc}"
+}
+
+package() {
+	make PREFIX=/usr DESTDIR="$pkgdir" install
+
+	mkdir -p "$pkgdir"/usr/share/doc/$pkgname/
+	install -m644 FAQ README \
+		Documentation/data-structures.txt \
+		"$pkgdir"/usr/share/doc/$pkgname/
+}
+
+sha512sums="43c16b5cb4141077dd51f93e877e28e1a00e69ced58a9c8f643635b6f87a8044cddfe29a734b4a43282748e12f287b19b4fb3ce8c5e0b13931a3355974dff982  sparse-0.6.2.tar.xz"

@@ -1,0 +1,67 @@
+# Maintainer: Ariadne Conill <ariadne@dereferenced.org>
+pkgname=ifupdown-ng
+pkgver=0.8.4
+pkgrel=0
+pkgdesc="tools for managing network configuration"
+url="https://github.com/ifupdown-ng/ifupdown-ng"
+arch="all"
+license="ISC"
+checkdepends="kyua atf"
+makedepends="scdoc"
+install=""
+subpackages="$pkgname-doc $pkgname-iproute2 $pkgname-ppp"
+source="https://distfiles.dereferenced.org/ifupdown-ng/ifupdown-ng-$pkgver.tar.xz"
+builddir="$srcdir/ifupdown-ng-$pkgver"
+provides="ifupdown-any"
+provider_priority=900
+
+# We conflict with the vlan package because we provide our own
+# vlan support with the link executor.
+depends="!vlan"
+
+# We only install the core executors right now.  The other executors are
+# still being ported to run under ifupdown-ng natively, and so we will
+# use the ifupdown scripts for now for those cases.  However, it is nice
+# to make the automatic dependency resolution work, and ifupdown-ng
+# provides some stubs to enable that.
+_executor_stubs="bridge bond"
+
+# These are optional executors which do not conflict with what we are
+# presently shipping.  These executors require iproute2.
+_executor_iproute2="vrf gre"
+
+# These are all optional executors we plan to use.
+_executor_opt="ppp $_executor_iproute2"
+
+build() {
+	make
+	make docs
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" EXECUTOR_SCRIPTS_OPT="$_executor_opt" EXECUTOR_SCRIPTS_STUB="$_executor_stubs" install install_docs
+}
+
+iproute2() {
+	pkgdesc="ifupdown-ng integration for iproute2"
+	depends="iproute2-minimal"
+	install_if="$pkgname $depends"
+
+	for exec in $_executor_iproute2; do
+		amove usr/libexec/ifupdown-ng/$exec
+	done
+}
+
+ppp() {
+	pkgdesc="ifupdown-ng integration for ppp"
+	depends="ppp-daemon"
+	install_if="$pkgname $depends"
+
+	amove usr/libexec/ifupdown-ng/ppp
+}
+
+sha512sums="9906d855e0a9f4ffea865e1f596790266fc77079bf26deac21a3a7955e2f2f9cce755ad4927f93c7c36aafb6a48c2507da31ee516bd404fe914d4356dffcc4eb  ifupdown-ng-0.8.4.tar.xz"

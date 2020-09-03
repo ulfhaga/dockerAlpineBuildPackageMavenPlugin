@@ -1,0 +1,29 @@
+# Contributor: Leo <thinkabit.ukim@gmail.com>
+# Contributor: Stefan Wagner <stw@bit-strickerei.de>
+# Maintainer: Stefan Wagner <stw@bit-strickerei.de>
+pkgname=dunst
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="A customizable and lightweight notification-daemon"
+url="https://dunst-project.org/"
+arch="all !s390x !mips !mips64" # librsvg
+license="BSD-3-Clause"
+makedepends="gtk+2.0-dev libxscrnsaver-dev libxinerama-dev libxrandr-dev libnotify-dev dbus-dev"
+checkdepends="dbus librsvg"
+subpackages="$pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/dunst-project/dunst/archive/v$pkgver.tar.gz"
+
+build() {
+	make all dunstify
+}
+
+check() {
+	make test
+}
+
+package() {
+	make DESTDIR="$pkgdir" PREFIX=/usr install
+	install -Dm755 dunstify "$pkgdir"/usr/bin/dunstify
+}
+
+sha512sums="2057dc530adce1dac89f12f4ca55e9186d378ccc2b406e0fa20d43bc69f671dc303b608a4fea781ab1193bd2e159dcbdecf3baf50e27ac9b0f164965b5824c85  dunst-1.5.0.tar.gz"

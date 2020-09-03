@@ -1,0 +1,31 @@
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=babl
+pkgver=0.1.80
+pkgrel=0
+pkgdesc="Dynamic, any to any, pixel format conversion library"
+url="http://gegl.org/babl"
+arch="all"
+license="LGPL-3.0-or-later"
+makedepends="meson gobject-introspection-dev lcms2-dev vala"
+subpackages="$pkgname-dev"
+source="https://ftp.gimp.org/pub/babl/${pkgver%.*}/babl-$pkgver.tar.xz"
+
+case "$CARCH" in
+# tests time out on builder
+mips*)	options="!check";;
+esac
+
+build() {
+	abuild-meson . output
+	ninja -C output
+}
+
+check() {
+	ninja -C output test
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C output install
+}
+
+sha512sums="e1e790825fd5d112395d9e2a61af541cf4552647a24db75c2149fa3f843883c9c4648625c3af3189ab6ef72b7bb193fe6f4121aa052bf350ca9c80502c368f71  babl-0.1.80.tar.xz"
