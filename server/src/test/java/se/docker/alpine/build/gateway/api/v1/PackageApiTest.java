@@ -27,6 +27,8 @@ public class PackageApiTest
     public static final String MY_PACKAGE = "myPackage";
     public static final String MY_PACKAGE_BASE64 = "bXlQYWNrYWdl";
 
+    String id = "1";
+
     @DisplayName("Creates a member resource in the collection resource. " +
             "The URI of the created member resource is automatically assigned and returned " +
             "in the response Location header field. ")
@@ -62,11 +64,11 @@ public class PackageApiTest
         String originalInput = "test input";
         String encodedString = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
-        given()
+        given().pathParam("id", id)
          //       .multiPart("controlName2", "my_file_name.txt", MY_PACKAGE_BASE64)
        // .multiPart(new File("/tmp/apa.txt"))
                 .body(encodedString)
-                .when().put("/v1/packages/1/tarball")
+                .when().put("/v1/packages/{id}/tarball")
                 .then()
                 .statusCode(200);
     }
@@ -77,8 +79,9 @@ public class PackageApiTest
     public void testMemberPutNamePackage()
     {
         given()
+                .pathParam("id", id)
                 .body(MY_PACKAGE)
-                .when().put("/v1/packages/1/name")
+                .when().put("/v1/packages/{id}/name")
                 .then()
                 .statusCode(200);
     }
@@ -89,8 +92,9 @@ public class PackageApiTest
     public void testMemberGetNamePackage()
     {
         given()
+                .pathParam("id", id)
                 .when()
-                .get("/v1/packages/1/name")
+                .get("/v1/packages/{id}/name")
                 .then()
                 .body(is(MY_PACKAGE))
                 .statusCode(200);
@@ -102,7 +106,8 @@ public class PackageApiTest
     public void testMemberGetPackage()
     {
         given()
-                .when().get("/v1/packages/1")
+                .pathParam("id", id)
+                .when().get("/v1/packages/{id}")
                 .then()
                 .statusCode(200)
                 .body(is("{\"name\"" +
@@ -115,7 +120,8 @@ public class PackageApiTest
     public void testCollectionPutPackage()
     {
         given()
-                .when().put("/v1/packages/1")
+                .pathParam("id", id)
+                .when().put("/v1/packages/{id}")
                 .then()
                 .header("Location", matchesPattern("http://localhost:[0-9]+/v1/packages/1"))
                 .statusCode(201);
@@ -127,8 +133,9 @@ public class PackageApiTest
     public void testMemberGetNameEmptyPackage()
     {
         given()
+                .pathParam("id", id)
                 .when()
-                .get("/v1/packages/1/name")
+                .get("/v1/packages/{id}/name")
                 .then()
                 .body(is(""))
                 .statusCode(200);

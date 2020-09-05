@@ -1,10 +1,8 @@
 package se.docker.alpine.build.gateway.api.v1;
 
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import se.docker.alpine.api.v1.RestfulPackageApi;
 import se.docker.alpine.build.model.PackageData;
 import se.docker.alpine.build.service.PackagesService;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import se.docker.alpine.api.v1.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -12,13 +10,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.List;
 import java.util.UUID;
 
 @Path("/v1/packages/{id}")
@@ -38,7 +34,7 @@ public class PackageApi implements RestfulPackageApi
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response postPackageData()
+    public Response postPackageData(@PathParam("id") Long id)
     {
         Response response;
         PackageData packageData = packagesService.getPackageById(id);
@@ -62,7 +58,7 @@ public class PackageApi implements RestfulPackageApi
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPackageData()
+    public Response getPackageData(@PathParam("id") Long id)
     {
         PackageData packageData = packagesService.getPackageById(id);
         if (packageData == null)
@@ -79,7 +75,7 @@ public class PackageApi implements RestfulPackageApi
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response putTarBall(String body) throws IOException
+    public Response putTarBall(@PathParam("id") Long id, String body) throws IOException
     {
         Response response;
         byte[] decodedBytes = Base64.getDecoder().decode(body);
@@ -93,7 +89,7 @@ public class PackageApi implements RestfulPackageApi
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response setName(String body)
+    public Response setName(@PathParam("id") Long id, String body)
     {
         Response response;
         PackageData packageData;
@@ -114,7 +110,7 @@ public class PackageApi implements RestfulPackageApi
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response getName()
+    public Response getName(@PathParam("id") Long id)
     {
         Response response;
         PackageData packageData;
@@ -139,7 +135,8 @@ public class PackageApi implements RestfulPackageApi
         String uuid = UUID.randomUUID().toString();
         File file = new File(FILES_PATH + File.separator + uuid);
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
+        try (FileOutputStream fos = new FileOutputStream(file))
+        {
             fos.write(bytes);
             fos.flush();
         }
