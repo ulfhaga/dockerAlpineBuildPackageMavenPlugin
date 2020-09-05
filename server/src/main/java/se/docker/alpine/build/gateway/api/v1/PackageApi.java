@@ -4,6 +4,7 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import se.docker.alpine.build.model.PackageData;
 import se.docker.alpine.build.service.PackagesService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import se.docker.alpine.api.v1.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/v1/packages/{id}")
-public class PackageApi
+public class PackageApi implements RestfulPackageApi
 {
     @PathParam("id")
     private String id;
@@ -30,10 +31,14 @@ public class PackageApi
     @Inject
     PackagesService packagesService;
 
+    @Context
+    private UriInfo uriInfo;
+
+    @Override
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response postPackageData(@Context UriInfo uriInfo)
+    public Response postPackageData()
     {
         Response response;
         PackageData packageData = packagesService.getPackageById(id);
@@ -54,6 +59,7 @@ public class PackageApi
         return response;
     }
 
+    @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPackageData()
@@ -68,11 +74,12 @@ public class PackageApi
         }
     }
 
+    @Override
     @Path("tarball")
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response putTarBall( String body) throws IOException
+    public Response putTarBall(String body) throws IOException
     {
         Response response;
         byte[] decodedBytes = Base64.getDecoder().decode(body);
@@ -81,11 +88,12 @@ public class PackageApi
         return response;
     }
 
+    @Override
     @Path("name")
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response setName(String body, @PathParam("name") String name)
+    public Response setName(String body)
     {
         Response response;
         PackageData packageData;
@@ -101,11 +109,12 @@ public class PackageApi
         return response;
     }
 
+    @Override
     @Path("name")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response getName(@PathParam("name") String name)
+    public Response getName()
     {
         Response response;
         PackageData packageData;

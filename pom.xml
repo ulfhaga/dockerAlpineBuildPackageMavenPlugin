@@ -12,9 +12,10 @@
     <url>https://github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin</url>
 
     <modules>
+        <module>restful-api</module>
+        <module>client</module>
         <module>server</module>
         <module>maven-plugin</module>
-        <module>client</module>
         <module>sample</module>
     </modules>
 
