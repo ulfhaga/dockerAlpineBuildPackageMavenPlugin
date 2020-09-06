@@ -1,11 +1,22 @@
 package se.docker.alpine.gateway;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class ClientDto
 {
-    private File source;
+    private Path source;
     private String name;
+
+    public Path getSource()
+    {
+        return source;
+    }
+
+    public void setSource(Path source)
+    {
+        this.source = source;
+    }
+
 
     public String getName()
     {
