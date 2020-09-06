@@ -7,15 +7,16 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 
-@Tag("dd")
 class ClientTestIT
 {
     @DisplayName("Restful tests")
     @Test
     public void test1() throws IOException
     {
+        ClientDto clientDto = new ClientDto();
+        clientDto.setName("MyGoodPackage");
         Client client = new Client();
-        client.send();
+        client.send(clientDto);
     }
 
 }

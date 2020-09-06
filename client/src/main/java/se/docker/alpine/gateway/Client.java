@@ -24,14 +24,14 @@ public class Client
         client = resteasyClientBuilder.build();
     }
 
-    public void send() throws IOException
+    public void send(ClientDto clientDto) throws IOException
     {
         String uri = createCollection();
         uri = createCollection();
         if (uri.startsWith(RestfulPackageApi.V_1_PACKAGES))
         {
             String id = uri.substring(RestfulPackageApi.V_1_PACKAGES.length());
-            putName(id);
+            putName(id,clientDto.getName());
             getName(id);
         }
         else
@@ -64,11 +64,11 @@ public class Client
         return path;
     }
 
-    private String putName(String path) throws IOException
+    private String putName(String path, String name) throws IOException
     {
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
-        Response response = proxy.setName(Long.valueOf(path),"XXXZZZZZXDS");
+        Response response = proxy.setName(Long.valueOf(path),name);
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
         return path;
