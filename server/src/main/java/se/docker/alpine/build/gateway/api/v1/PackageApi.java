@@ -11,7 +11,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.UUID;
@@ -44,7 +46,8 @@ public class PackageApi implements RestfulPackageApi
             URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(newId)).build();
             response = (Response.created(uri).status(Response.Status.CREATED)
                     .type(MediaType.APPLICATION_JSON).build());
-        } else
+        }
+        else
         {
             packageData.clear();
             URI uri = uriInfo.getAbsolutePathBuilder().build();
@@ -63,7 +66,8 @@ public class PackageApi implements RestfulPackageApi
         if (packageData == null)
         {
             return Response.noContent().build();
-        } else
+        }
+        else
         {
             return Response.ok().entity(packageData).build();
         }
@@ -91,7 +95,8 @@ public class PackageApi implements RestfulPackageApi
     public Response putSource(@PathParam("id") Long id, @GZIP byte[] tarStream) throws IOException
     {
         String path = "/tmp/xxxx.tar";
-        try (FileOutputStream stream = new FileOutputStream(path)) {
+        try (FileOutputStream stream = new FileOutputStream(path))
+        {
             stream.write(tarStream);
         }
         Response response;
@@ -112,7 +117,8 @@ public class PackageApi implements RestfulPackageApi
         if (packageData == null)
         {
             response = Response.noContent().build();
-        } else
+        }
+        else
         {
             packageData.setName(body);
             response = Response.ok().build();
@@ -133,7 +139,8 @@ public class PackageApi implements RestfulPackageApi
         if (packageData == null)
         {
             response = Response.noContent().build();
-        } else
+        }
+        else
         {
             String packageName = packageData.getName();
             response = Response.ok().entity(packageName).build();
