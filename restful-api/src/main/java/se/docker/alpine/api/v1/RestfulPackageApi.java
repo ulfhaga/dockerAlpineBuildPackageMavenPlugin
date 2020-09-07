@@ -4,6 +4,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import org.jboss.resteasy.annotations.GZIP;
 
 @Path(RestfulPackageApi.V_1_PACKAGES + "{id}")
 public interface RestfulPackageApi
@@ -24,6 +25,12 @@ public interface RestfulPackageApi
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     Response putTarBall(@PathParam("id") Long id, String body) throws IOException;
+
+    @Path("source")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    Response putSource(@PathParam("id") Long id, @GZIP byte[] tarStream) throws IOException;
 
     @Path("name")
     @PUT

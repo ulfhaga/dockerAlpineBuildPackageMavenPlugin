@@ -27,6 +27,14 @@
             <version>3.0.2.Final</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-core-spi -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-core-spi</artifactId>
+            <version>4.5.6.Final</version>
+        </dependency>
+
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

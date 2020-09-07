@@ -8,13 +8,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Nested;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 
@@ -69,6 +70,22 @@ public class PackageApiTest
        // .multiPart(new File("/tmp/apa.txt"))
                 .body(encodedString)
                 .when().put("/v1/packages/{id}/tarball")
+                .then()
+                .statusCode(200);
+    }
+
+    @DisplayName("Replaces all the representations of the member tarball resource or create the member resource if it does not exist, with the representation in the request body.")
+    @Test
+    @Order(11)
+    public void testMemberPutTarPackage() throws IOException
+    {
+        Path sourcePathTar = Paths.get("src","test","resources", "testData","source.tar");
+        assertTrue(Files.exists(sourcePathTar));
+        byte[] sourceTar = Files.readAllBytes(sourcePathTar);
+        String originalInput = "test input";
+        given().pathParam("id", id)
+                .body(sourceTar)
+                .when().put("/v1/packages/{id}/source")
                 .then()
                 .statusCode(200);
     }

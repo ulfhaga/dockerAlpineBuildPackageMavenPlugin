@@ -1,5 +1,6 @@
 package se.docker.alpine.build.gateway.api.v1;
 
+import org.jboss.resteasy.annotations.GZIP;
 import se.docker.alpine.api.v1.RestfulPackageApi;
 import se.docker.alpine.build.model.PackageData;
 import se.docker.alpine.build.service.PackagesService;
@@ -10,9 +11,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.Base64;
 import java.util.UUID;
@@ -80,6 +79,22 @@ public class PackageApi implements RestfulPackageApi
         Response response;
         byte[] decodedBytes = Base64.getDecoder().decode(body);
         String decodedString = new String(decodedBytes);
+        response = Response.ok().build();
+        return response;
+    }
+
+    @Override
+    @Path("source")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    public Response putSource(@PathParam("id") Long id, @GZIP byte[] tarStream) throws IOException
+    {
+        String path = "/tmp/xxxx.tar";
+        try (FileOutputStream stream = new FileOutputStream(path)) {
+            stream.write(tarStream);
+        }
+        Response response;
         response = Response.ok().build();
         return response;
     }
