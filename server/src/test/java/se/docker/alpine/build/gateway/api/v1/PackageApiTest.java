@@ -1,22 +1,17 @@
 package se.docker.alpine.build.gateway.api.v1;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Nested;
-
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @DisplayName("Restful tests")
@@ -57,12 +52,12 @@ public class PackageApiTest
     }
 
 
-    @DisplayName("Replaces all the representations of the member tarball resource or create the member resource if it does not exist, with the representation in the request body.")
+    @DisplayName("Replaces all the representations of the member source resource or create the member resource if it does not exist, with the representation in the request body.")
     @Test
     @Order(11)
     public void testMemberPutSourcePackage() throws IOException
     {
-        Path sourcePathTar = Paths.get("src","test","resources", "testData","source.tar");
+        Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
         assertTrue(Files.exists(sourcePathTar));
         byte[] sourceTar = Files.readAllBytes(sourcePathTar);
         String originalInput = "test input";
@@ -73,9 +68,25 @@ public class PackageApiTest
                 .statusCode(200);
     }
 
-    @DisplayName("Replaces all the representations of the member name resource or create the member resource if it does not exist, with the representation in the request body.")
+    @DisplayName("Get a representation of the member source resource or create the member resource if it does not exist, with the representation in the request body.")
     @Test
     @Order(12)
+    public void testMemberGetSourcePackage() throws IOException
+    {
+        //Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
+        //assertTrue(Files.exists(sourcePathTar));
+        //byte[] sourceTar = Files.readAllBytes(sourcePathTar);
+
+        String originalInput = "test input";
+        given().pathParam("id", id)
+                .when().get("/v1/packages/{id}/source")
+                .then()
+                .statusCode(200);
+    }
+
+    @DisplayName("Replaces all the representations of the member name resource or create the member resource if it does not exist, with the representation in the request body.")
+    @Test
+    @Order(15)
     public void testMemberPutNamePackage()
     {
         given()
@@ -88,7 +99,7 @@ public class PackageApiTest
 
     @DisplayName("Replaces all the representations of the member resource or create the member resource if it does not exist, with the representation in the request body.")
     @Test
-    @Order(13)
+    @Order(17)
     public void testMemberGetNamePackage()
     {
         given()
@@ -102,15 +113,15 @@ public class PackageApiTest
 
     @DisplayName("Retrieves a representation of the member resource in the response body")
     @Test
-    @Order(14)
+    @Order(18)
     public void testMemberGetPackage()
     {
         given()
                 .pathParam("id", id)
                 .when().get("/v1/packages/{id}")
                 .then()
-                .statusCode(200);
-             //   .body(is("{\"name\"" +                    ":\"" + MY_PACKAGE + "\"}"));
+                .statusCode(200)
+                .body(is("{\"name\"" + ":\"" + MY_PACKAGE + "\"}"));
     }
 
     @DisplayName("Replace all the representations of the member resources of the collection resource with the representation in the request body, or create the collection resource if it does not exist.")

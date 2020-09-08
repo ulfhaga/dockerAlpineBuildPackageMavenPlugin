@@ -123,14 +123,13 @@ public class PackageApi implements RestfulPackageApi
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.TEXT_PLAIN)
+    @GZIP
     public Response getSource(@PathParam("id") Long id) throws IOException
     {
         Response response;
         java.nio.file.Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
-
         byte[] sourceGzip = Files.readAllBytes(sourcePathTar);
-
-        response = Response.ok().encoding("gzip").entity(sourceGzip).build();
+        response = Response.ok().entity(sourceGzip).build();
         return response;
     }
 

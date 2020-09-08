@@ -30,6 +30,7 @@ public interface RestfulPackageApi
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.TEXT_PLAIN)
+    @GZIP
     Response getSource(@PathParam("id") Long id) throws IOException;
 
     @Path("name")
