@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -73,14 +74,11 @@ public class PackageApiTest
     @Order(12)
     public void testMemberGetSourcePackage() throws IOException
     {
-        //Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
-        //assertTrue(Files.exists(sourcePathTar));
-        //byte[] sourceTar = Files.readAllBytes(sourcePathTar);
-
         String originalInput = "test input";
         given().pathParam("id", id)
                 .when().get("/v1/packages/{id}/source")
                 .then()
+                .header("Content-Length", greaterThan("1000"))
                 .statusCode(200);
     }
 

@@ -102,8 +102,10 @@ public class PackageApi implements RestfulPackageApi
             java.nio.file.Path path = packageData.getSource();
             if (path != null)
             {
-                java.nio.file.Path sourceDirectory = Paths.get(path.toString(), id + ".tar");
-                File gzipFile = sourceDirectory.toFile();
+                java.nio.file.Path sourceFile = Paths.get(path.toString(), id + ".tar");
+                Files.deleteIfExists(sourceFile);
+
+                File gzipFile = sourceFile.toFile();
 
                 try (FileOutputStream stream = new FileOutputStream(gzipFile))
                 {
@@ -126,10 +128,29 @@ public class PackageApi implements RestfulPackageApi
     @GZIP
     public Response getSource(@PathParam("id") Long id) throws IOException
     {
+        LOG.debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX   getSource");
         Response response;
-        java.nio.file.Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
-        byte[] sourceGzip = Files.readAllBytes(sourcePathTar);
-        response = Response.ok().entity(sourceGzip).build();
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            java.nio.file.Path path = packageData.getSource();
+            if (path != null)
+            {
+                java.nio.file.Path sourceFile = Paths.get(path.toString(), id + ".tar");
+                LOG.debugv("sourceFile: {0} " , sourceFile.toAbsolutePath().toString() );
+                byte[] sourceTar = Files.readAllBytes(sourceFile);
+                response = Response.ok().entity(sourceTar).build();
+            }
+            else
+            {
+                response = Response.serverError().build();
+            }
+        }
         return response;
     }
 
