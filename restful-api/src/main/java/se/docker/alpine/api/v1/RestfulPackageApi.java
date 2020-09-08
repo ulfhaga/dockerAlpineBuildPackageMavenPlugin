@@ -14,7 +14,7 @@ public interface RestfulPackageApi
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    Response postPackageData(@PathParam("id") Long id);
+    Response postPackageData(@PathParam("id") Long id) throws IOException;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -43,4 +43,10 @@ public interface RestfulPackageApi
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     Response getName(@PathParam("id") Long id);
+
+    @Path("package")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getPackage(@PathParam("id") Long id) throws IOException;
 }

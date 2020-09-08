@@ -1,7 +1,13 @@
 package se.docker.alpine.build.service;
 
+import org.apache.commons.io.FileUtils;
 import se.docker.alpine.build.model.PackageData;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,11 +24,21 @@ public class PackagesService
 
     private final AtomicLong index = new AtomicLong();
 
-    public long createPackage()
+    private final Path tempDir;
+
+    public PackagesService() throws IOException
+    {
+        tempDir = Files.createTempDirectory("packages");
+    }
+
+    public long createPackage() throws IOException
     {
         long counter = getCounter();
         PackageData packageData = new PackageData();
         packages.put(counter, packageData);
+        Path folder = Paths.get(tempDir.toAbsolutePath().toString(),String.valueOf(counter));
+        FileUtils.deleteDirectory(folder.toFile());
+        Files.createDirectory(folder);
         return counter;
     }
 

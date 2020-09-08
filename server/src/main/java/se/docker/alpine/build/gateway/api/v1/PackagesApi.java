@@ -5,6 +5,7 @@ import se.docker.alpine.build.service.PackagesService;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class PackagesApi implements RestfulPackagesApi
     @SuppressWarnings("QsUndeclaredPathMimeTypesInspection")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response packageId()
+    public Response packageId() throws IOException
     {
         long id = packagesService.createPackage();
 

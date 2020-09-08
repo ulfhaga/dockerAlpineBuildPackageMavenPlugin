@@ -6,6 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 @Path("/v1/packages")
 public interface RestfulPackagesApi
@@ -13,7 +14,7 @@ public interface RestfulPackagesApi
     @SuppressWarnings("QsUndeclaredPathMimeTypesInspection")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    Response packageId();
+    Response packageId() throws IOException;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

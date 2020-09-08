@@ -11,9 +11,9 @@ set -e
 shopt -s -o nounset
 declare C_DIR=$(dirname "$0")
 cd "${C_DIR}" || exit 1
-declare -r PARENT_FOLDER=$(dirname "$(pwd)")
-declare -r A_PORTS="${PARENT_FOLDER}"/target/aports
-declare -r PACKAGES="${PARENT_FOLDER}"/target/packages
+declare -r PARENT_FOLDER=$(mktemp -d -t ci-XXXXXXXXXX)
+declare -r A_PORTS="${PARENT_FOLDER}"/aports
+declare -r PACKAGES="${PARENT_FOLDER}"/packages
 declare -g package_name
 
 source globals

@@ -5,6 +5,7 @@ import se.docker.alpine.build.model.PackageData;
 import se.docker.alpine.build.service.PackagesService;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -17,6 +18,10 @@ public class MockPackagesService extends PackagesService
             = new Hashtable<>();
 
     private Long index = 0L;
+
+    public MockPackagesService() throws IOException
+    {
+    }
 
     @Override
     public long createPackage()

@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+//import java.nio.file.Path;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -35,7 +38,7 @@ public class PackageApi implements RestfulPackageApi
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response postPackageData(@PathParam("id") Long id)
+    public Response postPackageData(@PathParam("id") Long id) throws IOException
     {
         Response response;
         PackageData packageData = packagesService.getPackageById(id);
@@ -78,7 +81,7 @@ public class PackageApi implements RestfulPackageApi
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response putTarBall(@PathParam("id") Long id, String body) throws IOException
+    public Response putTarBall(@PathParam("id") Long id, String body)
     {
         Response response;
         byte[] decodedBytes = Base64.getDecoder().decode(body);
@@ -148,6 +151,20 @@ public class PackageApi implements RestfulPackageApi
         return response;
     }
 
+    @Path("package")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response getPackage(@PathParam("id") Long id) throws IOException
+    {
+        Response response;
+        java.nio.file.Path sourcePathTar = Paths.get("src","test","resources", "testData","source.tar");
+
+        byte[] sourceGzip = Files.readAllBytes(sourcePathTar);
+
+        response = Response.ok().encoding("gzip").entity(sourceGzip).build();
+        return response;
+    }
 
     //Convert a Base64 string and create a file
     private String convertFile(String dataBase64)

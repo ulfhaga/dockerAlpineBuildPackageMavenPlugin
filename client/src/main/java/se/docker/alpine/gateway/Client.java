@@ -40,7 +40,7 @@ public class Client
         }
     }
 
-    private String createCollection()
+    private String createCollection() throws IOException
     {
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackagesApi proxy = target.proxy(RestfulPackagesApi.class);
@@ -52,18 +52,7 @@ public class Client
         response.close();
         return path;
     }
-
-    private String putName1fdfdgfdg(String path) throws IOException
-    {
-    //    InputStream stream = Files.newInputStream(Path.of(path));
-    //    Entity<InputStream> entity = Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM);
-        Entity<String> entity =  Entity.entity("FFF",MediaType.TEXT_PLAIN);
-        Response response =  client.target(path).request().put(entity);
-        System.out.println("HTTP code: " + response.getStatus());
-        response.close();
-        return path;
-    }
-
+    
     private String putName(String path, String name) throws IOException
     {
         ResteasyWebTarget target = client.target(BASE_URI);
