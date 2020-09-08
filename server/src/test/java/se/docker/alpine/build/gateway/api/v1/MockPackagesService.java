@@ -6,6 +6,8 @@ import se.docker.alpine.build.service.PackagesService;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -18,15 +20,17 @@ public class MockPackagesService extends PackagesService
             = new Hashtable<>();
 
     private Long index = 0L;
-
+    private final Path tempDir;
     public MockPackagesService() throws IOException
     {
+        tempDir = Files.createTempDirectory("packages");
     }
 
     @Override
     public long createPackage()
     {
         final PackageData packageData = new PackageData();
+        packageData.setSource(tempDir);
         packages.put(++index,packageData);
         return index;
     }

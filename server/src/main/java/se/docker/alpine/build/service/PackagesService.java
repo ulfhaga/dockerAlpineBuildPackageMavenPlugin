@@ -33,12 +33,15 @@ public class PackagesService
 
     public long createPackage() throws IOException
     {
-        long counter = getCounter();
         PackageData packageData = new PackageData();
+
+        long counter = getCounter();
         packages.put(counter, packageData);
+
         Path folder = Paths.get(tempDir.toAbsolutePath().toString(),String.valueOf(counter));
         FileUtils.deleteDirectory(folder.toFile());
-        Files.createDirectory(folder);
+        packageData.setSource(Files.createDirectory(folder));
+
         return counter;
     }
 

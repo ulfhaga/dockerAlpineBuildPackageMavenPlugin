@@ -1,5 +1,6 @@
 package se.docker.alpine.build.gateway.api.v1;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.GZIP;
 import se.docker.alpine.api.v1.RestfulPackageApi;
 import se.docker.alpine.build.model.PackageData;
@@ -17,13 +18,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-//import java.nio.file.Path;
 import java.util.Base64;
 import java.util.UUID;
+
 
 @Path("/v1/packages/{id}")
 public class PackageApi implements RestfulPackageApi
 {
+
+    private static final Logger LOG = Logger.getLogger(PackageApi.class);
+
     @PathParam("id")
     private String id;
     final static String FILES_PATH = "/tmp";
@@ -40,6 +44,8 @@ public class PackageApi implements RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     public Response postPackageData(@PathParam("id") Long id) throws IOException
     {
+        LOG.debug("postPackageData");
+
         Response response;
         PackageData packageData = packagesService.getPackageById(id);
 
@@ -77,35 +83,57 @@ public class PackageApi implements RestfulPackageApi
     }
 
     @Override
-    @Path("tarball")
-    @PUT
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public Response putTarBall(@PathParam("id") Long id, String body)
-    {
-        Response response;
-        byte[] decodedBytes = Base64.getDecoder().decode(body);
-        String decodedString = new String(decodedBytes);
-        response = Response.ok().build();
-        return response;
-    }
-
-    @Override
     @Path("source")
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     public Response putSource(@PathParam("id") Long id, @GZIP byte[] tarStream) throws IOException
     {
-        String path = "/tmp/xxxx.tar";
-        try (FileOutputStream stream = new FileOutputStream(path))
-        {
-            stream.write(tarStream);
-        }
+        LOG.debug("putSource");
         Response response;
-        response = Response.ok().build();
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            java.nio.file.Path path = packageData.getSource();
+            if (path != null)
+            {
+                java.nio.file.Path sourceDirectory = Paths.get(path.toString(), id + ".tar");
+                File gzipFile = sourceDirectory.toFile();
+
+                try (FileOutputStream stream = new FileOutputStream(gzipFile))
+                {
+                    stream.write(tarStream);
+                }
+                response = Response.ok().build();
+            }
+            else
+            {
+                response = Response.serverError().build();
+            }
+        }
         return response;
     }
+
+    @Path("source")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response getSource(@PathParam("id") Long id) throws IOException
+    {
+        Response response;
+        java.nio.file.Path sourcePathTar = Paths.get("src", "test", "resources", "testData", "source.tar");
+
+        byte[] sourceGzip = Files.readAllBytes(sourcePathTar);
+
+        response = Response.ok().encoding("gzip").entity(sourceGzip).build();
+        return response;
+    }
+
 
     @Override
     @Path("name")
@@ -151,20 +179,6 @@ public class PackageApi implements RestfulPackageApi
         return response;
     }
 
-    @Path("package")
-    @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @Consumes(MediaType.TEXT_PLAIN)
-    public Response getPackage(@PathParam("id") Long id) throws IOException
-    {
-        Response response;
-        java.nio.file.Path sourcePathTar = Paths.get("src","test","resources", "testData","source.tar");
-
-        byte[] sourceGzip = Files.readAllBytes(sourcePathTar);
-
-        response = Response.ok().encoding("gzip").entity(sourceGzip).build();
-        return response;
-    }
 
     //Convert a Base64 string and create a file
     private String convertFile(String dataBase64)

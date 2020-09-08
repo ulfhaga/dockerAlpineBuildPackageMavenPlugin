@@ -1,8 +1,22 @@
 package se.docker.alpine.build.model;
 
+import java.nio.file.Path;
+
 public class PackageData
 {
-    private  String name;
+    private String name;
+
+    private transient Path source;
+
+    public Path getSource()
+    {
+        return source;
+    }
+
+    public void setSource(Path source)
+    {
+        this.source = source;
+    }
 
     public String getName()
     {
@@ -14,9 +28,9 @@ public class PackageData
         this.name = name;
     }
 
-
     public void clear()
     {
         name = "";
+        source = null;
     }
 }

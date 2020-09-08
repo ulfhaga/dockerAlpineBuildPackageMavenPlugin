@@ -20,17 +20,17 @@ public interface RestfulPackageApi
     @Produces(MediaType.APPLICATION_JSON)
     Response getPackageData(@PathParam("id") Long id);
 
-    @Path("tarball")
-    @PUT
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.TEXT_PLAIN)
-    Response putTarBall(@PathParam("id") Long id, String body) throws IOException;
-
     @Path("source")
     @PUT
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     Response putSource(@PathParam("id") Long id, @GZIP byte[] tarStream) throws IOException;
+
+    @Path("source")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getSource(@PathParam("id") Long id) throws IOException;
 
     @Path("name")
     @PUT
@@ -44,9 +44,4 @@ public interface RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     Response getName(@PathParam("id") Long id);
 
-    @Path("package")
-    @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @Consumes(MediaType.TEXT_PLAIN)
-    Response getPackage(@PathParam("id") Long id) throws IOException;
 }
