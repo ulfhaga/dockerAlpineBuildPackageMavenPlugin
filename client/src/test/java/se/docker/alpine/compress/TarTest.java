@@ -1,10 +1,7 @@
 package se.docker.alpine.compress;
 
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+@Tag("tag2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TarTest
 {

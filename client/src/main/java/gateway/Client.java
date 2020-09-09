@@ -1,19 +1,15 @@
-package se.docker.alpine.gateway;
+package gateway;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import se.docker.alpine.api.v1.RestfulPackageApi;
 import se.docker.alpine.api.v1.RestfulPackagesApi;
-import se.docker.alpine.compress.Tar;
 
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 
 public class Client
 {
