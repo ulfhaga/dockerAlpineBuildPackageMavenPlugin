@@ -18,6 +18,7 @@
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <java.compiler.debug>true</java.compiler.debug>
         <junit5.version>5.4.2</junit5.version>
+        <skipITs>false</skipITs>
     </properties>
 
     <dependencyManagement>
@@ -123,13 +124,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.0.0-M3</version>
-                <configuration>
-                    <includes>
-                        <include>**/IT*.java</include>
-                        <include>**/*IT.java</include>
-                        <include>**/*ITCase.java</include>
-                    </includes>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
