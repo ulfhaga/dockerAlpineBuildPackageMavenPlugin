@@ -18,6 +18,8 @@
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <java.compiler.debug>true</java.compiler.debug>
         <junit5.version>5.4.2</junit5.version>
+        <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
+        <quarkus.http.test-port>0</quarkus.http.test-port>
         <skipITs>false</skipITs>
     </properties>
 
@@ -149,6 +151,42 @@
                                 <source>src/it/java</source>
                             </sources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/docker</sourceDirectory>
+                    <showLogs>true</showLogs>
+                    <useColor>true</useColor>
+                    <images>
+                        <image>
+                            <name>quarkus/server-alpine-jvm</name>
+                            <run>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:8080/v1/packages</url>
+                                    </http>
+                                    <time>10000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
