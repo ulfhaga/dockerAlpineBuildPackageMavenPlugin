@@ -1,5 +1,6 @@
 package se.docker.alpine.compress;
 
+
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class TarTest
     {
         Path sourceDirectory = Paths.get("src","test","resources", "testData");
         Path archive = Paths.get("target", SOURCE_TAR);
-        Tar.createTarFolder(sourceDirectory,archive);
+        Tar.createTarContent(sourceDirectory,archive);
         assertTrue(Files.exists(archive));
     }
 
@@ -34,8 +35,18 @@ class TarTest
     {
         Path target = Paths.get("target","testData");
         Path source = Paths.get("target", SOURCE_TAR);
-        Tar.decompressTarFile(source,target);
+        Tar.extractTarFile(source,target);
         Path hello = Paths.get("target", "testData", "source", "mypackage-1.0", "hello.sh");
         assertTrue(Files.exists(hello));
+    }
+
+    @Test
+    @Order(10)
+    void createTarContent() throws IOException
+    {
+        Path sourceDirectory = Paths.get("src","test","resources", "testData");
+        byte[] archiveContent = Tar.createTarContent(sourceDirectory);
+        int len = archiveContent.length;
+        // assertTrue( len > 1093);
     }
 }

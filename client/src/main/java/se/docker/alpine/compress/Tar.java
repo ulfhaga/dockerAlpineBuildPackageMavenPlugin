@@ -11,7 +11,62 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class Tar
 {
-    public static void createTarFolder(Path source, Path archive) throws IOException
+    public static byte[] createTarContent(Path source) throws IOException
+    {
+        byte[] archiveContent;
+        if (!Files.isDirectory(source))
+        {
+            throw new IOException("Please provide a directory.");
+        }
+        try (
+                ByteArrayOutputStream archive = new ByteArrayOutputStream();
+                BufferedOutputStream buffOut = new BufferedOutputStream(archive);
+                TarArchiveOutputStream tOut = new TarArchiveOutputStream(buffOut))
+        {
+            Files.walkFileTree(source, new SimpleFileVisitor<>()
+            {
+                @Override
+                public FileVisitResult visitFile(Path file,
+                                                 BasicFileAttributes attributes)
+                {
+                    // only copy files, no symbolic links
+                    if (attributes.isSymbolicLink())
+                    {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    // get filename
+                    Path targetFile = source.relativize(file);
+                    try
+                    {
+                        TarArchiveEntry tarEntry = new TarArchiveEntry(
+                                file.toFile(), targetFile.toString());
+                        tOut.putArchiveEntry(tarEntry);
+                        Files.copy(file, tOut);
+                        tOut.closeArchiveEntry();
+                    }
+                    catch (IOException e)
+                    {
+                        System.err.printf("Unable to tar.gz : %s%n%s%n", file, e);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc)
+                {
+                    System.err.printf("Unable to tar.gz : %s%n%s%n", file, exc);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            tOut.flush();
+            archiveContent = archive.toByteArray();
+            tOut.finish();
+        }  // try
+        return archiveContent;
+    }
+
+
+    public static void createTarContent(Path source, Path archive) throws IOException
     {
         if (!Files.isDirectory(source))
         {
@@ -48,7 +103,8 @@ public class Tar
                         Files.copy(file, tOut);
                         tOut.closeArchiveEntry();
                         System.out.printf("file : %s%n", file);
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         System.err.printf("Unable to tar.gz : %s%n%s%n", file, e);
                     }
@@ -66,7 +122,7 @@ public class Tar
         }
     }
 
-    public static void decompressTarFile(Path source, Path target)
+    public static void extractTarFile(Path source, Path target)
             throws IOException
     {
         if (Files.notExists(source))
@@ -85,7 +141,8 @@ public class Tar
                 if (entry.isDirectory())
                 {
                     Files.createDirectories(newPath);
-                } else
+                }
+                else
                 {
                     // check parent folder again
                     Path parent = newPath.getParent();

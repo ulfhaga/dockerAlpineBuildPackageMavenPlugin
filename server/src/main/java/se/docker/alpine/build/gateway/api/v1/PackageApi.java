@@ -128,7 +128,7 @@ public class PackageApi implements RestfulPackageApi
     @GZIP
     public Response getSource(@PathParam("id") Long id) throws IOException
     {
-        LOG.debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX   getSource");
+        LOG.debug("getSource");
         Response response;
         PackageData packageData;
         packageData = packagesService.getPackageById(id);

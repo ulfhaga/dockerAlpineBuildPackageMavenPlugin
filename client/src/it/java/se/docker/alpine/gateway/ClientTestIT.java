@@ -1,5 +1,6 @@
 package se.docker.alpine.gateway;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import java.nio.file.Paths;
 
 class ClientTestIT
 {
+    @Disabled
     @DisplayName("Restful tests")
     @Test
     public void test1() throws IOException
