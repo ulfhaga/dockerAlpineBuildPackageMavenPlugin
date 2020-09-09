@@ -13,7 +13,7 @@ public class Tar
 {
     public static byte[] createTarContent(Path source) throws IOException
     {
-        byte[] archiveContent;
+        byte[] compressedData;
         if (!Files.isDirectory(source))
         {
             throw new IOException("Please provide a directory.");
@@ -58,11 +58,24 @@ public class Tar
                     return FileVisitResult.CONTINUE;
                 }
             });
+            // tOut.flush();
+
             tOut.flush();
-            archiveContent = archive.toByteArray();
+            buffOut.flush();
+            archive.flush();
+            archive.close();
+            compressedData = archive.toByteArray();
+
+          /*  byte ff[] =new byte[100000];
+            archive.write(ff);
+            long dddd = tOut.getBytesWritten();
+            archiveContent = new byte[(int) dddd];
+            tOut.write(archiveContent, 0, (int) dddd);
+
+           */
             tOut.finish();
         }  // try
-        return archiveContent;
+        return compressedData;
     }
 
 
