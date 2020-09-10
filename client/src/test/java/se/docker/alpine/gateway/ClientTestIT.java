@@ -18,7 +18,7 @@ class ClientTestIT
     @Test
     public void test1() throws IOException
     {
-        Path sourceDirectory = Paths.get("src","it","resources","source");
+        Path sourceDirectory = Paths.get("src","test","resources","source");
         ClientDto clientDto = new ClientDto();
         clientDto.setName("MyGoodPackage");
         clientDto.setSource(sourceDirectory);

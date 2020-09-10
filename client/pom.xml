@@ -172,20 +172,33 @@
                                 </ports>
                                 <wait>
                                     <http>
-                                        <url>http://localhost:8080/v1/packages</url>
+                                        <url>http://localhost:8080/health/ready</url>
+                                        <method>GET</method>
+                                        <status>200</status>
                                     </http>
                                     <time>10000</time>
+                                    <kill>1000</kill>
+                                    <shutdown>500</shutdown>
+                                    <healthy>false</healthy>
                                 </wait>
                             </run>
+
                         </image>
                     </images>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>docker-build</id>
-                        <phase>verify</phase>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -5,11 +5,13 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import se.docker.alpine.api.v1.RestfulPackageApi;
 import se.docker.alpine.api.v1.RestfulPackagesApi;
+import se.docker.alpine.compress.Tar;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 
 public class Client
 {
@@ -31,8 +33,7 @@ public class Client
             String id = uri.substring(RestfulPackageApi.V_1_PACKAGES.length());
             putName(id,clientDto.getName());
             getName(id);
-
-
+            putSource(id,clientDto.getSource());
         }
         else
         {
@@ -75,19 +76,17 @@ public class Client
         return name;
     }
 
-/*
-    private byte[] putSource(Path sourceFolder,Path archive) throws IOException
+
+    private void putSource(String id, Path sourceFolder) throws IOException
     {
-        Tar.createTarFile(sourceFolder,archive);
-       byte[] tarFileContent =
+        byte[] tarFileContent = Tar.createTarContent(sourceFolder);
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
-        Response response = proxy.putSource(Long.valueOf(path),name);
+        Response response = proxy.putSource(Long.valueOf(id),tarFileContent);
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
-        return path;
     }
 
-*/
+
 
 }

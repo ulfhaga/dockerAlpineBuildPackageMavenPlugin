@@ -62,12 +62,7 @@ ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jb
 COPY target/lib/* ${INSTALLATION_FOLDER}/lib/
 COPY target/*-runner.jar ${INSTALLATION_FOLDER}/app.jar
 
-
 EXPOSE 8080
-
-#
-#USER 1001
-#USER dev
 
 #
 # Alpine settings
@@ -102,5 +97,7 @@ RUN git clone git://git.alpinelinux.org/aports
 RUN abuild-keygen -a -i
 
 USER 1001
+
+HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost/ || exit 1
 
 ENTRYPOINT [ "/usr/local/lib/alpine/run-java.sh" ]

@@ -65,3 +65,5 @@ curl -v -w "\n" -X PUT  -H "Content-Type: text/plain"  http://localhost:8080/v1/
 curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:8080/v1/packages/1 
 curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:8080/v1/packages
 
+
+mvn -D docker.skip install # http://dmp.fabric8.io/#global-configuration
