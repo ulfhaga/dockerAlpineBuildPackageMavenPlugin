@@ -8,8 +8,6 @@ public class PackageData
 
     private transient Path source;
 
-    private transient Path alpinePackage;
-
     public Path getSource()
     {
         return source;
@@ -34,10 +32,5 @@ public class PackageData
     {
         name = "";
         source = null;
-    }
-
-    public Path getPackage()
-    {
-        return this.alpinePackage;
     }
 }

@@ -11,11 +11,11 @@
 ip	0	IP		# internet protocol, pseudo protocol number
 icmp	1	ICMP		# internet control message protocol
 igmp	2	IGMP		# Internet Group Management
-ggp	3	GGP		# se.docker.alpine.gateway-se.docker.alpine.gateway protocol
+ggp	3	GGP		# gateway-gateway protocol
 ipencap	4	IP-ENCAP	# IP encapsulated in IP (officially ``IP'')
 st	5	ST		# ST datagram mode
 tcp	6	TCP		# transmission control protocol
-egp	8	EGP		# exterior se.docker.alpine.gateway protocol
+egp	8	EGP		# exterior gateway protocol
 pup	12	PUP		# PARC universal packet protocol
 udp	17	UDP		# user datagram protocol
 hmp	20	HMP		# host monitoring protocol

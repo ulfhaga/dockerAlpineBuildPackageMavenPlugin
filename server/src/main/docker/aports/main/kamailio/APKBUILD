@@ -374,7 +374,7 @@ snmpstats() {
 }
 
 xmpp() {
-	_generic_pkg "XMPP (Jabber) se.docker.alpine.gateway" \
+	_generic_pkg "XMPP (Jabber) gateway" \
 		"$_mod_list_xmpp"
 }
 

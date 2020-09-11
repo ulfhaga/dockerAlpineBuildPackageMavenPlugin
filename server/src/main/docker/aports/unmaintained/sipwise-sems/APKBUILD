@@ -40,7 +40,7 @@ source="https://github.com/sipwise/sems/archive/mr$pkgver.tar.gz
 
 # applied:
 #	sems-0004-fix-PRACK-route.patch
-#	sems-0007-Fix-se.docker.alpine.gateway-module-s-version-passing-in-CMake.patch
+#	sems-0007-Fix-gateway-module-s-version-passing-in-CMake.patch
 #	sems-0010-Move-CMake-defines.patch
 
 _builddir="$srcdir/$_basename-mr$pkgver"
@@ -77,7 +77,7 @@ build() {
 		-DSEMS_EXEC_PREFIX=/usr \
 		-DSEMS_LIBDIR=lib \
 		|| return 1
-	make
+	make 
 }
 
 package() {
@@ -146,8 +146,8 @@ g722() {
 	_mv_sub usr/lib/sems/plug-in/g722.so
 }
 
-#se.docker.alpine.gateway() {
-#	pkgdesc="ISDN se.docker.alpine.gateway for SEMS"
+#gateway() {
+#	pkgdesc="ISDN gateway for SEMS"
 #	depends="sems"
 #}
 

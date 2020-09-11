@@ -36,7 +36,7 @@ package() {
 		doc/admin-api.md \
 		doc/configure.md \
 		doc/djc_layer_model.md \
-		doc/nat-se.docker.alpine.gateway.md \
+		doc/nat-gateway.md \
 		doc/network-services.md \
 		doc/non-root-user.md \
 		doc/security_specification.md \

@@ -4,7 +4,7 @@
 pkgname=iaxmodem
 pkgver=1.3.0
 pkgrel=0
-pkgdesc="Softmodem for hylafax that connects to VOIP se.docker.alpine.gateway with IAX"
+pkgdesc="Softmodem for hylafax that connects to VOIP gateway with IAX"
 url="http://iaxmodem.sourceforge.net/"
 arch="all"
 license="LGPL+"

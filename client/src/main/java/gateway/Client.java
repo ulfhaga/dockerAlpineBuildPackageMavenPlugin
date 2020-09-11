@@ -1,4 +1,4 @@
-package se.docker.alpine.gateway;
+package gateway;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -26,7 +26,7 @@ public class Client
 
     public void send(ClientDto clientDto) throws IOException
     {
-        String uri;
+        String uri = createCollection();
         uri = createCollection();
         if (uri.startsWith(RestfulPackageApi.V_1_PACKAGES))
         {
@@ -54,13 +54,14 @@ public class Client
         return path;
     }
     
-    private void putName(String path, String name) throws IOException
+    private String putName(String path, String name) throws IOException
     {
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
         Response response = proxy.setName(Long.valueOf(path),name);
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
+        return path;
     }
 
     private String getName(String path) throws IOException

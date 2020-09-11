@@ -3,16 +3,17 @@ package se.docker.alpine.build.service;
 import org.apache.commons.io.FileUtils;
 import se.docker.alpine.build.model.PackageData;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 
 @Transactional
 @ApplicationScoped
@@ -37,7 +38,7 @@ public class PackagesService
         long counter = getCounter();
         packages.put(counter, packageData);
 
-        Path folder = Paths.get(tempDir.toAbsolutePath().toString(), String.valueOf(counter));
+        Path folder = Paths.get(tempDir.toAbsolutePath().toString(),String.valueOf(counter));
         FileUtils.deleteDirectory(folder.toFile());
         packageData.setSource(Files.createDirectory(folder));
 
@@ -71,11 +72,5 @@ public class PackagesService
             }
         }
         return counter;
-    }
-
-    public boolean createAlpinePackage(PackageData packageData)
-    {
-
-        return false;
     }
 }

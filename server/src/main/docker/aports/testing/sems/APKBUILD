@@ -43,7 +43,7 @@ source="$pkgname-$pkgver.tar.gz::https://github.com/sems-server/sems/archive/$pk
 
 # applied:
 #	sems-0004-fix-PRACK-route.patch
-#	sems-0007-Fix-se.docker.alpine.gateway-module-s-version-passing-in-CMake.patch
+#	sems-0007-Fix-gateway-module-s-version-passing-in-CMake.patch
 #	sems-0010-Move-CMake-defines.patch
 
 replaces="
@@ -130,8 +130,8 @@ g722() {
 	_mv_sub usr/lib/sems/plug-in/g722.so
 }
 
-#se.docker.alpine.gateway() {
-#	pkgdesc="ISDN se.docker.alpine.gateway for SEMS"
+#gateway() {
+#	pkgdesc="ISDN gateway for SEMS"
 #	depends="sems"
 #}
 

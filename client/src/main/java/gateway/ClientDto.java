@@ -1,4 +1,4 @@
-package se.docker.alpine.gateway;
+package gateway;
 
 import java.nio.file.Path;
 
