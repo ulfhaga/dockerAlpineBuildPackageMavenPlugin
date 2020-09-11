@@ -38,11 +38,10 @@ public class PackageApi implements RestfulPackageApi
     @Context
     private UriInfo uriInfo;
 
-    @Override
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response postPackageData(@PathParam("id") Long id) throws IOException
+    public Response putMember(@PathParam("id") Long id) throws IOException
     {
         LOG.debug("postPackageData");
 
@@ -51,6 +50,7 @@ public class PackageApi implements RestfulPackageApi
 
         if (packageData == null)
         {
+            // Create
             long newId = packagesService.createPackage();
             URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(newId)).build();
             response = (Response.created(uri).status(Response.Status.CREATED)
@@ -58,6 +58,7 @@ public class PackageApi implements RestfulPackageApi
         }
         else
         {
+            // Replace
             packageData.clear();
             URI uri = uriInfo.getAbsolutePathBuilder().build();
             response = (Response.created(uri).status(Response.Status.CREATED)
@@ -69,7 +70,7 @@ public class PackageApi implements RestfulPackageApi
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPackageData(@PathParam("id") Long id)
+    public Response getMember(@PathParam("id") Long id)
     {
         PackageData packageData = packagesService.getPackageById(id);
         if (packageData == null)
@@ -142,7 +143,7 @@ public class PackageApi implements RestfulPackageApi
             if (path != null)
             {
                 java.nio.file.Path sourceFile = Paths.get(path.toString(), id + ".tar");
-                LOG.debugv("sourceFile: {0} " , sourceFile.toAbsolutePath().toString() );
+                LOG.debugv("sourceFile: {0} ", sourceFile.toAbsolutePath().toString());
                 byte[] sourceTar = Files.readAllBytes(sourceFile);
                 response = Response.ok().entity(sourceTar).build();
             }
@@ -199,6 +200,48 @@ public class PackageApi implements RestfulPackageApi
         return response;
     }
 
+
+    @Path("package")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @GZIP
+    public Response getPackage(@PathParam("id") Long id) throws IOException
+    {
+        LOG.debug("getPackage");
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            if (packagesService.createAlpinePackage(packageData))
+            {
+                java.nio.file.Path path = packageData.getPackage();
+                if (path != null)
+                {
+                    java.nio.file.Path packageFile = path;
+                    LOG.debugv("packageFile: {0} ", packageFile.toAbsolutePath().toString());
+
+
+                    byte[] sourceTar = Files.readAllBytes(packageFile);
+                    response = Response.ok().entity(sourceTar).build();
+                }
+                else
+                {
+                    response = Response.serverError().build();
+                }
+            }
+            else
+            {
+                response = Response.serverError().build();
+            }
+        }
+        return response;
+    }
 
     //Convert a Base64 string and create a file
     private String convertFile(String dataBase64)

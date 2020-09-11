@@ -18,7 +18,7 @@ interfaceup() {
 }
 
 # awk script: scans the /proc routing table for local subnets
-# 1. filter list for entries with a gateway (column 3) of 0.0.0.0 (ie interface-local)
+# 1. filter list for entries with a se.docker.alpine.gateway (column 3) of 0.0.0.0 (ie interface-local)
 # 2. read column 2 for network-order hex encoded subnet address
 # 3. match against a 10.x.x.x, 172.(16-31).x.x, or 192.168.x.x address
 # 4. print out any interface (column 1) that matches

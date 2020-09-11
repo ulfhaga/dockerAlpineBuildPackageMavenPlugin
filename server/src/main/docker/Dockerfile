@@ -83,6 +83,9 @@ COPY maven/src/main/docker/scripts/create_new_package.sh /usr/local/lib/alpine/s
 COPY maven/src/main/docker/aports /home/dev/aports
 RUN chgrp -R -v abuild /home/dev/aports
 
+# Healtcheck
+HEALTHCHECK --interval=1m --timeout=4s CMD curl -f http://localhost:8080/health/ready || exit 1
+
 # Set user                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     WORKDIR /home/dev
 USER dev
 WORKDIR /home/dev

@@ -14,11 +14,11 @@ public interface RestfulPackageApi
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    Response postPackageData(@PathParam("id") Long id) throws IOException;
+    Response putMember(@PathParam("id") Long id) throws IOException;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getPackageData(@PathParam("id") Long id);
+    Response getMember(@PathParam("id") Long id);
 
     @Path("source")
     @PUT

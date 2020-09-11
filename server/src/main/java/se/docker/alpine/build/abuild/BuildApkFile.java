@@ -1,4 +1,4 @@
-package se.docker.alpine.abuild;
+package se.docker.alpine.build.abuild;
 
 import java.io.BufferedReader;
 import java.io.IOException;

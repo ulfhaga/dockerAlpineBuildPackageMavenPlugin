@@ -1,6 +1,6 @@
 # Contributor: Michael Pirogov <vbnet.ru@gmail.com>
 # Maintainer: Michael Pirogov <vbnet.ru@gmail.com>
-pkgname=janus-gateway
+pkgname=janus-se.docker.alpine.gateway
 pkgver=0.10.4
 pkgrel=1
 pkgdesc="Janus WebRTC Server"
@@ -12,7 +12,7 @@ makedepends="autoconf automake libtool gengetopt lua5.3-dev cmake libsrtp-dev
 	libnice-dev jansson-dev libconfig-dev libusrsctp-dev libmicrohttpd-dev
 	libwebsockets-dev rabbitmq-c-dev curl-dev libogg-dev libopusenc-dev
 	lua duktape-dev npm doxygen graphviz ffmpeg-dev zlib-dev libogg-dev"
-source="$pkgname-$pkgver.tar.gz::https://github.com/meetecho/janus-gateway/archive/v$pkgver.tar.gz
+source="$pkgname-$pkgver.tar.gz::https://github.com/meetecho/janus-se.docker.alpine.gateway/archive/v$pkgver.tar.gz
 	$pkgname.initd
 	$pkgname.confd
 	"
@@ -57,6 +57,6 @@ package() {
 	install -Dm644 "$srcdir"/$pkgname.confd "$pkgdir"/etc/conf.d/$pkgname
 }
 
-sha512sums="7dd837a34f7f303c70c8acb43f6c0da42ec62723ff9e8e3b7d85f8f15a2db554400715ff5de71aca4f0423809458fb9e760a132b5c83b17c29f55830add8df1d  janus-gateway-0.10.4.tar.gz
-942d8566219a426671d78b962f1584a910137995a2dbfc9af2a5c2901f30dc8992bbc749543d149d9f3d24bd751090abc226fca405276450ef84acff1cd74cc1  janus-gateway.initd
-f442a419a435f5d1adab673011b7689a5680064f32f712e5e4668c486ce10f1442822c60cb302ee850ddc576a9e9f610a0863f02204e56f1fc68aa3ee312ebe0  janus-gateway.confd"
+sha512sums="7dd837a34f7f303c70c8acb43f6c0da42ec62723ff9e8e3b7d85f8f15a2db554400715ff5de71aca4f0423809458fb9e760a132b5c83b17c29f55830add8df1d  janus-se.docker.alpine.gateway-0.10.4.tar.gz
+942d8566219a426671d78b962f1584a910137995a2dbfc9af2a5c2901f30dc8992bbc749543d149d9f3d24bd751090abc226fca405276450ef84acff1cd74cc1  janus-se.docker.alpine.gateway.initd
+f442a419a435f5d1adab673011b7689a5680064f32f712e5e4668c486ce10f1442822c60cb302ee850ddc576a9e9f610a0863f02204e56f1fc68aa3ee312ebe0  janus-se.docker.alpine.gateway.confd"

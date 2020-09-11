@@ -16,7 +16,7 @@ start_pre() {
 }
 
 start() {
-	ebegin "Starting Janus gateway server"
+	ebegin "Starting Janus se.docker.alpine.gateway server"
 	start-stop-daemon --start --make-pidfile --exec /usr/bin/janus \
 		--pidfile "${PIDFILE}" --background --quiet \
 		--user "${JANUS_USER}" \
@@ -25,7 +25,7 @@ start() {
 }
 
 stop() {
-	ebegin "Stopping Janus gateway server"
+	ebegin "Stopping Janus se.docker.alpine.gateway server"
 	start-stop-daemon --stop --quiet --pidfile "${PIDFILE}"
 	eend $?
 }

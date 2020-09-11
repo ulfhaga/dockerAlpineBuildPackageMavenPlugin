@@ -9,6 +9,8 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 You can run your application in dev mode that enables live coding using:
 ```
 ./mvnw quarkus:dev
+
+mvn quarkus:dev -Ddebug
 ```
 
 ## Packaging and running the application
@@ -40,6 +42,7 @@ mvn -P docker docker:stop
 # Test
 tree /home/ulha/code/dockerAlpineBuildMavenPackage/server/target/docker/quarkus/server-alpine-jvm/build/maven
 
+http://maven.fabric8.io/
 http://dmp.fabric8.io/#example
 https://en.wikipedia.org/wiki/Representational_state_transfer
 https://quarkus.io/guides/rest-json
@@ -50,6 +53,9 @@ docker exec -it server-alpine-jvm-1   /bin/sh
 
 
 ./mvnw verify -Pnative -Dquarkus.native.container-build=true 
+
+mvn -DskipITs -Ddocker.skip install
+
 
 docker run -i --rm -p 8080:8080 quarkus/server-alpine-jvm 
 eller 

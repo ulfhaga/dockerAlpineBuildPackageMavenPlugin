@@ -3,7 +3,7 @@
 pkgname=bitlbee
 pkgver=3.6
 pkgrel=0
-pkgdesc="An IRC to other chat networks gateway"
+pkgdesc="An IRC to other chat networks se.docker.alpine.gateway"
 url="https://www.bitlbee.org/"
 arch="all"
 license="GPL-2.0-or-later"

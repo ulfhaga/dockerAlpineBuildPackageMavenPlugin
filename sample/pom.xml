@@ -13,6 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -82,18 +83,67 @@
                 <version>1.0-SNAPSHOT</version>
                 <configuration>
                     <name>mypackage</name>
-                    <source>${project.basedir}/src/test/resources/source</source>
+                    <source>${project.basedir}/src/test/resources/testData/source</source>
                 </configuration>
                 <executions>
                     <execution>
                         <id>execution</id>
-                        <phase>package</phase>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/docker</sourceDirectory>
+                    <showLogs>true</showLogs>
+                    <useColor>true</useColor>
+                    <images>
+                        <image>
+                            <name>quarkus/server-alpine-jvm:latest</name>
+                            <run>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:8080/health/ready</url>
+                                        <method>GET</method>
+                                        <status>200</status>
+                                    </http>
+                                    <time>10000</time>
+                                    <kill>1000</kill>
+                                    <shutdown>500</shutdown>
+                                    <healthy>false</healthy>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>

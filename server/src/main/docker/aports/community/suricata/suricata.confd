@@ -6,12 +6,12 @@
 
 # Pass options to each suricata service.
 # You can launch more than one service at the same time with different options.
-# This can be useful in a multi-queue gateway, for example.
+# This can be useful in a multi-queue se.docker.alpine.gateway, for example.
 # You can expand on the Suricata inline example found at:
 # https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Setting_up_IPSinline_for_Linux
 # Instead of configuring iptables to send traffic to just one queue, you can configure it to "load balance"
 # on several queues. You can then have a Suricata instance processing traffic for each queue.
-# This should help improve performance on the gateway/firewall.
+# This should help improve performance on the se.docker.alpine.gateway/firewall.
 # Suppose you configured iptables to use queues 0 and 1. You can now do the following:
 # ln -s /etc/init.d/suricata /etc/init.d/suricata.q0
 # ln -s /etc/init.d/suricata /etc/init.d/suricata.q1
