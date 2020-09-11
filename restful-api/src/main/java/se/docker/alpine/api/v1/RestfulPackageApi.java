@@ -45,4 +45,11 @@ public interface RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     Response getName(@PathParam("id") Long id);
 
+    @Path("package")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @GZIP
+    Response getPackage(@PathParam("id") Long id) throws IOException;
+
 }
