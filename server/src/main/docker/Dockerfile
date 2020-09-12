@@ -84,7 +84,7 @@ COPY maven/src/main/docker/aports /home/dev/aports
 RUN chgrp -R -v abuild /home/dev/aports
 
 # Healtcheck
-HEALTHCHECK --interval=1m --timeout=4s CMD curl -f http://localhost:8080/health/ready || exit 1
+HEALTHCHECK --start-period=0s --interval=30s --timeout=4s CMD curl -f http://localhost:8080/health/ready || exit 1
 
 # Set user                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     WORKDIR /home/dev
 USER dev
@@ -92,5 +92,4 @@ WORKDIR /home/dev
 
 RUN abuild-keygen -n
 
-USER root
 ENTRYPOINT [ "/usr/local/lib/alpine/run-java.sh" ]

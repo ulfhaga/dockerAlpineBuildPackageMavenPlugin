@@ -45,6 +45,18 @@ public interface RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     Response getName(@PathParam("id") Long id);
 
+    @Path("version")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setVersion(@PathParam("id") Long id, String body);
+
+    @Path("version")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getVersion(@PathParam("id") Long id);
+
     @Path("package")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

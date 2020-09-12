@@ -34,6 +34,7 @@ public class Client
             putName(id,clientDto.getName());
             getName(id);
             putSource(id,clientDto.getSource());
+            getPackage(id);
         }
         else
         {
@@ -84,6 +85,18 @@ public class Client
         Response response = proxy.putSource(Long.valueOf(id),tarFileContent);
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
+    }
+
+    private byte[] getPackage(String path) throws IOException
+    {
+        byte[] name;
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.getPackage(Long.valueOf(path));
+        name = response.readEntity(byte[].class);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+        return name;
     }
 
 

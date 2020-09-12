@@ -6,6 +6,9 @@ public class PackageData
 {
     private String name;
 
+
+    private String version;
+
     private transient Path source;
 
     private transient Path alpinePackage;
@@ -28,6 +31,16 @@ public class PackageData
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion(String version)
+    {
+        this.version = version;
     }
 
     public void clear()

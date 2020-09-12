@@ -1,6 +1,7 @@
 package se.docker.alpine.build.service;
 
 import org.apache.commons.io.FileUtils;
+import se.docker.alpine.build.abuild.BuildApkFile;
 import se.docker.alpine.build.model.PackageData;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -73,8 +74,11 @@ public class PackagesService
         return counter;
     }
 
-    public boolean createAlpinePackage(PackageData packageData)
+    public boolean createAlpinePackage(PackageData packageData) throws IOException
     {
+
+        BuildApkFile buildApkFile = new BuildApkFile(BuildApkFile.createProcessBuilder(), packageData);
+
 
         return false;
     }

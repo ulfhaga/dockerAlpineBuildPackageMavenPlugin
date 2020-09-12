@@ -1,20 +1,25 @@
 package se.docker.alpine.build.abuild;
 
+import org.apache.commons.io.FilenameUtils;
 import se.docker.alpine.build.model.PackageData;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.ws.rs.InternalServerErrorException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class BuildApkFile
 {
+    public static final String APKBUILD = "APKBUILD";
     private final ProcessBuilder processBuilder;
     private final PackageData packageData;
     private final Path tempDir;
     private final Path aportsFolder;
+    private final Path packageFolder;
+    private final Path targetFolder;
 
 
     public BuildApkFile(ProcessBuilder processBuilder, PackageData packageData) throws IOException
@@ -24,15 +29,57 @@ public class BuildApkFile
         tempDir = Files.createTempDirectory("aports");
         aportsFolder = Paths.get(tempDir.toAbsolutePath().toString(), "aports");
         Files.createDirectory(aportsFolder);
+
+        // Create package folder
+        packageFolder = Paths.get(aportsFolder.toAbsolutePath().toString(), packageData.getName());
+        Files.createDirectory(packageFolder);
+
+        // Copy tar ball
+        final Path sourceTarFile = packageData.getSource();
+        String fileNameWithOutExt = FilenameUtils.removeExtension(sourceTarFile.getFileName().toString());
+        String extension = FilenameUtils.getExtension(sourceTarFile.getFileName().toString());
+        final String newFilename = fileNameWithOutExt + "-" + packageData.getVersion() + "." + extension;
+        Path targetFile = Paths.get(packageFolder.toAbsolutePath().toString(),
+                newFilename);
+
+        targetFolder = targetFile.getParent();
+        Files.copy(sourceTarFile, targetFile);
+
+        // TODO  ulf
+        //    buildApkFile(sourceFolder);
+        // updateApkBuildFile();
     }
 
-    public int build(String packageName, String workFolder)
+    private int buildApkFile(Path workFolder)
     {
-        int exitVal = 100;
-        // docker exec -t -w /home/dev/aports apk-build newapkbuild "${package_name}"
-        processBuilder.command("docker", "exec", "-t", "-w", workFolder, "apk-build", "newapkbuild", packageName);
+        String[] commandNewApkBuild = {"newapkbuild", this.packageData.getName()};
+        Supplier<String[]> command = () -> commandNewApkBuild;
+        int exitVal = command(packageData.getName(), workFolder, command);
+        return exitVal;
+    }
+
+    private void updateApkBuildFile() throws IOException
+    {
+        Path apkBuild = Paths.get(targetFolder.toString(), APKBUILD);
+        if (Files.exists(apkBuild))
+        {
+            UpdateApkBuildFile updateApkBuildFile = new UpdateApkBuildFile(packageData);
+        }
+        else
+        {
+            throw new InternalServerErrorException();
+        }
+
+    }
+
+    private int command(String packageName, Path workFolder, Supplier<String[]> supplier)
+    {
+        int exitVal = 0;
+        processBuilder.command(supplier.get());
         try
         {
+            Map<String, String> env = processBuilder.environment();
+            env.put("user.dir", workFolder.toAbsolutePath().toString());
             Process process = processBuilder.start();
             StringBuilder output = new StringBuilder();
             BufferedReader reader = new BufferedReader(
@@ -59,6 +106,15 @@ public class BuildApkFile
             e.printStackTrace();
         }
         return exitVal;
+    }
+
+    private void writeToFile(byte[] content, String path) throws IOException
+    {
+        File file = new File(path);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file))
+        {
+            fileOutputStream.write(content);
+        }
     }
 
     static public ProcessBuilder createProcessBuilder()
