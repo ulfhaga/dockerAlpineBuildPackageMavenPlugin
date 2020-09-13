@@ -28,12 +28,15 @@ class UpdateApkBuildFileTest
         PackageData packageData = new PackageData();
         packageData.setName("mypackage");
         packageData.setVersion("1.0");
-        Path akpBuildPath = Paths.get("src", "test", "resources", "buildData","APKBUILD");
-        Path updatedAkpBuildPath = Paths.get("target","APKBUILD");
+        packageData.setArch("noarch");
+        packageData.setLicense("LGPL-2.1-or-later");
+        packageData.setUrl("http:\\/\\/www.github.com");
+        packageData.setDescription("Testing");
+        Path akpBuildPath = Paths.get("src", "test", "resources", "buildData",UpdateApkBuildFile.APKBUILD);
+        Path updatedAkpBuildPath = Paths.get("target",UpdateApkBuildFile.APKBUILD);
         packageData.setSource(akpBuildPath);
         UpdateApkBuildFile updateApkBuildFile = new UpdateApkBuildFile(packageData);
         updateApkBuildFile.updateApkBuildFile(akpBuildPath,updatedAkpBuildPath);
-
 
     }
 }

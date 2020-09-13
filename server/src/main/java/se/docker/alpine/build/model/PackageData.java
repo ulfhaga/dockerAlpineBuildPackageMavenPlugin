@@ -6,10 +6,60 @@ public class PackageData
 {
     private String name;
 
-
     private String version;
 
     private transient Path source;
+
+    private String arch;
+
+    private String license;
+
+    private String description;
+
+    private String url;
+
+
+    public String getArch()
+    {
+        return arch;
+    }
+
+    public void setArch(String arch)
+    {
+        this.arch = arch;
+    }
+
+    public String getLicense()
+    {
+        return license;
+    }
+
+    public void setLicense(String license)
+    {
+        this.license = license;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
 
     private transient Path alpinePackage;
 

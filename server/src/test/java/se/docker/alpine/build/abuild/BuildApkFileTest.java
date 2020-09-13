@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class BuildApkFileTest
 {
 
@@ -27,12 +25,15 @@ class BuildApkFileTest
     @Test
     void build() throws IOException
     {
-        Path sourceFile = Paths.get("src","test","resources","testData","source.tar");
+        Path sourceFile = Paths.get("src", "test", "resources", "testData", "source.tar");
 
         PackageData packageData = new PackageData();
         packageData.setName("mypackage");
         packageData.setVersion("1.0");
         packageData.setSource(sourceFile);
+        packageData.setArch("noarch");
+        packageData.setLicense("LGPL-2.1-or-later");
+        packageData.setUrl("http:\\/\\/www.github.com");
         BuildApkFile buildApkFile = new BuildApkFile(BuildApkFile.createProcessBuilder(), packageData);
     }
 
