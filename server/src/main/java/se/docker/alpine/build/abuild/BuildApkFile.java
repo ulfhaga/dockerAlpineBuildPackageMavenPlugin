@@ -44,10 +44,13 @@ public class BuildApkFile
 
         targetFolder = targetFile.getParent();
         Files.copy(sourceTarFile, targetFile);
+    }
 
-        // TODO  ulf
-        //    buildApkFile(sourceFolder);
-        // updateApkBuildFile();
+    public void run() throws IOException
+    {
+        buildApkFile(targetFolder);
+        UpdateApkBuildFile updateApkBuildFile = new UpdateApkBuildFile(packageData);
+        updateApkBuildFile.updateApkBuildFile(targetFolder,targetFolder);
     }
 
     private int buildApkFile(Path workFolder)

@@ -18,6 +18,7 @@ public class PackageData
 
     private String url;
 
+    private transient Path alpinePackage;
 
     public String getArch()
     {
@@ -49,7 +50,6 @@ public class PackageData
         this.description = description;
     }
 
-
     public String getUrl()
     {
         return url;
@@ -59,9 +59,6 @@ public class PackageData
     {
         this.url = url;
     }
-
-
-    private transient Path alpinePackage;
 
     public Path getSource()
     {
@@ -97,6 +94,12 @@ public class PackageData
     {
         name = "";
         source = null;
+        version = "";
+        arch = "";
+        license = "";
+        description = "";
+        url = "";
+        alpinePackage = null;
     }
 
     public Path getPackage()

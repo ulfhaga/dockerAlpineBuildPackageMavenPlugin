@@ -76,10 +76,8 @@ public class PackagesService
 
     public boolean createAlpinePackage(PackageData packageData) throws IOException
     {
-
         BuildApkFile buildApkFile = new BuildApkFile(BuildApkFile.createProcessBuilder(), packageData);
-
-
+        buildApkFile.run();
         return false;
     }
 }

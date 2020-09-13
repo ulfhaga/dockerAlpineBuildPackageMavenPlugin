@@ -18,6 +18,13 @@ class ClientTestIT
         ClientDto clientDto = new ClientDto();
         clientDto.setName("MyGoodPackage");
         clientDto.setSource(sourceDirectory);
+
+        clientDto.setVersion("1.0");
+        clientDto.setArch("noarch");
+        clientDto.setLicense("LGPL-2.1-or-later");
+        clientDto.setUrl("http:\\/\\/www.github.com");
+        clientDto.setDescription("Testing");
+
         Client client = new Client();
         client.send(clientDto);
     }
