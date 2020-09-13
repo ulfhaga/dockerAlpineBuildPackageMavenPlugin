@@ -12,7 +12,7 @@
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/server-alpine-jvm
+# docker run -i --rm  --name server-alpine-jvm --mount type=bind,src=homeDev,dst=/home/dev,bind-propagation=shared -p 8080:8080 quarkus/server-alpine-jvm
 # or
 # mvn -P docker docker:start
 # ( mvn -P docker docker:stop )

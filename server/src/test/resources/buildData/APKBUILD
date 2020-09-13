@@ -1,0 +1,31 @@
+# Contributor: dev <dev@email.address>
+# Maintainer:
+pkgname=mypackage
+pkgver=
+pkgrel=0
+pkgdesc=""
+url=""
+arch="all"
+license=""
+depends=""
+makedepends=""
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source=""
+builddir="$srcdir/"
+
+build() {
+	# Replace with proper build command(s)
+	:
+}
+
+check() {
+	# Replace with proper check command(s)
+	:
+}
+
+package() {
+	# Replace with proper package command(s)
+	:
+}
+

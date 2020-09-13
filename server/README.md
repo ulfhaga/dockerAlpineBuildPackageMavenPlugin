@@ -35,6 +35,8 @@ If you want to learn more about building native executables, please consult http
 
 mvn -P docker docker:start
 
+docker run --rm -dit --name apk-build apk-build:latest
+
 # Stop the docker container
 
 mvn -P docker docker:stop
