@@ -25,7 +25,6 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <maven.deploy.skip>false</maven.deploy.skip>
         <main.basedir>${project.basedir}</main.basedir>
     </properties>
