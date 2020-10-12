@@ -12,6 +12,46 @@ public class ClientDto
     private String description;
     private String url;
 
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public void setArch(String arch)
+    {
+        this.arch = arch;
+    }
+
+    public String getArch()
+    {
+        return arch;
+    }
+
+    public String getLicense()
+    {
+        return license;
+    }
+    public void setLicense(String license)
+    {
+        this.license = license;
+    }
+
+    public String getUrl()
+    {
+        return url;
+    }
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+
     public Path getSource()
     {
         return source;
@@ -36,23 +76,17 @@ public class ClientDto
     {
         this.version = version;
     }
-    public void setArch(String arch)
-    {
-        this.arch = arch;
-    }
 
-    public void setLicense(String license)
-    {
-        this.license = license;
-    }
 
-    public void setUrl(String url)
-    {
-        this.url = url;
-    }
+
+
+
+
 
     public void setDescription(String description)
     {
         this.description = description;
     }
+
+
 }

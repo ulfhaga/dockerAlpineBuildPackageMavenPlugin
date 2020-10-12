@@ -35,15 +35,21 @@ public class BuildApkFile
         Files.createDirectory(packageFolder);
 
         // Copy tar ball
-        final Path sourceTarFile = packageData.getSource();
-        String fileNameWithOutExt = FilenameUtils.removeExtension(sourceTarFile.getFileName().toString());
+
+      /*  String fileNameWithOutExt = FilenameUtils.removeExtension(sourceTarFile.getFileName().toString());
         String extension = FilenameUtils.getExtension(sourceTarFile.getFileName().toString());
         final String newFilename = fileNameWithOutExt + "-" + packageData.getVersion() + "." + extension;
         Path targetFile = Paths.get(packageFolder.toAbsolutePath().toString(),
                 newFilename);
 
         targetFolder = targetFile.getParent();
+        */
+        String tarFile = packageData.getName() + "-" + packageData.getVersion() + ".tar";
+        Path targetFile = Paths.get(packageFolder.toAbsolutePath().toString(),tarFile);
+        Path sourceTarFile = packageData.getSource();
         Files.copy(sourceTarFile, targetFile);
+
+        targetFolder = targetFile.getParent();
     }
 
     public void run() throws IOException

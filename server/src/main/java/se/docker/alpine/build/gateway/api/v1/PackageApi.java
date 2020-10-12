@@ -245,7 +245,6 @@ public class PackageApi implements RestfulPackageApi
         return response;
     }
 
-
     @Path("package")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -287,6 +286,55 @@ public class PackageApi implements RestfulPackageApi
         }
         return response;
     }
+
+    @Override
+    public Response setArch(Long id, String body)
+    {
+        return null;
+    }
+
+    @Override
+    public Response getArch(Long id)
+    {
+        return null;
+    }
+
+    @Override
+    public Response setLicense(Long id, String body)
+    {
+        return null;
+    }
+
+    @Override
+    public Response getLicense(Long id)
+    {
+        return null;
+    }
+
+    @Override
+    public Response setDescription(Long id, String body)
+    {
+        return null;
+    }
+
+    @Override
+    public Response getDescription(Long id)
+    {
+        return null;
+    }
+
+    @Override
+    public Response setUrl(Long id, String body)
+    {
+        return null;
+    }
+
+    @Override
+    public Response getUrl(Long id)
+    {
+        return null;
+    }
+
 
     //Convert a Base64 string and create a file
     private String convertFile(String dataBase64)

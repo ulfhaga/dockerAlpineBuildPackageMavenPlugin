@@ -57,6 +57,54 @@ public interface RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     Response getVersion(@PathParam("id") Long id);
 
+    @Path("arch")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setArch(@PathParam("id") Long id, String body);
+
+    @Path("arch")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getArch(@PathParam("id") Long id);
+
+    @Path("license")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setLicense(@PathParam("id") Long id, String body);
+
+    @Path("license")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getLicense(@PathParam("id") Long id);
+
+    @Path("description")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setDescription(@PathParam("id") Long id, String body);
+
+    @Path("description")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getDescription(@PathParam("id") Long id);
+
+    @Path("url")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setUrl(@PathParam("id") Long id, String body);
+
+    @Path("url")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getUrl(@PathParam("id") Long id);
+
     @Path("package")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

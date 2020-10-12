@@ -32,14 +32,58 @@ public class Client
         {
             String id = uri.substring(RestfulPackageApi.V_1_PACKAGES.length());
             putName(id,clientDto.getName());
-            getName(id);
+         //   getName(id);
             putSource(id,clientDto.getSource());
+            putVersion(id,clientDto.getVersion());
+            putArch(id,clientDto.getArch());
             getPackage(id);
         }
         else
         {
             throw new InternalServerErrorException("Wrong path uri:" + uri);
         }
+    }
+
+    private void putArch(String path, String arch)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setArch(Long.valueOf(path),arch);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private String getArch(String path) throws IOException
+    {
+        String arch;
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.getArch(Long.valueOf(path));
+        arch = response.readEntity(String.class);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+        return arch;
+    }
+
+    private void putVersion(String path, String version)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setVersion(Long.valueOf(path),version);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private String getVersion(String path) throws IOException
+    {
+        String version;
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.getVersion(Long.valueOf(path));
+        version = response.readEntity(String.class);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+        return version;
     }
 
     private String createCollection() throws IOException
