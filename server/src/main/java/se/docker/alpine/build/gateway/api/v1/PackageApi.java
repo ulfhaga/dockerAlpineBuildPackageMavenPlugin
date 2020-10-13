@@ -290,43 +290,127 @@ public class PackageApi implements RestfulPackageApi
     @Override
     public Response setArch(Long id, String body)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setArch(body);
+            response = Response.ok().build();
+        }
+        return response;
     }
 
     @Override
     public Response getArch(Long id)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            String packageName = packageData.getArch();
+            response = Response.ok().entity(packageName).build();
+        }
+        return response;
     }
 
     @Override
     public Response setLicense(Long id, String body)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setLicense(body);
+            response = Response.ok().build();
+        }
+        return response;
     }
 
     @Override
     public Response getLicense(Long id)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            String packageName = packageData.getLicense();
+            response = Response.ok().entity(packageName).build();
+        }
+        return response;
     }
 
     @Override
     public Response setDescription(Long id, String body)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setDescription(body);
+            response = Response.ok().build();
+        }
+        return response;
     }
 
     @Override
     public Response getDescription(Long id)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            String packageName = packageData.getDescription();
+            response = Response.ok().entity(packageName).build();
+        }
+        return response;
     }
 
     @Override
     public Response setUrl(Long id, String body)
     {
-        return null;
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setUrl(body);
+            response = Response.ok().build();
+        }
+        return response;
     }
 
     @Override

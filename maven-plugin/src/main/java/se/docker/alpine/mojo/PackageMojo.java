@@ -21,6 +21,21 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
     @Parameter(property = "name", required = true)
     private String name;
 
+    @Parameter(property = "version", required = true)
+    private String version;
+
+    @Parameter(property = "arch", required = true)
+    private String arch;
+
+    @Parameter(property = "license", required = false)
+    private String license;
+
+    @Parameter(property = "url", required = false)
+    private String url;
+
+    @Parameter(property = "description", required = false)
+    private String description;
+
 
     @Override
     public void execute()
