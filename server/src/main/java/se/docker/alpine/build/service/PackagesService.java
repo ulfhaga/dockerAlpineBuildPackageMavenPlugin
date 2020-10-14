@@ -78,6 +78,7 @@ public class PackagesService
     {
         BuildApkFile buildApkFile = new BuildApkFile(BuildApkFile.createProcessBuilder(), packageData);
         buildApkFile.run();
+        // TODO : Nytt kommando
         return false;
     }
 }

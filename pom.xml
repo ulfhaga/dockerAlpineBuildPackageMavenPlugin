@@ -13,8 +13,8 @@
 
     <modules>
         <module>restful-api</module>
-        <module>client</module>
         <module>server</module>
+        <module>client</module>
         <module>maven-plugin</module>
         <module>sample</module>
     </modules>

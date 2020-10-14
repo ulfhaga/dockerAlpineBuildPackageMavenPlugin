@@ -36,12 +36,42 @@ public class Client
             putSource(id,clientDto.getSource());
             putVersion(id,clientDto.getVersion());
             putArch(id,clientDto.getArch());
+            putLicence(id,clientDto.getLicense());
+            putDescription(id,clientDto.getDescription());
+            putUrl(id,clientDto.getDescription());
             getPackage(id);
         }
         else
         {
             throw new InternalServerErrorException("Wrong path uri:" + uri);
         }
+    }
+
+    private void putUrl(String path, String description)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setUrl(Long.valueOf(path),description);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private void putDescription(String path, String description)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setDescription(Long.valueOf(path),description);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private void putLicence(String path, String license)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setLicense(Long.valueOf(path),license);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
     }
 
     private void putArch(String path, String arch)

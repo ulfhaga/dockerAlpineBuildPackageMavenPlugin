@@ -83,7 +83,7 @@
                 <version>1.0-SNAPSHOT</version>
                 <configuration>
                     <name>mypackage</name>
-                    <source>${project.basedir}/src/test/resources/testData/source</source>
+                    <source>${project.basedir}/src/test/resources/testData/root</source>
                     <version>1.0</version>
                     <arch>noarch</arch>
                     <license>LGPL-2.1-or-later</license>
@@ -109,9 +109,11 @@
                     <sourceDirectory>${project.basedir}/src/main/docker</sourceDirectory>
                     <showLogs>true</showLogs>
                     <useColor>true</useColor>
+
                     <images>
                         <image>
                             <name>quarkus/server-alpine-jvm:latest</name>
+                            <autoRemove>true</autoRemove>
                             <run>
                                 <ports>
                                     <port>8080:8080</port>

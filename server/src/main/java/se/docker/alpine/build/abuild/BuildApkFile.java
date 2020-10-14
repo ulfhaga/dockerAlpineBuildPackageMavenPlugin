@@ -1,6 +1,5 @@
 package se.docker.alpine.build.abuild;
 
-import org.apache.commons.io.FilenameUtils;
 import se.docker.alpine.build.model.PackageData;
 
 import javax.ws.rs.InternalServerErrorException;
@@ -31,8 +30,8 @@ public class BuildApkFile
         Files.createDirectory(aportsFolder);
 
         // Create package folder
-        packageFolder = Paths.get(aportsFolder.toAbsolutePath().toString(), packageData.getName());
-        Files.createDirectory(packageFolder);
+        // packageFolder = Paths.get(aportsFolder.toAbsolutePath().toString(), packageData.getName());
+        // Files.createDirectory(packageFolder);
 
         // Copy tar ball
 
@@ -44,19 +43,25 @@ public class BuildApkFile
 
         targetFolder = targetFile.getParent();
         */
+        targetFolder = aportsFolder.getParent();
+        packageFolder = null;
+    }
+
+    private void copyTarFileToArkBuild(PackageData packageData) throws IOException
+    {
         String tarFile = packageData.getName() + "-" + packageData.getVersion() + ".tar";
-        Path targetFile = Paths.get(packageFolder.toAbsolutePath().toString(),tarFile);
+        Path targetFile = Paths.get(aportsFolder.toAbsolutePath().toString(),packageData.getName(),tarFile);
         Path sourceTarFile = packageData.getSource();
         Files.copy(sourceTarFile, targetFile);
-
-        targetFolder = targetFile.getParent();
     }
 
     public void run() throws IOException
     {
         buildApkFile(targetFolder);
         UpdateApkBuildFile updateApkBuildFile = new UpdateApkBuildFile(packageData);
-        updateApkBuildFile.updateApkBuildFile(targetFolder,targetFolder);
+        Path apkBuildFile = Paths.get(aportsFolder.toAbsolutePath().toString(),packageData.getName(),"APKBUILD");
+        updateApkBuildFile.updateApkBuildFile(apkBuildFile,apkBuildFile);
+        copyTarFileToArkBuild(packageData);
     }
 
     private int buildApkFile(Path workFolder)
@@ -88,7 +93,8 @@ public class BuildApkFile
         try
         {
             Map<String, String> env = processBuilder.environment();
-            env.put("user.dir", workFolder.toAbsolutePath().toString());
+            //env.put("user.dir", workFolder.toAbsolutePath().toString());
+            processBuilder.directory(aportsFolder.toFile());
             Process process = processBuilder.start();
             StringBuilder output = new StringBuilder();
             BufferedReader reader = new BufferedReader(
