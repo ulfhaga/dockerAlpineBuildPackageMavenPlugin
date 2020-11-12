@@ -19,7 +19,8 @@ public class UpdateApkBuildFile
     public static final Pattern COMPILE_URL = Pattern.compile("(url=.*)");
     public static final Pattern COMPILE_ARCH = Pattern.compile("(arch=.*)");
     public static final Pattern COMPILE_LICENSE = Pattern.compile("(license=.*)");
-
+    public static final Pattern COMPILE_SUBPACKAGES = Pattern.compile("(subpackages=.*)");
+    public static final Pattern COMPILE_BUILD_DIR = Pattern.compile("(builddir=.*)");
 
     private final PackageData packageData;
 
@@ -35,7 +36,28 @@ public class UpdateApkBuildFile
         if (Files.exists(apkBuildFile))
         {
             String content = new String(Files.readAllBytes(apkBuildFile));
-            updatedContent = url(license(description(arch(source(version(content))))));
+            updatedContent = buildDir(subpackages(url(license(description(arch(source(version(content))))))));
+
+            int indexBuild = updatedContent.indexOf("build()" );
+            updatedContent = updatedContent.substring(0, indexBuild);
+
+            updatedContent = updatedContent + "build() {\n" +
+                    "\t# Replace with proper build command(s)\n" +
+                    "\tcd \"${builddir}\";\n" +
+                    "\tmkdir -p \"${pkgdir}\";\n" +
+                    "}\n" +
+                    "check() {\n" +
+                    "\t# Replace with proper check command(s)\n" +
+                    "\tcd \"${builddir}\";\n" +
+                    "}\n" +
+                    "package() {\n" +
+                    "    # Replace with proper package command(s)\n" +
+                    "\tcd \"${builddir}\";\n" +
+                    "\tmkdir -p \"${pkgdir}\";\n" +
+                    "\n" +
+                    "install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello.sh\n" +
+                    "}\n";
+
             writeToFile(updatedContent.getBytes(), updatedApkBuildFile);
         }
         else
@@ -79,6 +101,18 @@ public class UpdateApkBuildFile
     {
         String replacement = "url=\"" + packageData.getUrl() + "\"";
         return COMPILE_URL.matcher(content).replaceFirst(replacement);
+    }
+
+    private String subpackages(String content)
+    {
+        String replacement = "subpackages=\"" + "\"";
+        return COMPILE_SUBPACKAGES.matcher(content).replaceFirst(replacement);
+    }
+
+    private String buildDir(String content)
+    {
+        String replacement = "builddir=\"" + "\"";
+        return COMPILE_BUILD_DIR.matcher(content).replaceFirst(replacement);
     }
 
 

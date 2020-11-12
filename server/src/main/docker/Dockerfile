@@ -90,6 +90,6 @@ HEALTHCHECK --start-period=1s --interval=30s --timeout=4s CMD curl -f http://loc
 USER dev
 WORKDIR /home/dev
 
-RUN abuild-keygen -n
+RUN abuild-keygen -a -n
 
 ENTRYPOINT [ "/usr/local/lib/alpine/run-java.sh" ]

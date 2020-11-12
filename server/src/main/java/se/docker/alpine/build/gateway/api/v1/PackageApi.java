@@ -103,7 +103,7 @@ public class PackageApi implements RestfulPackageApi
             java.nio.file.Path path = packageData.getSource();
             if (path != null)
             {
-                java.nio.file.Path sourceFile = Paths.get(path.toString(), id + ".tar");
+                java.nio.file.Path sourceFile = Paths.get(path.toString(), "source" + ".tar");
                 Files.deleteIfExists(sourceFile);
 
                 File gzipFile = sourceFile.toFile();
@@ -142,7 +142,7 @@ public class PackageApi implements RestfulPackageApi
             java.nio.file.Path path = packageData.getSource();
             if (path != null)
             {
-                java.nio.file.Path sourceFile = Paths.get(path.toString(), id + ".tar");
+                java.nio.file.Path sourceFile = Paths.get(path.toString(), "source" + ".tar");
                 LOG.debugv("sourceFile: {0} ", sourceFile.toAbsolutePath().toString());
                 byte[] sourceTar = Files.readAllBytes(sourceFile);
                 response = Response.ok().entity(sourceTar).build();

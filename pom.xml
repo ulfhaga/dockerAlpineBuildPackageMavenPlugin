@@ -42,7 +42,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[11,14.0.2)</version>
+                                    <version>[11,15)</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
                                     <version>[${maven.version},)</version>

@@ -30,7 +30,7 @@ public class BuildApkFile
         Files.createDirectory(aportsFolder);
 
         // Create package folder
-        // packageFolder = Paths.get(aportsFolder.toAbsolutePath().toString(), packageData.getName());
+        packageFolder = Paths.get(aportsFolder.toAbsolutePath().toString(), packageData.getName());
         // Files.createDirectory(packageFolder);
 
         // Copy tar ball
@@ -41,17 +41,18 @@ public class BuildApkFile
         Path targetFile = Paths.get(packageFolder.toAbsolutePath().toString(),
                 newFilename);
 
+
         targetFolder = targetFile.getParent();
         */
         targetFolder = aportsFolder.getParent();
-        packageFolder = null;
+        Path targetFile = Paths.get(aportsFolder.toAbsolutePath().toString(),packageData.getName());
     }
 
     private void copyTarFileToArkBuild(PackageData packageData) throws IOException
     {
         String tarFile = packageData.getName() + "-" + packageData.getVersion() + ".tar";
         Path targetFile = Paths.get(aportsFolder.toAbsolutePath().toString(),packageData.getName(),tarFile);
-        Path sourceTarFile = packageData.getSource();
+        Path sourceTarFile =  Paths.get(packageData.getSource().toAbsolutePath().toString(),"source.tar");
         Files.copy(sourceTarFile, targetFile);
     }
 
@@ -68,7 +69,7 @@ public class BuildApkFile
     {
         String[] commandNewApkBuild = {"newapkbuild", this.packageData.getName()};
         Supplier<String[]> command = () -> commandNewApkBuild;
-        int exitVal = command(packageData.getName(), workFolder, command);
+        int exitVal = command(packageData.getName(), aportsFolder, command);
         return exitVal;
     }
 
@@ -94,7 +95,8 @@ public class BuildApkFile
         {
             Map<String, String> env = processBuilder.environment();
             //env.put("user.dir", workFolder.toAbsolutePath().toString());
-            processBuilder.directory(aportsFolder.toFile());
+           // processBuilder.directory(aportsFolder.toFile());
+            processBuilder.directory(workFolder.toFile());
             Process process = processBuilder.start();
             StringBuilder output = new StringBuilder();
             BufferedReader reader = new BufferedReader(
@@ -135,5 +137,29 @@ public class BuildApkFile
     static public ProcessBuilder createProcessBuilder()
     {
         return new ProcessBuilder();
+    }
+
+    public int buildApkPackage()
+    {
+        /*
+          docker exec -t -w /home/dev/aports/"${package_name}" apk-build abuild checksum
+  docker exec -t -w /home/dev/aports/"${package_name}" apk-build abuild -r
+         */
+        String[] commandNewApkBuild = {"abuild", "checksum"};
+        Supplier<String[]> command = () -> commandNewApkBuild;
+        int exitVal = command(packageData.getName(), packageFolder, command);
+
+        if (exitVal == 0 )
+        {
+            String[] commandABuild = {"abuild", "-r"};
+            command = () -> commandABuild;
+            exitVal = command(packageData.getName(), packageFolder, command);
+        }
+
+
+        return exitVal;
+
+
+
     }
 }

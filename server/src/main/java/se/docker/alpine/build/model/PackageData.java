@@ -1,5 +1,6 @@
 package se.docker.alpine.build.model;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public class PackageData
@@ -104,6 +105,14 @@ public class PackageData
 
     public Path getPackage()
     {
-        return this.alpinePackage;
+        File path = new File("/home/dev/packages/aports/x86_64/" + getName() + "-" + getVersion() + "-r0" + ".apk");
+        if (path.exists())
+        {
+            return path.toPath();
+        }
+        else
+        {
+            return null;
+        }
     }
 }

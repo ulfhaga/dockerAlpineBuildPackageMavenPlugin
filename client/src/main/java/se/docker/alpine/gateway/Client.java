@@ -9,7 +9,7 @@ import se.docker.alpine.compress.Tar;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Path;
 
@@ -38,8 +38,15 @@ public class Client
             putArch(id,clientDto.getArch());
             putLicence(id,clientDto.getLicense());
             putDescription(id,clientDto.getDescription());
-            putUrl(id,clientDto.getDescription());
-            getPackage(id);
+            putUrl(id,clientDto.getUrl());
+            byte[] packageAkp = getPackage(id);
+
+            File file = new File("/tmp/out.apk");
+
+            try (FileOutputStream stream = new FileOutputStream(file)) {
+                stream.write(packageAkp);
+            }
+
         }
         else
         {
