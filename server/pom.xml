@@ -205,7 +205,7 @@
                                         </ports>
                                         <wait>
                                             <http>
-                                                <url>http://localhost:8080/v1/packages</url>
+                                                <url>http://localhost:64014/v1/packages</url>
                                             </http>
                                             <time>10000</time>
                                         </wait>

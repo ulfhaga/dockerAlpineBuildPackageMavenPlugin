@@ -22,7 +22,7 @@
 #
 # Then run the container using :
 #
-# docker run -i --rm -p 64014:64014 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
+# docker run -i --rm -p 64014:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
 #
 ###
 FROM alpine:3.12.0
