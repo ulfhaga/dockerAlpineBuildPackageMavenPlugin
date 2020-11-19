@@ -12,17 +12,17 @@
 #
 # Then run the container using:
 #
-# docker run -i --rm  --name server-alpine-jvm --mount type=bind,src=homeDev,dst=/home/dev,bind-propagation=shared -p 8080:8080 quarkus/server-alpine-jvm
+# docker run -i --rm  --name server-alpine-jvm --mount type=bind,src=homeDev,dst=/home/dev,bind-propagation=shared -p 64014:64014 quarkus/server-alpine-jvm
 # or
 # mvn -P docker docker:start
 # ( mvn -P docker docker:stop )
 #
 # If you want to include the debug port into your docker image
-# you will have to expose the debug port (default 5005) like this :  EXPOSE 8080 5050
+# you will have to expose the debug port (default 5005) like this :  EXPOSE 64014 5050
 #
 # Then run the container using :
 #
-# docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
+# docker run -i --rm -p 64014:64014 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
 #
 ###
 FROM alpine:3.12.0

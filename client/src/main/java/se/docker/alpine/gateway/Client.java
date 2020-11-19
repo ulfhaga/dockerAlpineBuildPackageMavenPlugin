@@ -15,7 +15,7 @@ import java.nio.file.Path;
 
 public class Client
 {
-    final static String BASE_URI = "http://127.0.0.1:8080";
+    final static String BASE_URI = "http://127.0.0.1:64014";
     final ResteasyClient client;
 
     public Client()

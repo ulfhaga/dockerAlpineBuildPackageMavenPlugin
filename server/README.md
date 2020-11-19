@@ -59,19 +59,19 @@ docker exec -it server-alpine-jvm-1   /bin/sh
 mvn -DskipITs -Ddocker.skip install
 
 
-docker run -i --rm -p 8080:8080 quarkus/server-alpine-jvm 
+docker run -i --rm -p 64014:64014 quarkus/server-alpine-jvm 
 eller 
 java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8881  target/server-1.0-SNAPSHOT-runner.jar
 
 
-http://localhost:8080/v1/packages/1
+http://localhost:64014/v1/packages/1
 
-curl -v -w "\n" -X POST  http://localhost:8080/v1/packages
+curl -v -w "\n" -X POST  http://localhost:64014/v1/packages
 
-curl -v -w "\n" -X PUT  -H "Content-Type: text/plain"  http://localhost:8080/v1/packages/1/name -d 'apa1' 
+curl -v -w "\n" -X PUT  -H "Content-Type: text/plain"  http://localhost:64014/v1/packages/1/name -d 'apa1' 
 
-curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:8080/v1/packages/1 
-curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:8080/v1/packages
+curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:64014/v1/packages/1 
+curl -v -w "\n" -X GET -H "Content-Type: application/json"  http://localhost:64014/v1/packages
 
 
 mvn -D docker.skip install # http://dmp.fabric8.io/#global-configuration

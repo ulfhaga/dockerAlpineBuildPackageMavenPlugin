@@ -201,7 +201,7 @@
                                     </build>
                                     <run>
                                         <ports>
-                                            <port>8080:8080</port>
+                                            <port>64014:8080</port>
                                         </ports>
                                         <wait>
                                             <http>

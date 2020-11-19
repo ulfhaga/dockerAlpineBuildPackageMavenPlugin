@@ -10,6 +10,9 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ *  Build an APK
+ */
 public class BuildApkFile
 {
     public static final String APKBUILD = "APKBUILD";

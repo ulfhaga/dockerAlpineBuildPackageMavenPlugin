@@ -116,11 +116,11 @@
                             <autoRemove>true</autoRemove>
                             <run>
                                 <ports>
-                                    <port>8080:8080</port>
+                                    <port>64014:64014</port>
                                 </ports>
                                 <wait>
                                     <http>
-                                        <url>http://localhost:8080/health/ready</url>
+                                        <url>http://localhost:64014/health/ready</url>
                                         <method>GET</method>
                                         <status>200</status>
                                     </http>

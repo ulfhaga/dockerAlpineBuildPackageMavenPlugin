@@ -11,14 +11,14 @@
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/server-alpine-jvm
+# docker run -i --rm -p 64014:64014 quarkus/server-alpine-jvm
 #
 # If you want to include the debug port into your docker image
-# you will have to expose the debug port (default 5005) like this :  EXPOSE 8080 5050
+# you will have to expose the debug port (default 5005) like this :  EXPOSE 64014 5050
 #
 # Then run the container using :
 #
-# docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
+# docker run -i --rm -p 64014:64014 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/server-alpine-jvm
 #
 ###
 FROM alpine:3.12.0
@@ -62,7 +62,7 @@ ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jb
 COPY target/lib/* ${INSTALLATION_FOLDER}/lib/
 COPY target/*-runner.jar ${INSTALLATION_FOLDER}/app.jar
 
-EXPOSE 8080
+EXPOSE 64014
 
 #
 # Alpine settings
