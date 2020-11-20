@@ -27,13 +27,13 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
     @Parameter(property = "arch", required = true)
     private String arch;
 
-    @Parameter(property = "license", required = false)
+    @Parameter(property = "license", required = true)
     private String license;
 
-    @Parameter(property = "url", required = false)
+    @Parameter(property = "url", required = true)
     private String url;
 
-    @Parameter(property = "description", required = false)
+    @Parameter(property = "description", required = true)
     private String description;
 
 
@@ -62,10 +62,16 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
     private ClientDto getClientDto()
     {
         ClientDto clientDto = new ClientDto();
-        clientDto.setName(name);
 
         Path sourceDirectory = Paths.get(source);
         clientDto.setSource(sourceDirectory);
+        clientDto.setName(name);
+        clientDto.setVersion(version);
+        clientDto.setArch(arch);
+        clientDto.setLicense(license);
+        clientDto.setUrl(url);
+        clientDto.setDescription(description);
+
 
         return clientDto;
     }
