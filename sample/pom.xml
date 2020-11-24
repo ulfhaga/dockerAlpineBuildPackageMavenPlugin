@@ -109,14 +109,12 @@
                     <sourceDirectory>${project.basedir}/src/main/docker</sourceDirectory>
                     <showLogs>true</showLogs>
                     <useColor>true</useColor>
-
                     <images>
                         <image>
                             <name>quarkus/server-alpine-jvm:latest</name>
-                            <autoRemove>true</autoRemove>
                             <run>
                                 <ports>
-                                    <port>64014:64014</port>
+                                    <port>64014:8080</port>
                                 </ports>
                                 <wait>
                                     <http>
