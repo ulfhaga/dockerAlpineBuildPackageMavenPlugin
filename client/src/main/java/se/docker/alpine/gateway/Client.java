@@ -32,13 +32,12 @@ public class Client
         {
             String id = uri.substring(RestfulPackageApi.V_1_PACKAGES.length());
             putName(id,clientDto.getName());
-         //   getName(id);
-            putSource(id,clientDto.getSource());
             putVersion(id,clientDto.getVersion());
             putArch(id,clientDto.getArch());
             putLicence(id,clientDto.getLicense());
             putDescription(id,clientDto.getDescription());
             putUrl(id,clientDto.getUrl());
+            putSource(id,clientDto.getSource(), clientDto.getName(), clientDto.getVersion());
             byte[] packageAkp = getPackage(id);
 
             File file = new File("/tmp/out.apk");
@@ -158,9 +157,19 @@ public class Client
     }
 
 
-    private void putSource(String id, Path sourceFolder) throws IOException
+    private void putSourceCC(String id, Path sourceFolder) throws IOException
     {
         byte[] tarFileContent = Tar.createTarContent(sourceFolder);
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.putSource(Long.valueOf(id),tarFileContent);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private void putSource(String id, Path sourceFolder,String packName, String version) throws IOException
+    {
+        byte[] tarFileContent = Tar.createApkTarContent(sourceFolder,packName, version);
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
         Response response = proxy.putSource(Long.valueOf(id),tarFileContent);

@@ -57,6 +57,27 @@ class TarTest
         writeToFile(archiveContent, pathTar);
         assertTrue(Files.isRegularFile(pathTarFile));
     }
+// createApkTarContent
+
+    @Test
+    @Order(11)
+    void createApkTarContent() throws IOException
+    {
+        Path sourceDirectory = Paths.get("src", "test", "resources", "testData","source");
+        Path archive = Paths.get("target", SOURCE_TAR);
+        Tar.createApkTarContent(sourceDirectory,archive,"MyApplication","2.0");
+        assertTrue(Files.exists(archive.toAbsolutePath()));
+    }
+
+    @Test
+    @Order(12)
+    void createApkTarByteContent() throws IOException
+    {
+        Path sourceDirectory = Paths.get("src", "test", "resources", "testData","source");
+        Path archive = Paths.get("target", SOURCE_TAR);
+        byte[] tar = Tar.createApkTarContent(sourceDirectory,"MyApplication","2.0");
+        assertTrue(tar.length > 0 );
+    }
 
     private void writeToFile(byte[] content, String path) throws IOException
     {

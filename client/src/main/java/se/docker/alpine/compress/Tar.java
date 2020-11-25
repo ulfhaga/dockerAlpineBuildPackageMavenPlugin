@@ -4,6 +4,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.*;
@@ -78,6 +79,24 @@ public class Tar
         return compressedData;
     }
 
+    public static byte[] createApkTarContent(Path source, String packageName, String version) throws IOException
+    {
+        final String prefix = "packageName" + "-" + version;
+        Path tmpDir = Files.createTempDirectory(prefix);
+        Path newSource = Paths.get(tmpDir.toAbsolutePath().toString(), prefix);
+        Files.createDirectory( newSource.toAbsolutePath());
+        FileUtils.copyDirectory(source.toAbsolutePath().toFile(),newSource.toAbsolutePath().toFile());
+        return createTarContent(newSource);
+    }
+
+    public static void createApkTarContent(Path source, Path archive, String packageName, String version) throws IOException
+    {
+       Path tmpDir = Files.createTempDirectory("packageName" + "-" + version);
+       Path newSource = Paths.get(tmpDir.toAbsolutePath().toString(), "packageName" + "-" + version);
+       Files.createDirectory( newSource.toAbsolutePath());
+       FileUtils.copyDirectory(source.toAbsolutePath().toFile(),newSource.toAbsolutePath().toFile());
+       createTarContent(newSource,archive);
+    }
 
     public static void createTarContent(Path source, Path archive) throws IOException
     {
