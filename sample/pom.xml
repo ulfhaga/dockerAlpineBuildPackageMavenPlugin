@@ -83,7 +83,7 @@
                 <version>1.0-SNAPSHOT</version>
                 <configuration>
                     <name>mypackage</name>
-                    <source>${project.basedir}/src/test/resources/testData/root</source>
+                    <source>${project.basedir}/src/test/resources/testData/source</source>
                     <version>1.0</version>
                     <arch>noarch</arch>
                     <license>LGPL-2.1-or-later</license>
