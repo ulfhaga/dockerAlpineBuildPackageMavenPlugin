@@ -11,7 +11,7 @@ public class ClientDto
     private String license;
     private String description;
     private String url;
-
+    private Path target;
 
     public String getVersion()
     {
@@ -75,6 +75,16 @@ public class ClientDto
     public void setVersion(String version)
     {
         this.version = version;
+    }
+
+    public Path getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget(Path source)
+    {
+        this.target = source;
     }
 
 

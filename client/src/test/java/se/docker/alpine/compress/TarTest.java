@@ -75,8 +75,14 @@ class TarTest
     {
         Path sourceDirectory = Paths.get("src", "test", "resources", "testData","source");
         Path archive = Paths.get("target", SOURCE_TAR);
-        byte[] tar = Tar.createApkTarContent(sourceDirectory,"MyApplication","2.0");
-        assertTrue(tar.length > 0 );
+        byte[] archiveContent = Tar.createApkTarContent(sourceDirectory,"MyApplication","2.0");
+        assertTrue(archiveContent.length > 0 );
+
+        final String pathTar = "target/archive.tar";
+        final Path pathTarFile = Paths.get(pathTar);
+        Files.deleteIfExists(pathTarFile);
+        writeToFile(archiveContent, pathTar);
+        assertTrue(Files.isRegularFile(pathTarFile));
     }
 
     private void writeToFile(byte[] content, String path) throws IOException

@@ -89,6 +89,7 @@
                     <license>LGPL-2.1-or-later</license>
                     <url>http://www.github.com</url>
                     <description>testing</description>
+                    <target>${project.basedir}/target</target>
                 </configuration>
                 <executions>
                     <execution>

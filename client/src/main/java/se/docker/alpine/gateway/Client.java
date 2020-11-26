@@ -11,7 +11,9 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Client
 {
@@ -40,9 +42,12 @@ public class Client
             putSource(id,clientDto.getSource(), clientDto.getName(), clientDto.getVersion());
             byte[] packageAkp = getPackage(id);
 
-            File file = new File("/tmp/out.apk");
-
-            try (FileOutputStream stream = new FileOutputStream(file)) {
+            if ( Files.notExists(clientDto.getTarget()))
+            {
+                Files.createDirectory(clientDto.getTarget());
+            }
+            Path apkFile = Paths.get(clientDto.getTarget().toAbsolutePath().toString(), clientDto.getName() + "-" + clientDto.getVersion() + ".apk");
+            try (FileOutputStream stream = new FileOutputStream(apkFile.toAbsolutePath().toString())) {
                 stream.write(packageAkp);
             }
 

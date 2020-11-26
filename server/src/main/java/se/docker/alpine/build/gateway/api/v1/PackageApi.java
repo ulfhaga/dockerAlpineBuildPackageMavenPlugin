@@ -276,6 +276,7 @@ public class PackageApi implements RestfulPackageApi
                 }
                 else
                 {
+                    LOG.error("Package not founded");
                     response = Response.serverError().build();
                 }
             }

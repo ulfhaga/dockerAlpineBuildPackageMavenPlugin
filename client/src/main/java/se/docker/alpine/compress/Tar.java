@@ -81,21 +81,21 @@ public class Tar
 
     public static byte[] createApkTarContent(Path source, String packageName, String version) throws IOException
     {
-        final String prefix = "packageName" + "-" + version;
+        final String prefix = packageName + "-" + version;
         Path tmpDir = Files.createTempDirectory(prefix);
         Path newSource = Paths.get(tmpDir.toAbsolutePath().toString(), prefix);
         Files.createDirectory( newSource.toAbsolutePath());
         FileUtils.copyDirectory(source.toAbsolutePath().toFile(),newSource.toAbsolutePath().toFile());
-        return createTarContent(newSource);
+        return createTarContent(tmpDir);
     }
 
     public static void createApkTarContent(Path source, Path archive, String packageName, String version) throws IOException
     {
-       Path tmpDir = Files.createTempDirectory("packageName" + "-" + version);
-       Path newSource = Paths.get(tmpDir.toAbsolutePath().toString(), "packageName" + "-" + version);
+       Path tmpDir = Files.createTempDirectory(packageName + "-" + version);
+       Path newSource = Paths.get(tmpDir.toAbsolutePath().toString(), packageName + "-" + version);
        Files.createDirectory( newSource.toAbsolutePath());
        FileUtils.copyDirectory(source.toAbsolutePath().toFile(),newSource.toAbsolutePath().toFile());
-       createTarContent(newSource,archive);
+       createTarContent(tmpDir,archive);
     }
 
     public static void createTarContent(Path source, Path archive) throws IOException

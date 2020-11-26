@@ -2,9 +2,13 @@ package se.docker.alpine.build.model;
 
 import java.io.File;
 import java.nio.file.Path;
+import org.jboss.logging.Logger;
+import se.docker.alpine.build.gateway.api.v1.PackageApi;
 
 public class PackageData
 {
+    private static final Logger LOG = Logger.getLogger(PackageApi.class);
+
     private String name;
 
     private String version;
@@ -112,6 +116,7 @@ public class PackageData
         }
         else
         {
+            LOG.debug("Error APK package not created");
             return null;
         }
     }

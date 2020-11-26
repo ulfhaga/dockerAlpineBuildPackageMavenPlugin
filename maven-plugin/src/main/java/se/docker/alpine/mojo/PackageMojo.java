@@ -36,6 +36,8 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
     @Parameter(property = "description", required = true)
     private String description;
 
+    @Parameter(property = "target", required = true)
+    private String target;
 
     @Override
     public void execute()
@@ -71,8 +73,8 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
         clientDto.setLicense(license);
         clientDto.setUrl(url);
         clientDto.setDescription(description);
-
-
+        Path targetDirectory = Paths.get(target);
+        clientDto.setTarget(targetDirectory);
         return clientDto;
     }
 

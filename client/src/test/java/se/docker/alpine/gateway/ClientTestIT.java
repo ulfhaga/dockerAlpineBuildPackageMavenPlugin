@@ -24,6 +24,7 @@ class ClientTestIT
         clientDto.setLicense("LGPL-2.1-or-later");
         clientDto.setUrl("http:\\/\\/www.github.com");
         clientDto.setDescription("Testing");
+        clientDto.setTarget(Path.of("/tmp"));
 
         Client client = new Client();
         client.send(clientDto);
