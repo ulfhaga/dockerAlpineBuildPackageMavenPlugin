@@ -245,6 +245,52 @@ public class PackageApi implements RestfulPackageApi
         return response;
     }
 
+
+
+    @Override
+    @Path("packageFunction")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response setPackageFunction(@PathParam("id") Long id, String body)
+    {
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setPackageFunction(body);
+            response = Response.ok().build();
+        }
+        return response;
+    }
+
+    @Override
+    @Path("packageFunction")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response getPackageFunction(@PathParam("id") Long id)
+    {
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            String packageFunction = packageData.getPackageFunction();
+            response = Response.ok().entity(packageFunction).build();
+        }
+        return response;
+    }
+
     @Path("package")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

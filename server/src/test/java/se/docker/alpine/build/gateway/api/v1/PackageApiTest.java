@@ -23,6 +23,7 @@ public class PackageApiTest
 {
     public static final String MY_PACKAGE = "myPackage";
     public static final String MY_PACKAGE_BASE64 = "bXlQYWNrYWdl";
+    public static final String FUNCTION_PACKAGE = "mkdir /tmp/a.txt";
 
     String id = "1";
 
@@ -109,9 +110,38 @@ public class PackageApiTest
                 .statusCode(200);
     }
 
-    @DisplayName("Retrieves a representation of the member resource in the response body")
+
+    @DisplayName("Replaces all the representations of the member functionPackage resource or create the member resource if it does not exist, with the representation in the request body.")
     @Test
     @Order(18)
+    public void testMemberPutFunctionPackagePackage()
+    {
+        given()
+                .pathParam("id", id)
+                .body(FUNCTION_PACKAGE)
+                .when().put("/v1/packages/{id}/packageFunction")
+                .then()
+                .statusCode(200);
+    }
+
+    @DisplayName("Replaces all the representations of the member resource or create the member resource if it does not exist, with the representation in the request body.")
+    @Test
+    @Order(19)
+    public void testMemberGetFunctionPackagePackage()
+    {
+        given()
+                .pathParam("id", id)
+                .when()
+                .get("/v1/packages/{id}/packageFunction")
+                .then()
+                .body(is(FUNCTION_PACKAGE))
+                .statusCode(200);
+    }
+
+
+    @DisplayName("Retrieves a representation of the member resource in the response body")
+    @Test
+    @Order(20)
     public void testMemberGetPackage()
     {
         given()
@@ -119,7 +149,7 @@ public class PackageApiTest
                 .when().get("/v1/packages/{id}")
                 .then()
                 .statusCode(200)
-                .body(is("{\"name\"" + ":\"" + MY_PACKAGE + "\"}"));
+                .body(is("{\"name\":\"myPackage\",\"packageFunction\":\"" + FUNCTION_PACKAGE + "\"}"));
     }
 
     @DisplayName("Replace all the representations of the member resources of the collection resource with the representation in the request body, or create the collection resource if it does not exist.")

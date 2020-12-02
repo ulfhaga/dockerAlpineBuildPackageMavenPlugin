@@ -41,6 +41,8 @@ public class UpdateApkBuildFile
             int indexBuild = updatedContent.indexOf("build()" );
             updatedContent = updatedContent.substring(0, indexBuild);
 
+            String packageFunction = packageData.getPackageFunction();
+
             updatedContent = updatedContent + "build() {\n" +
                     "\t# Replace with proper build command(s)\n" +
                     "\tcd \"${builddir}\";\n" +
@@ -54,8 +56,8 @@ public class UpdateApkBuildFile
                     "    # Replace with proper package command(s)\n" +
                     "\tcd \"${builddir}\";\n" +
                     "\tmkdir -p \"${pkgdir}\";\n" +
+                    "\n" + packageFunction +
                     "\n" +
-                    "install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello.sh\n" +
                     "}\n";
 
             writeToFile(updatedContent.getBytes(), updatedApkBuildFile);

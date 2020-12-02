@@ -12,6 +12,7 @@ public class ClientDto
     private String description;
     private String url;
     private Path target;
+    private String packageFunction;
 
     public String getVersion()
     {
@@ -32,6 +33,7 @@ public class ClientDto
     {
         return license;
     }
+
     public void setLicense(String license)
     {
         this.license = license;
@@ -41,6 +43,7 @@ public class ClientDto
     {
         return url;
     }
+
     public void setUrl(String url)
     {
         this.url = url;
@@ -51,6 +54,10 @@ public class ClientDto
         return description;
     }
 
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 
     public Path getSource()
     {
@@ -87,16 +94,13 @@ public class ClientDto
         this.target = source;
     }
 
-
-
-
-
-
-
-    public void setDescription(String description)
+    public void setPackageFunction(String packageFunction)
     {
-        this.description = description;
+        this.packageFunction = packageFunction;
     }
 
-
+    public String getPackageFunction()
+    {
+        return packageFunction;
+    }
 }

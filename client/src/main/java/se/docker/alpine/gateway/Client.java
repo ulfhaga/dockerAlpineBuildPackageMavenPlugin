@@ -40,6 +40,7 @@ public class Client
             putDescription(id,clientDto.getDescription());
             putUrl(id,clientDto.getUrl());
             putSource(id,clientDto.getSource(), clientDto.getName(), clientDto.getVersion());
+            putPackageFunction(id,clientDto.getPackageFunction());
             byte[] packageAkp = getPackage(id);
 
             if ( Files.notExists(clientDto.getTarget()))
@@ -127,6 +128,27 @@ public class Client
         return version;
     }
 
+    private void putPackageFunction(String path, String function)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setPackageFunction(Long.valueOf(path),function);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private String getPackageFunction(String path) throws IOException
+    {
+        String name;
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.getPackageFunction(Long.valueOf(path));
+        name = response.readEntity(String.class);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+        return name;
+    }
+
     private String createCollection() throws IOException
     {
         ResteasyWebTarget target = client.target(BASE_URI);
@@ -159,17 +181,6 @@ public class Client
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
         return name;
-    }
-
-
-    private void putSourceCC(String id, Path sourceFolder) throws IOException
-    {
-        byte[] tarFileContent = Tar.createTarContent(sourceFolder);
-        ResteasyWebTarget target = client.target(BASE_URI);
-        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
-        Response response = proxy.putSource(Long.valueOf(id),tarFileContent);
-        System.out.println("HTTP code: " + response.getStatus());
-        response.close();
     }
 
     private void putSource(String id, Path sourceFolder,String packName, String version) throws IOException

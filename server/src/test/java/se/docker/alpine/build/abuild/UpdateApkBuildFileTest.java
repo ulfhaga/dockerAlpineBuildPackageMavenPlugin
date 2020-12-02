@@ -32,6 +32,7 @@ class UpdateApkBuildFileTest
         packageData.setLicense("LGPL-2.1-or-later");
         packageData.setUrl("http:\\/\\/www.github.com");
         packageData.setDescription("Testing");
+        packageData.setPackageFunction("install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello1.sh");
         Path akpBuildPath = Paths.get("src", "test", "resources", "buildData",UpdateApkBuildFile.APKBUILD);
         Path updatedAkpBuildPath = Paths.get("target",UpdateApkBuildFile.APKBUILD);
         packageData.setSource(akpBuildPath);

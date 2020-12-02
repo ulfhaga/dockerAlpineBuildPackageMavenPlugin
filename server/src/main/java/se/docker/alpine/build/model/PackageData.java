@@ -23,6 +23,8 @@ public class PackageData
 
     private String url;
 
+    private String packageFunction;
+
     private transient Path alpinePackage;
 
     public String getArch()
@@ -95,6 +97,15 @@ public class PackageData
         this.version = version;
     }
 
+    public String getPackageFunction()
+    {
+        return packageFunction;
+    }
+    public void setPackageFunction(String packageFunction)
+    {
+        this.packageFunction = packageFunction;
+    }
+
     public void clear()
     {
         name = "";
@@ -104,6 +115,7 @@ public class PackageData
         license = "";
         description = "";
         url = "";
+        packageFunction = "";
         alpinePackage = null;
     }
 
@@ -120,4 +132,6 @@ public class PackageData
             return null;
         }
     }
+
+
 }

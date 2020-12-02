@@ -25,6 +25,7 @@ class ClientTestIT
         clientDto.setUrl("http:\\/\\/www.github.com");
         clientDto.setDescription("Testing");
         clientDto.setTarget(Path.of("/tmp"));
+        clientDto.setPackageFunction("install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello1.sh");
 
         Client client = new Client();
         client.send(clientDto);

@@ -105,6 +105,18 @@ public interface RestfulPackageApi
     @Consumes(MediaType.TEXT_PLAIN)
     Response getUrl(@PathParam("id") Long id);
 
+    @Path("packageFunction")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response setPackageFunction(@PathParam("id") Long id, String body);
+
+    @Path("packageFunction")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    Response getPackageFunction(@PathParam("id") Long id);
+
     @Path("package")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

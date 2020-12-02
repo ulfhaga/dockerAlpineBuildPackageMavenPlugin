@@ -36,9 +36,8 @@ class TarTest
         Path target = Paths.get("target", "testData");
         Path source = Paths.get("target", SOURCE_TAR);
         Tar.extractTarFile(source, target);
-        Path hello = Paths.get("target", "testData", "source", "MyGoodPackage-1.0", "hello.sh");
+        Path hello = Paths.get("target", "testData", "source", "hello.sh");
         assertTrue(Files.exists(hello));
-
     }
 
     @Test

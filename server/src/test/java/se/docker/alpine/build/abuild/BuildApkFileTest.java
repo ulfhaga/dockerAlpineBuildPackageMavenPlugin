@@ -34,6 +34,7 @@ class BuildApkFileTest
         packageData.setArch("noarch");
         packageData.setLicense("LGPL-2.1-or-later");
         packageData.setUrl("http:\\/\\/www.github.com");
+        packageData.setPackageFunction("install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello1.sh");
         BuildApkFile buildApkFile = new BuildApkFile(BuildApkFile.createProcessBuilder(), packageData);
     }
 

@@ -39,6 +39,9 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
     @Parameter(property = "target", required = true)
     private String target;
 
+    @Parameter(property = "packageFunction", required = true)
+    private String packageFunction;
+
     @Override
     public void execute()
     {
@@ -58,7 +61,6 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
             e.printStackTrace();
         }
 
-
     }
 
     private ClientDto getClientDto()
@@ -73,6 +75,7 @@ public class PackageMojo implements org.apache.maven.plugin.Mojo
         clientDto.setLicense(license);
         clientDto.setUrl(url);
         clientDto.setDescription(description);
+        clientDto.setPackageFunction(packageFunction);
         Path targetDirectory = Paths.get(target);
         clientDto.setTarget(targetDirectory);
         return clientDto;
