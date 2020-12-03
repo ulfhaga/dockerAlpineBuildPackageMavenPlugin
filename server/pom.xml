@@ -102,7 +102,7 @@
                 <version>${compiler-plugin.version}</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <target>11</target>
                     <compilerArgs>
                         <arg>-Xpkginfo:always</arg>
                     </compilerArgs>
