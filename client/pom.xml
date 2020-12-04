@@ -13,8 +13,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <java.compiler.debug>true</java.compiler.debug>
         <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
         <quarkus.http.test-port>0</quarkus.http.test-port>
