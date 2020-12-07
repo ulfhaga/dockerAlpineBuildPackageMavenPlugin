@@ -24,8 +24,7 @@ public class PackageApiTest
     public static final String MY_PACKAGE = "myPackage";
     public static final String MY_PACKAGE_BASE64 = "bXlQYWNrYWdl";
     public static final String FUNCTION_PACKAGE = "mkdir /tmp/a.txt";
-
-    String id = "1";
+    private  String id = "1";
 
     @DisplayName("Creates a member resource in the collection resource. " +
             "The URI of the created member resource is automatically assigned and returned " +

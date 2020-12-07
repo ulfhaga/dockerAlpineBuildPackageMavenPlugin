@@ -25,7 +25,7 @@ public class PackageData
 
     private String packageFunction;
 
-    private transient Path alpinePackage;
+    // private transient Path alpinePackage;
 
     public String getArch()
     {
@@ -116,7 +116,7 @@ public class PackageData
         description = "";
         url = "";
         packageFunction = "";
-        alpinePackage = null;
+       // alpinePackage = null;
     }
 
     public Path getPackage()

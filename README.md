@@ -17,7 +17,7 @@ If no docker image needs to be created run:
 ## Architecture
 
 The maven plugin se.docker.alpine:plugin-maven use the client (module client) to communicate 
-with server inside an Alpine docker container. The container create the Alpine package. 
+with server inside an Alpine docker container. The container creates the Alpine package. 
 The plugin can now receive the package via the client (module client).
 
 

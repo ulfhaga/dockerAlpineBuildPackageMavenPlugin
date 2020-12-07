@@ -11,7 +11,6 @@ import java.io.IOException;
 @Path("/v1/packages")
 public interface RestfulPackagesApi
 {
-    @SuppressWarnings("QsUndeclaredPathMimeTypesInspection")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     Response packageId() throws IOException;

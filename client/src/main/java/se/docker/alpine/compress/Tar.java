@@ -59,21 +59,12 @@ public class Tar
                     return FileVisitResult.CONTINUE;
                 }
             });
-            // tOut.flush();
 
             tOut.flush();
             buffOut.flush();
             archive.flush();
             archive.close();
             compressedData = archive.toByteArray();
-
-          /*  byte ff[] =new byte[100000];
-            archive.write(ff);
-            long dddd = tOut.getBytesWritten();
-            archiveContent = new byte[(int) dddd];
-            tOut.write(archiveContent, 0, (int) dddd);
-
-           */
             tOut.finish();
         }  // try
         return compressedData;

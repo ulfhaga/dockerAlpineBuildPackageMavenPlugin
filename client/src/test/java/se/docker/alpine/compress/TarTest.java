@@ -8,8 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @Tag("tag2")
@@ -47,7 +46,7 @@ class TarTest
         Path sourceDirectory = Paths.get("src", "test", "resources", "testData");
         byte[] archiveContent = Tar.createTarContent(sourceDirectory);
         int len = archiveContent.length;
-        assertFalse(len == 0);
+        assertNotEquals(len, 0);
         assertTrue(len > 100);
 
         final String pathTar = "target/archive.tar";

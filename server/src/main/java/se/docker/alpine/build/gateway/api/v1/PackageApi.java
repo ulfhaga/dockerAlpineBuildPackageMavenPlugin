@@ -313,11 +313,8 @@ public class PackageApi implements RestfulPackageApi
                 java.nio.file.Path path = packageData.getPackage();
                 if (path != null)
                 {
-                    java.nio.file.Path packageFile = path;
-                    LOG.debugv("packageFile: {0} ", packageFile.toAbsolutePath().toString());
-
-
-                    byte[] sourceTar = Files.readAllBytes(packageFile);
+                    LOG.debugv("packageFile: {0} ", path.toAbsolutePath().toString());
+                    byte[] sourceTar = Files.readAllBytes(path);
                     response = Response.ok().entity(sourceTar).build();
                 }
                 else
@@ -467,7 +464,12 @@ public class PackageApi implements RestfulPackageApi
     }
 
 
-    //Convert a Base64 string and create a file
+    /**
+     * Convert a Base64 string and create a file
+     * @param dataBase64 the string to converted.
+     * @return the cnverted string
+     * @throws IOException
+     */
     private String convertFile(String dataBase64)
             throws IOException
     {

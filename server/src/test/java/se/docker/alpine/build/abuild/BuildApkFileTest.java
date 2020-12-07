@@ -11,17 +11,6 @@ import java.nio.file.Paths;
 
 class BuildApkFileTest
 {
-
-    @BeforeEach
-    void setUp()
-    {
-    }
-
-    @AfterEach
-    void tearDown()
-    {
-    }
-
     @Test
     void build() throws IOException
     {

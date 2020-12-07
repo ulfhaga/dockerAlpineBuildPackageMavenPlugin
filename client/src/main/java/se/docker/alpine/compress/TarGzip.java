@@ -19,8 +19,6 @@ public class TarGzip
             throw new IOException("Please provide a directory.");
         }
 
-        // get folder name as zip file name
-       // String tarFileName = source.getFileName().toString() + ".tar.gz";
         String tarFileName = archive.toFile().getAbsolutePath();
 
         try (OutputStream fOut = Files.newOutputStream(Paths.get(tarFileName));
@@ -120,7 +118,6 @@ public class TarGzip
         if (!normalizePath.startsWith(targetDir)) {
             throw new IOException("Bad entry: " + entry.getName());
         }
-
         return normalizePath;
     }
 

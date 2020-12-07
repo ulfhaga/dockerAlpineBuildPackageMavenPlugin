@@ -95,7 +95,7 @@ public class Client
         response.close();
     }
 
-    private String getArch(String path) throws IOException
+    private String getArch(String path)
     {
         String arch;
         ResteasyWebTarget target = client.target(BASE_URI);
@@ -116,7 +116,7 @@ public class Client
         response.close();
     }
 
-    private String getVersion(String path) throws IOException
+    private String getVersion(String path)
     {
         String version;
         ResteasyWebTarget target = client.target(BASE_URI);
@@ -137,7 +137,7 @@ public class Client
         response.close();
     }
 
-    private String getPackageFunction(String path) throws IOException
+    private String getPackageFunction(String path)
     {
         String name;
         ResteasyWebTarget target = client.target(BASE_URI);
@@ -162,7 +162,7 @@ public class Client
         return path;
     }
     
-    private void putName(String path, String name) throws IOException
+    private void putName(String path, String name)
     {
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
@@ -171,7 +171,7 @@ public class Client
         response.close();
     }
 
-    private String getName(String path) throws IOException
+    private String getName(String path)
     {
         String name;
         ResteasyWebTarget target = client.target(BASE_URI);

@@ -86,8 +86,7 @@ RUN chmod g+w /var/cache/distfiles
 
 RUN   mkdir -p ${INSTALLATION_FOLDER}/scripts
 COPY  src/main/docker/scripts/create_new_package.sh ${INSTALLATION_FOLDER}/scripts/
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        WORKDIR /home/dev
+WORKDIR /home/dev/
 # USER dev
 
 RUN git config --global user.name "dev"
