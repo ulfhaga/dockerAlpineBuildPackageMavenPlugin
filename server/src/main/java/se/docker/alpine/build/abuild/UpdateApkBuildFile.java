@@ -14,6 +14,7 @@ public class UpdateApkBuildFile
 {
     public static final String APKBUILD = "APKBUILD";
     public static final Pattern COMPILE_VER = Pattern.compile("(pkgver=.*)");
+    public static final Pattern COMPILE_RELEASE_NUMBER = Pattern.compile("(pkgrel=.*)");
     public static final Pattern COMPILE_SOURCE = Pattern.compile("(source=.*)");
     public static final Pattern COMPILE_DESC = Pattern.compile("(pkgdesc=.*)");
     public static final Pattern COMPILE_URL = Pattern.compile("(url=.*)");
@@ -36,7 +37,7 @@ public class UpdateApkBuildFile
         if (Files.exists(apkBuildFile))
         {
             String content = new String(Files.readAllBytes(apkBuildFile));
-            updatedContent = buildDir(subpackages(url(license(description(arch(source(version(content))))))));
+            updatedContent = buildDir(releaseNumber(subpackages(url(license(description(arch(source(version(content)))))))));
 
             int indexBuild = updatedContent.indexOf("build()" );
             updatedContent = updatedContent.substring(0, indexBuild);
@@ -72,6 +73,12 @@ public class UpdateApkBuildFile
     {
         String replacement = "pkgver=\"" + packageData.getVersion() + "\"";
         return COMPILE_VER.matcher(content).replaceFirst(replacement);
+    }
+
+    private String releaseNumber(String content)
+    {
+        String replacement = "pkgrel=\"" + packageData.getReleaseNumber() + "\"";
+        return COMPILE_RELEASE_NUMBER.matcher(content).replaceFirst(replacement);
     }
 
     private String source(String content)

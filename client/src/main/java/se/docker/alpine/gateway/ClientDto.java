@@ -7,6 +7,7 @@ public class ClientDto
     private Path source;
     private String name;
     private String version;
+    private Integer releaseNumber;
     private String arch;
     private String license;
     private String description;
@@ -84,6 +85,17 @@ public class ClientDto
         this.version = version;
     }
 
+    public void setReleaseNumber(Integer releaseNumber)
+    {
+        this.releaseNumber = releaseNumber;
+    }
+
+    public Integer getReleaseNumber()
+    {
+        return releaseNumber;
+    }
+
+
     public Path getTarget()
     {
         return target;
@@ -103,4 +115,6 @@ public class ClientDto
     {
         return packageFunction;
     }
+
+
 }

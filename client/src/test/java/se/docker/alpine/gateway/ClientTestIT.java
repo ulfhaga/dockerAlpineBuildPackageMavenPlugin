@@ -20,11 +20,12 @@ class ClientTestIT
         clientDto.setSource(sourceDirectory);
 
         clientDto.setVersion("1.0");
+        clientDto.setReleaseNumber(0);
         clientDto.setArch("noarch");
         clientDto.setLicense("LGPL-2.1-or-later");
         clientDto.setUrl("http:\\/\\/www.github.com");
         clientDto.setDescription("Testing");
-        clientDto.setTarget(Path.of("/tmp"));
+        clientDto.setTarget(Paths.get("/tmp"));
         clientDto.setPackageFunction("install -Dm755 hello.sh \"$pkgdir\"/usr/bin/hello1.sh");
 
         Client client = new Client();

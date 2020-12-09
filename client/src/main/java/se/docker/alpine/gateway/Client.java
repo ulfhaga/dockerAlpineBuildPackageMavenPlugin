@@ -14,11 +14,14 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.jboss.logging.Logger;
 
 public class Client
 {
+    private static final Logger LOG = Logger.getLogger(Client.class);
     final static String BASE_URI = "http://127.0.0.1:64014";
     final ResteasyClient client;
+    static volatile int internalReleaseNumber = 0;
 
     public Client()
     {
@@ -30,11 +33,15 @@ public class Client
     {
         String uri;
         uri = createCollection();
+
+
         if (uri.startsWith(RestfulPackageApi.V_1_PACKAGES))
         {
             String id = uri.substring(RestfulPackageApi.V_1_PACKAGES.length());
             putName(id,clientDto.getName());
             putVersion(id,clientDto.getVersion());
+
+            putReleaseNumber(clientDto, id);
             putArch(id,clientDto.getArch());
             putLicence(id,clientDto.getLicense());
             putDescription(id,clientDto.getDescription());
@@ -59,12 +66,25 @@ public class Client
         }
     }
 
+    private void putReleaseNumber(ClientDto clientDto, String id)
+    {
+        Integer releaseNumber = clientDto.getReleaseNumber() ;
+        if (releaseNumber == null)
+        {
+            putReleaseNumber(id, internalReleaseNumber++);
+        }
+        else
+        {
+            putReleaseNumber(id, releaseNumber);
+        }
+    }
+
     private void putUrl(String path, String description)
     {
         ResteasyWebTarget target = client.target(BASE_URI);
         RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
         Response response = proxy.setUrl(Long.valueOf(path),description);
-        System.out.println("HTTP code: " + response.getStatus());
+        LOG.debugf("HTTP code: %s", response.getStatus());
         response.close();
     }
 
@@ -126,6 +146,27 @@ public class Client
         System.out.println("HTTP code: " + response.getStatus());
         response.close();
         return version;
+    }
+
+    private void putReleaseNumber(String path, Integer version)
+    {
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.setReleaseNumber(Long.valueOf(path),version);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+    }
+
+    private Integer getReleaseNumber(String path)
+    {
+        Integer releaseNumber;
+        ResteasyWebTarget target = client.target(BASE_URI);
+        RestfulPackageApi proxy = target.proxy(RestfulPackageApi.class);
+        Response response = proxy.getReleaseNumber(Long.valueOf(path));
+        releaseNumber = response.readEntity(Integer.class);
+        System.out.println("HTTP code: " + response.getStatus());
+        response.close();
+        return releaseNumber;
     }
 
     private void putPackageFunction(String path, String function)

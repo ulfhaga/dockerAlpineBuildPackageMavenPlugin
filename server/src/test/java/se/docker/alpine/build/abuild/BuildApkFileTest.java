@@ -19,6 +19,7 @@ class BuildApkFileTest
         PackageData packageData = new PackageData();
         packageData.setName("mypackage");
         packageData.setVersion("1.0");
+        packageData.setReleaseNumber(0);
         packageData.setSource(sourceFile);
         packageData.setArch("noarch");
         packageData.setLicense("LGPL-2.1-or-later");

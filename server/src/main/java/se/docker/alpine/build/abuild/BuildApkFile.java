@@ -84,16 +84,16 @@ public class BuildApkFile
             exitVal = process.waitFor();
             if (exitVal == 0)
             {
-                LOG.debugv("Success: {0} ", output);
+                LOG.debugv("Success: %s ", output);
             }
             else
             {
-                LOG.errorf("ERROR: {0} ", output);
+                LOG.errorf("ERROR: %s ", output);
             }
         }
         catch (IOException | InterruptedException e)
         {
-            LOG.errorf("ERROR: {0} ", e.getMessage());
+            LOG.errorf("ERROR: %s ", e.getMessage());
             exitVal = 2;
         }
         return exitVal;

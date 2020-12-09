@@ -1,9 +1,10 @@
 package se.docker.alpine.build.model;
 
-import java.io.File;
-import java.nio.file.Path;
 import org.jboss.logging.Logger;
 import se.docker.alpine.build.gateway.api.v1.PackageApi;
+
+import java.io.File;
+import java.nio.file.Path;
 
 public class PackageData
 {
@@ -12,6 +13,8 @@ public class PackageData
     private String name;
 
     private String version;
+
+    private Integer releaseNumber;
 
     private transient Path source;
 
@@ -101,6 +104,7 @@ public class PackageData
     {
         return packageFunction;
     }
+
     public void setPackageFunction(String packageFunction)
     {
         this.packageFunction = packageFunction;
@@ -116,7 +120,7 @@ public class PackageData
         description = "";
         url = "";
         packageFunction = "";
-       // alpinePackage = null;
+        // alpinePackage = null;
     }
 
     public Path getPackage()
@@ -133,5 +137,14 @@ public class PackageData
         }
     }
 
+    public Integer getReleaseNumber()
+    {
+        return releaseNumber;
+    }
+
+    public void setReleaseNumber(Integer version)
+    {
+        this.releaseNumber = releaseNumber;
+    }
 
 }

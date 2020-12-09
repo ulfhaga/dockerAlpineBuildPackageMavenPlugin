@@ -246,6 +246,49 @@ public class PackageApi implements RestfulPackageApi
     }
 
 
+    @Override
+    @Path("releaseNumber")
+    @PUT
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response setReleaseNumber(@PathParam("id") Long id, Integer body)
+    {
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            packageData.setReleaseNumber(body);
+            response = Response.ok().build();
+        }
+        return response;
+    }
+
+    @Override
+    @Path("releaseNumber")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response getReleaseNumber(@PathParam("id") Long id)
+    {
+        Response response;
+        PackageData packageData;
+        packageData = packagesService.getPackageById(id);
+        if (packageData == null)
+        {
+            response = Response.noContent().build();
+        }
+        else
+        {
+            Integer packageName = packageData.getReleaseNumber();
+            response = Response.ok().entity(packageName).build();
+        }
+        return response;
+    }
 
     @Override
     @Path("packageFunction")
