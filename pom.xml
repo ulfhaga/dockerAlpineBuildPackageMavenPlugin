@@ -19,6 +19,11 @@
         <module>sample</module>
     </modules>
 
+    <scm>
+        <url>https://github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin</url>
+        <connection>scm:git:git://github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin.git</connection>
+    </scm>
+
     <properties>
         <maven.version>3.0.0</maven.version>
         <maven.compile.source>8</maven.compile.source>
@@ -41,10 +46,6 @@
                     <target>${maven.compile.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${java.compiler.debug}</debug>
-                    <compilerArgs>
-                        <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
-                        <arg>-Xpkginfo:always</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 
