@@ -24,7 +24,7 @@ public class Tar
                 BufferedOutputStream buffOut = new BufferedOutputStream(archive);
                 TarArchiveOutputStream tOut = new TarArchiveOutputStream(buffOut))
         {
-            Files.walkFileTree(source, new SimpleFileVisitor<>()
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>()
             {
                 @Override
                 public FileVisitResult visitFile(Path file,
@@ -105,7 +105,7 @@ public class Tar
              // GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut);
              TarArchiveOutputStream tOut = new TarArchiveOutputStream(buffOut))
         {
-            Files.walkFileTree(source, new SimpleFileVisitor<>()
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>()
             {
                 @Override
                 public FileVisitResult visitFile(Path file,

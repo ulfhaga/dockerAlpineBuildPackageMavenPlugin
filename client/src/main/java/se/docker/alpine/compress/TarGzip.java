@@ -26,7 +26,7 @@ public class TarGzip
              GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut);
              TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut)) {
 
-            Files.walkFileTree(source, new SimpleFileVisitor<>() {
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult visitFile(Path file,

@@ -115,6 +115,7 @@ public class PackageData
         name = "";
         source = null;
         version = "";
+        releaseNumber = 0;
         arch = "";
         license = "";
         description = "";
@@ -142,7 +143,7 @@ public class PackageData
         return releaseNumber;
     }
 
-    public void setReleaseNumber(Integer version)
+    public void setReleaseNumber(Integer releaseNumber)
     {
         this.releaseNumber = releaseNumber;
     }

@@ -21,8 +21,8 @@
 
     <properties>
         <maven.version>3.0.0</maven.version>
-        <maven.compile.source>9</maven.compile.source>
-        <maven.compile.target>9</maven.compile.target>
+        <maven.compile.source>8</maven.compile.source>
+        <maven.compile.target>8</maven.compile.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <main.basedir>${project.basedir}</main.basedir>
@@ -58,7 +58,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[11,15)</version>
+                                    <version>[1.8,1.15)</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
                                     <version>[${maven.version},)</version>
