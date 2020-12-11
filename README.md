@@ -25,7 +25,7 @@ with server inside an Alpine docker container. The container creates the Alpine 
 The plugin can now receive the package via the client (module client).
 
 
-## Generic Plugin configuration information
+## Plugin configuration information
 
 The POM defined of the plugin is se.docker.alpine:plugin-maven:1.0
 
