@@ -14,6 +14,10 @@ If no docker image needs to be created run:
 
     mvn install
 
+## Usage
+
+See example in file sample/pom.xml.
+
 ## Architecture
 
 The maven plugin se.docker.alpine:plugin-maven use the client (module client) to communicate 
@@ -21,9 +25,12 @@ with server inside an Alpine docker container. The container creates the Alpine 
 The plugin can now receive the package via the client (module client).
 
 
-## Plugin se.docker.alpine:plugin-maven
+## Generic Plugin configuration information
 
-See example in file sample/pom.xml
+The POM defined of the plugin is se.docker.alpine:plugin-maven:1.0
+
+
+
 
 The element configuration contains follow elements:
 
@@ -48,6 +55,8 @@ A collection of linux commands.
 To access the files in source, use the varible $pkgdir".
 
 ## Test to install an alpine package
+
+The created package file name is mypackage-1.0.apk in this example.
 
     docker run --name alpine -dit alpine sh  
     docker cp sample/target/mypackage-1.0.apk alpine:/
