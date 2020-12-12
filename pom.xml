@@ -23,6 +23,13 @@
         <url>https://github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin</url>
         <connection>scm:git:git://github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin.git</connection>
     </scm>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub ulfhaga Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ulfhaga/dockerAlpineBuildPackageMavenPlugin</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <maven.version>3.0.0</maven.version>
