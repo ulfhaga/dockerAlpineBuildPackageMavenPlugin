@@ -18,6 +18,12 @@ If no docker image needs to be created run:
 
 See example in file sample/pom.xml.
 
+There are two plugins that are needed
+
+The plugin __se.docker.alpine:plugin-maven__ act as a client to the plugin __io.fabric8:docker-maven-plugin__ that act as server.
+The server is a docker container that builds the package.
+
+
 ## Architecture
 
 The maven plugin se.docker.alpine:plugin-maven use the client (module client) to communicate 
