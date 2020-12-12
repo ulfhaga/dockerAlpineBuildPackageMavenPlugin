@@ -137,7 +137,6 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker-maven-plugin.version}</version>
                 <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/docker</sourceDirectory>
                     <showLogs>true</showLogs>
                     <useColor>true</useColor>
                     <images>
